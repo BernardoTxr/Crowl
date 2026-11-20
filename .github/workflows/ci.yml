@@ -1,0 +1,202 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  data:
+    name: Validate data catalog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Validate production data
+        run: python scripts/validate_data.py --production
+
+  backend:
+    name: Backend and migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: packages/crowl-core:services/api
+      MIGRATION_DATABASE_URL: postgresql+psycopg://crowl:crowl_ci@127.0.0.1:5432/crowl
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: crowl
+          POSTGRES_USER: crowl
+          POSTGRES_PASSWORD: crowl_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U crowl -d crowl"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements-dev.txt
+            services/api/requirements.txt
+            services/api/requirements-dev.txt
+
+      - name: Install backend dependencies
+        run: python -m pip install -r requirements-dev.txt -r services/api/requirements-dev.txt
+
+      - name: Run backend tests
+        run: python -m pytest tests/backend
+
+      - name: Compile PostgreSQL migration SQL offline
+        run: python -m alembic -c migrations/alembic.ini upgrade head --sql > /dev/null
+
+      - name: Apply migrations
+        run: python -m alembic -c migrations/alembic.ini upgrade head
+
+      - name: Verify PostgreSQL-only invariants
+        run: python -m pytest tests/postgres
+
+      - name: Check models for migration drift
+        run: python -m alembic -c migrations/alembic.ini check
+
+  crawler:
+    name: Crawler tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            packages/crowl-core/pyproject.toml
+            services/crawler/pyproject.toml
+
+      - name: Install crawler dependencies
+        run: python -m pip install -e ./packages/crowl-core -e './services/crawler[test]'
+
+      - name: Run crawler tests
+        run: python -m pytest tests/crawler
+
+  frontend:
+    name: Frontend tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: services/web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: services/web/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Audit frontend dependencies
+        run: npm audit --audit-level=high
+
+  railway-iac:
+    name: Railway IaC typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: .railway
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: .railway/package-lock.json
+
+      - name: Install IaC dependencies
+        run: npm ci
+
+      - name: Typecheck Railway definition
+        run: npm run check
+
+  docker:
+    name: Build ${{ matrix.image }} image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: api
+            context: .
+            dockerfile: services/api/Dockerfile
+          - image: crawler
+            context: .
+            dockerfile: services/crawler/Dockerfile
+          - image: web
+            context: services/web
+            dockerfile: services/web/Dockerfile
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64
+          push: false
+          cache-from: type=gha,scope=crowl-${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=crowl-${{ matrix.image }}

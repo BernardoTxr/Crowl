@@ -1,0 +1,32 @@
+{
+	auto_https off
+	admin off
+}
+
+:{$PORT:80} {
+	encode zstd gzip
+
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	handle /api/* {
+		reverse_proxy {$API_URL:http://api:8000}
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+		Cross-Origin-Opener-Policy same-origin
+		X-Frame-Options DENY
+		X-Content-Type-Options nosniff
+		X-Robots-Tag "noindex, nofollow, noarchive"
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+}

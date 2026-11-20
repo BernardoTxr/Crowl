@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crowl-crawler"
+version = "0.1.0"
+description = "One-shot, source-isolated fare collection service for Crowl"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Crowl contributors" }]
+dependencies = [
+  "crowl-core==0.1.0",
+  "psycopg[binary]==3.3.9",
+  "SQLAlchemy==2.0.58",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.3,<10"]
+
+[project.scripts]
+crowl-crawler = "crowl_crawler.cli:entrypoint"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["../../tests/crawler"]
+addopts = "-q"

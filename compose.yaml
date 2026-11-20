@@ -1,0 +1,94 @@
+name: crowl
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-crowl}
+      POSTGRES_USER: ${POSTGRES_USER:-crowl}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-crowl_dev_only}
+    volumes:
+      - crowl-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://crowl:crowl_dev_only@postgres:5432/crowl}
+      PORT: "8000"
+      CROWL_DATA_DIR: /app/data
+      CROWL_AUTO_CREATE_SCHEMA: "false"
+      CROWL_AUTO_SEED: "true"
+      CROWL_SEED_FIXTURES: ${CROWL_SEED_FIXTURES:-true}
+      CROWL_FRESHNESS_HOURS: ${CROWL_FRESHNESS_HOURS:-36}
+      CROWL_DURATION_HISTORY_DAYS: ${CROWL_DURATION_HISTORY_DAYS:-180}
+      CROWL_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      CROWL_SCHEMA_REVISION: ${CROWL_SCHEMA_REVISION:-0005_synthetic_run_isolation}
+    command:
+      - sh
+      - -c
+      - >-
+        alembic -c /app/migrations/alembic.ini upgrade head &&
+        exec uvicorn app.main:app --host 0.0.0.0 --port $${PORT:-8000} --proxy-headers
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: services/web
+      args:
+        VITE_API_BASE_URL: /api/v1
+    environment:
+      PORT: "80"
+      API_URL: http://api:8000
+    ports:
+      - "${WEB_PORT:-5173}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  crawler:
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: services/crawler/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://crowl:crowl_dev_only@postgres:5432/crowl}
+      CROWL_DATA_DIR: /app/data
+      CROWL_BATCH_DEADLINE_HOURS: ${CROWL_BATCH_DEADLINE_HOURS:-20}
+      CROWL_STRICT_SCHENGEN_PATH: "true"
+      CROWL_LOG_LEVEL: ${CROWL_LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  crowl-postgres:

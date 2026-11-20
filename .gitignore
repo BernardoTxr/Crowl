@@ -1,0 +1,33 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+.coverage
+htmlcov/
+
+# JavaScript
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Runtime
+*.db
+*.sqlite
+*.sqlite3
+playwright-report/
+test-results/
+artifacts/
+

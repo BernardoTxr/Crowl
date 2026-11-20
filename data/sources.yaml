@@ -1,0 +1,240 @@
+schema_version: 1
+sources:
+  - id: ryanair
+    name: Ryanair
+    modes: [flight]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: licensed direct distribution feed
+    access_note: Licensed direct or distribution feed required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [ryanair.com]
+    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No licensed route inventory configured. }
+  - id: easyjet
+    name: easyJet
+    modes: [flight]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: approved API, GDS, or aggregator
+    access_note: Approved API, GDS, or aggregator access required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [easyjet.com]
+    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No approved route inventory configured. }
+  - id: transavia
+    name: Transavia
+    modes: [flight]
+    strategy: http_structured
+    state: disabled_needs_credentials
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: official affiliate API
+    access_note: Official affiliate API is the preferred first live connector.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [transavia.com]
+    route_discovery: { method: affiliate_route_feed, status: blocked_access, provenance: Affiliate credentials not configured. }
+  - id: wizzair
+    name: Wizz Air
+    modes: [flight]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized distribution API or aggregator
+    access_note: Authorized distribution access required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [wizzair.com]
+    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No authorized route inventory configured. }
+  - id: vueling
+    name: Vueling
+    modes: [flight]
+    strategy: http_structured
+    state: disabled_needs_credentials
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: Vueling NDC or direct provider
+    access_note: NDC or approved provider credentials required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [vueling.com]
+    route_discovery: { method: ndc_route_feed, status: blocked_access, provenance: NDC credentials not configured. }
+  - id: volotea
+    name: Volotea
+    modes: [flight]
+    strategy: playwright
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized feed or express browser-rendering permission
+    access_note: Enable a feed or browser renderer only after explicit authorization.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [volotea.com]
+    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No feed or automation permission recorded. }
+  - id: flixbus
+    name: FlixBus
+    modes: [bus]
+    strategy: http_structured
+    state: disabled_needs_credentials
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: advanced partner API
+    access_note: Advanced partner API credentials required; GTFS is schedule-only.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [flixbus.com]
+    route_discovery: { method: partner_route_feed, status: blocked_access, provenance: Partner credentials not configured. }
+  - id: blablacar_bus
+    name: BlaBlaCar Bus
+    modes: [bus]
+    strategy: playwright
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized bus distributor feed or express browser-rendering permission
+    access_note: Bus inventory only; rideshare is out of scope.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [blablacar.com]
+    route_discovery: { method: authorized_bus_feed, status: blocked_access, provenance: No feed or automation permission recorded. }
+  - id: itabus
+    name: Itabus
+    modes: [bus]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized retailer or machine-readable feed
+    access_note: Authorized retailer or machine-readable feed required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [itabus.it]
+    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No retailer route feed configured. }
+  - id: alsa
+    name: Alsa
+    modes: [bus]
+    strategy: playwright
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized partner feed or express browser-rendering permission
+    access_note: Authorized partner feed required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [alsa.com]
+    route_discovery: { method: authorized_partner_feed, status: blocked_access, provenance: No feed or automation permission recorded. }
+  - id: ouigo
+    name: OUIGO
+    modes: [train]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized SNCF or OUIGO distribution feed
+    access_note: Live authorized distribution feed required; open-data ranges are insufficient.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [ouigo.com]
+    route_discovery: { method: authorized_distribution_feed, status: blocked_access, provenance: Open schedule data is insufficient for live fare routes. }
+  - id: sncf_connect
+    name: SNCF Connect
+    modes: [train]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: authorized distribution feed
+    access_note: Public schedule APIs do not provide the required live fares.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [sncf-connect.com]
+    route_discovery: { method: authorized_distribution_feed, status: blocked_access, provenance: Public schedule data is not fare inventory. }
+  - id: trenitalia_france
+    name: Trenitalia France
+    modes: [train]
+    strategy: http_structured
+    state: disabled_needs_credentials
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: official partner API
+    access_note: Official partner API approval required.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [trenitalia.com, trenitalia.fr]
+    route_discovery: { method: partner_route_feed, status: blocked_access, provenance: Partner credentials not configured. }
+  - id: eurostar
+    name: Eurostar
+    modes: [train]
+    strategy: http_structured
+    state: disabled_needs_authorization
+    enabled: false
+    kill_switch: true
+    config_version: "2026-11-20"
+    access_basis: licensed feed, GDS, or authorized distributor
+    access_note: Licensed feed, GDS, or distributor required; London is excluded.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    sale_horizon_days: null
+    attribution_required: null
+    booking_link_required: true
+    booking_hosts: [eurostar.com]
+    route_discovery: { method: licensed_distribution_feed, status: blocked_access, provenance: No licensed Schengen-pair route inventory configured. }

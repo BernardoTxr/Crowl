@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crowl-core"
+version = "0.1.0"
+description = "Shared domain rules and persistence models for Crowl"
+requires-python = ">=3.12"
+dependencies = [
+  "python-dateutil>=2.9,<3",
+  "PyYAML>=6.0,<7",
+  "SQLAlchemy>=2.0,<3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["crowl_core"]
