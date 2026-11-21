@@ -49,6 +49,13 @@ export const CityPage = () => {
     document.title = city ? `${city.name} weekend fares — Crowl` : 'City — Crowl';
   }, [city]);
 
+  useEffect(() => {
+    if (searchParams.get('mode') !== 'mixed') return;
+    const next = new URLSearchParams(searchParams);
+    next.delete('mode');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const updateFilter = (key: 'weekend' | 'mode', value: string) => {
     const next = new URLSearchParams(searchParams);
     if (!value || (key === 'mode' && value === 'all')) next.delete(key);
@@ -75,8 +82,6 @@ export const CityPage = () => {
   const attributeDefinitions = Object.fromEntries(
     (metaQuery.data?.data.attributeDefinitions ?? []).map((definition) => [definition.id, definition]),
   );
-  const isMock = Boolean(cityQuery.data?.isMock || metaQuery.data?.isMock || weekendsQuery.data?.isMock || historyQuery.data?.isMock || journeyQuery.data?.isMock);
-  const isMockCatalog = metaQuery.data?.data.catalogVariant === 'mock';
   const isSynthetic = Boolean(
     historyQuery.data?.isSynthetic
     || journeyQuery.data?.isSynthetic
@@ -86,14 +91,15 @@ export const CityPage = () => {
   return (
     <div className="page-shell city-page">
       <nav className="breadcrumb" aria-label="Breadcrumb"><Link to={`/${searchParams.size ? `?${searchParams}` : ''}`}>Explore</Link><span aria-hidden="true">/</span><span aria-current="page">{city.name}</span></nav>
-      {isSynthetic && isMockCatalog ? <DemoNotice compact kind="catalog-synthetic" /> : isSynthetic ? <DemoNotice compact kind="synthetic" /> : isMockCatalog ? <DemoNotice compact kind="catalog" /> : isMock && <DemoNotice compact />}
+      {isSynthetic && <DemoNotice compact />}
       <section className="city-hero">
         <img src={city.photo.asset} alt={city.photo.alt} style={{ objectPosition: city.photo.objectPosition }} onError={(event) => { if (!event.currentTarget.src.endsWith('/crowl-mark.svg')) event.currentTarget.src = '/crowl-mark.svg'; }} />
         <div className="city-hero-overlay" />
         <div className="city-hero-content">
           <div className="chip-row">
-            {city.status.visited && <span className="chip chip-visited">✓ Visited</span>}
-            {city.status.wishlist && <span className="chip chip-wishlist">☆ Wishlist</span>}
+            {city.status.visited
+              ? <span className="chip chip-visited">✓ Visited</span>
+              : city.status.wishlist && <span className="chip chip-wishlist">☆ Wishlist</span>}
           </div>
           <p className="eyebrow">{city.country.name}</p>
           <h1>{city.name}</h1>

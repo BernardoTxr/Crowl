@@ -39,10 +39,12 @@ def test_initial_migration_upgrades_to_expected_schema(tmp_path: Path) -> None:
 
     engine = create_engine(f"sqlite:///{database_path}")
     with engine.connect() as connection:
-        assert (
-            connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
-            == "0005_synthetic_run_isolation"
-        )
+        version_num = connection.execute(
+            text("SELECT version_num FROM alembic_version")
+        ).scalar()
+        assert version_num == "0006_flixbus_fare_policy"
+        # Alembic creates this column as VARCHAR(32) on PostgreSQL.
+        assert len(version_num) <= 32
         inspector = inspect(connection)
         tables = set(inspector.get_table_names())
         booking_columns = {
@@ -72,6 +74,7 @@ def test_initial_migration_upgrades_to_expected_schema(tmp_path: Path) -> None:
     } <= tables
     assert {
         "mandatory_fees_included",
+        "price_completeness",
         "passenger_age",
         "passenger_student",
         "passenger_eligibility_confirmed",
@@ -85,6 +88,7 @@ def test_initial_migration_upgrades_to_expected_schema(tmp_path: Path) -> None:
         booking_columns[name]["nullable"] is False
         for name in (
             "mandatory_fees_included",
+            "price_completeness",
             "passenger_age",
             "passenger_student",
             "passenger_eligibility_confirmed",
@@ -93,7 +97,7 @@ def test_initial_migration_upgrades_to_expected_schema(tmp_path: Path) -> None:
         )
     )
     assert {
-        "ck_snapshot_bookings_booking_mandatory_fees_complete",
+        "ck_snapshot_bookings_booking_price_policy",
         "ck_snapshot_bookings_booking_passenger_age_22",
         "ck_snapshot_bookings_booking_passenger_eligibility_confirmed",
         "ck_snapshot_bookings_booking_bookable_at_observation",
@@ -181,3 +185,6 @@ def test_initial_migration_compiles_for_postgresql_with_deferred_revision_fk() -
     assert "ALTER COLUMN passenger_age DROP DEFAULT" in sql
     assert "ck_snapshot_bookings_booking_mandatory_fees_complete" in sql
     assert "ck_snapshot_bookings_booking_student_fare_eligible" in sql
+    assert "ADD COLUMN price_completeness VARCHAR(9) DEFAULT 'complete' NOT NULL" in sql
+    assert "ALTER COLUMN price_completeness DROP DEFAULT" in sql
+    assert "ck_snapshot_bookings_booking_price_policy" in sql

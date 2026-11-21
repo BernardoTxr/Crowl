@@ -362,6 +362,29 @@ class DatabasePublisherTests(unittest.TestCase):
                 ],
             )
 
+    def test_required_winner_rolls_back_an_empty_publication(self) -> None:
+        manifest = self._manifest()
+        collected, events = self._collect(manifest)
+        empty_report = self._report_with_outcome(
+            collected,
+            SearchOutcome.SUCCESS_EMPTY,
+        )
+
+        with self.assertRaisesRegex(
+            PublicationError,
+            "requires at least one trusted, valid fare winner",
+        ):
+            DatabasePublisher(self.sessions).publish(
+                manifest,
+                empty_report,
+                health_events=events,
+                require_at_least_one_winner=True,
+            )
+
+        self.assertEqual(self._count(CrawlRun), 0)
+        self.assertEqual(self._count(FareSnapshot), 0)
+        self.assertEqual(self._count(FareCellObservation), 0)
+
     def test_same_day_rerun_reuses_cells_and_unchanged_revisions(self) -> None:
         manifest = self._manifest()
         first_report, first_events = self._collect(manifest)

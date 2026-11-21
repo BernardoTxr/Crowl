@@ -10,6 +10,7 @@ import pytest
 from sqlalchemy import func, select
 
 from crowl_core.catalog import (
+    CITY_CATALOG_FILENAME,
     CatalogValidationError,
     SOURCE_DEFINITIONS,
     ensure_default_profile_and_rules,
@@ -39,7 +40,7 @@ from crowl_core.travel_windows import generate_travel_windows
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_mock_catalog_and_terminal_registry_seed_idempotently(tmp_path: Path) -> None:
+def test_catalog_and_terminal_registry_seed_idempotently(tmp_path: Path) -> None:
     engine = create_database_engine(f"sqlite:///{tmp_path / 'catalog.db'}")
     Base.metadata.create_all(engine)
     factory = create_session_factory(engine)
@@ -57,7 +58,7 @@ def test_mock_catalog_and_terminal_registry_seed_idempotently(tmp_path: Path) ->
             include_fixture_fares=True,
         )
 
-        city_payload = load_city_catalog(ROOT / "data" / "cities.mock.json")
+        city_payload = load_city_catalog(ROOT / "data" / CITY_CATALOG_FILENAME)
         terminal_payload = __import__("json").loads(
             (ROOT / "data" / "terminals.json").read_text(encoding="utf-8")
         )
@@ -212,7 +213,7 @@ def test_fixture_history_does_not_mix_rule_dimensions_in_an_existing_batch(
 
 
 def test_catalog_semantic_validation_rejects_unknown_category_and_non_schengen() -> None:
-    payload = load_city_catalog(ROOT / "data" / "cities.mock.json")
+    payload = load_city_catalog(ROOT / "data" / CITY_CATALOG_FILENAME)
     broken = copy.deepcopy(payload)
     broken["cities"][0]["categories"].append("does-not-exist")
     with pytest.raises(CatalogValidationError, match="unknown categories"):

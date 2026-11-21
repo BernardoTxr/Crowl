@@ -88,6 +88,26 @@ def _offer() -> NormalizedOffer:
     )
 
 
+def _flixbus_displayed_fare() -> NormalizedOffer:
+    valid = _offer()
+    component = replace(
+        valid.booking_components[0],
+        seller="FlixBus",
+        source_slug="flixbus",
+        booking_url=None,
+        fare_name="Displayed fare",
+        mandatory_fees_included=False,
+        price_completeness=PriceCompleteness.ESTIMATED,
+    )
+    return replace(
+        valid,
+        source_slug="flixbus",
+        price_completeness=PriceCompleteness.ESTIMATED,
+        mandatory_fees_included=False,
+        booking_components=(component,),
+    )
+
+
 class OfferTrustTests(unittest.TestCase):
     def setUp(self) -> None:
         self.engine = create_database_engine("sqlite://")
@@ -129,6 +149,73 @@ class OfferTrustTests(unittest.TestCase):
         self.assertEqual(trusted.total_eur_cents, 10_000)
         self.assertFalse(trusted.bookings[0].component.student_fare_applied)
         self.assertNotIn("session", trusted.bookings[0].booking_url.lower())
+
+    def test_flixbus_displayed_fare_is_the_only_estimated_exception(self) -> None:
+        with self.sessions() as session:
+            trusted = self.policy.validate(
+                session,
+                offer=_flixbus_displayed_fare(),
+                passenger=PassengerProfile(age=22, student=True),
+            )
+        self.assertEqual(trusted.total_eur_cents, 10_000)
+        self.assertIsNone(trusted.bookings[0].booking_url)
+        self.assertEqual(
+            trusted.bookings[0].component.price_completeness,
+            PriceCompleteness.ESTIMATED,
+        )
+        self.assertFalse(trusted.bookings[0].component.mandatory_fees_included)
+
+        non_flixbus = replace(
+            _flixbus_displayed_fare(),
+            source_slug="transavia",
+            booking_components=(
+                replace(
+                    _flixbus_displayed_fare().booking_components[0],
+                    source_slug="transavia",
+                ),
+            ),
+        )
+        with self.sessions() as session, self.assertRaisesRegex(
+            OfferRejected,
+            "only complete prices",
+        ):
+            self.policy.validate(
+                session,
+                offer=non_flixbus,
+                passenger=PassengerProfile(age=22, student=True),
+            )
+
+    def test_flixbus_displayed_fare_requires_aligned_component_evidence(self) -> None:
+        valid = _flixbus_displayed_fare()
+        component = valid.booking_components[0]
+        mismatches = (
+            replace(
+                component,
+                price_completeness=PriceCompleteness.COMPLETE,
+                mandatory_fees_included=True,
+            ),
+            replace(component, price_completeness=PriceCompleteness.COMPLETE),
+            replace(component, mandatory_fees_included=True),
+            replace(component, source_slug="transavia"),
+        )
+
+        with self.sessions() as session:
+            for mismatched_component in mismatches:
+                with self.subTest(component=mismatched_component), self.assertRaises(
+                    OfferRejected
+                ) as captured:
+                    self.policy.validate(
+                        session,
+                        offer=replace(
+                            valid,
+                            booking_components=(mismatched_component,),
+                        ),
+                        passenger=PassengerProfile(age=22, student=True),
+                    )
+                self.assertEqual(
+                    captured.exception.code,
+                    "displayed_fare_component_mismatch",
+                )
 
     def test_fees_eligibility_teasers_and_non_bookable_fares_are_excluded(self) -> None:
         valid = _offer()

@@ -5,16 +5,16 @@ Schengen area. It compares complete round-trip prices from Paris-area
 terminals, retains daily price history, and presents destinations on an
 interactive map and city pages.
 
-This repository contains a runnable local v1 built around a 12-city mock
-catalog and clearly labeled synthetic fares. It is not a live-fare service
-yet: the final, manually curated JSON of approximately 150 cities is still
-required, and all 14 requested provider connectors remain disabled until an
-authorized feed, credentials, or distribution access is available.
+This repository contains a runnable local v1 backed by the supplied,
+manually curated 150-city catalog. FlixBus is enabled only for the verified
+direct Paris Bercy Seine–Amsterdam Sloterdijk route; the other 13 requested
+provider connectors remain kill-switched. A bounded activation on 2026-11-21
+successfully published the first real observation for the 2026-11-27 weekend.
 
-The current overview is an interactive, stylized SVG map with city markers,
-pan/zoom, clustering, keyboard controls, and an equivalent city list. A real
-geographic tile layer and Schengen boundary/mask are still pending. Current
-cross-source composition can pair outbound and return components from
+The current overview uses MapLibre with an attributed OpenFreeMap geographic
+basemap, city markers, pan/zoom, clustering, keyboard controls, and an
+equivalent city list. A dedicated Schengen boundary/mask is still pending.
+Current cross-source composition can pair outbound and return components from
 different sources; it does not yet build one direction from arbitrary legs
 published by different sources.
 
@@ -32,6 +32,9 @@ Crowl applies the following rules before a fare can be published:
 - One traveler, age 22; use a genuinely available student/youth fare or the
   ordinary adult fare. Prices are in EUR and include mandatory taxes and fees
   plus the smallest included personal item, with no paid baggage or membership.
+  The explicit FlixBus exception stores the exact public result-card amount as
+  a displayed fare even if a later service fee may apply; the UI labels it and
+  an exact-trip booking link is optional.
 - Outbound travel starts at an allowed Paris-area airport, passenger rail/bus
   terminal, or Massy. Return may use a different Paris terminal. Travel from
   Palaiseau to that terminal is excluded from duration and price.
@@ -65,7 +68,7 @@ to configure in version-controlled JSON and share read-only with friends.
 | Path/service | Responsibility |
 |---|---|
 | `services/web` | React, TypeScript, and Vite UI; Caddy serves it and proxies `/api/*` in production. |
-| `services/api` | Read-only FastAPI API under `/api/v1`, health endpoints, catalog import, and development seeding. |
+| `services/api` | Read-only FastAPI API under `/api/v1`, health endpoints, and catalog import. |
 | `packages/crowl-core` | SQLAlchemy schema, weekend rules, trip validation, and cross-source outbound/return pairing. |
 | `services/crawler` | One-shot source-isolated daily runner and transactional publisher; the fixture path remains available for development. It contains no scheduler. |
 | `postgres` | PostgreSQL 17 fare history, revisions, batch coverage, journey details, and extractor health. |
@@ -76,9 +79,9 @@ to configure in version-controlled JSON and share read-only with friends.
 Compose starts `postgres`, `api`, and `web` by default. The one-shot `crawler`
 uses the `tools` profile so it does not become a long-running local service.
 The Railway definition schedules the generic crawler command daily at 02:00
-UTC once provisioned. With the version-controlled source kill switches it
-records all 14 disabled states and publishes no invented fare; see the
-deployment guide for activation requirements.
+UTC once provisioned. It will run the one bounded FlixBus route and record the
+other 13 sources as disabled; see the deployment guide for the remaining
+activation requirements.
 
 ## Run locally with Compose
 
@@ -111,97 +114,66 @@ use.
 
 ### What the local data means
 
-Non-live data has four distinct origins:
+`data/crowl-cities-150.json` is the canonical editorial catalog. Local startup
+imports its 150 cities into PostgreSQL, while `data/terminals.json` separately
+defines operational terminals and the city links curated so far. A city
+without a terminal link remains visible in the directory and on the map, but
+cannot receive crawler coverage until that mapping is added.
 
-1. `data/cities.mock.json` is the temporary editorial catalog. Its city facts,
-   visit flags, attributes, and photos are examples until the final ~150-city
-   file is supplied.
-2. The API's development seed creates a synthetic price/history grid when
-   `CROWL_SEED_FIXTURES=true`. Local Compose enables this by default. Railway
-   explicitly sets it to `false`.
-3. The crawler's separate `fixture` adapter generates deterministic test
-   offers. It is marked `is_requested=false`, is excluded from the 14-provider
-   status list, and never represents a real brand.
-4. Local Vite development can show clearly labeled preview fallback data if
-   explicitly enabled. Docker and Railway builds disable that fallback, so an
-   unavailable API produces an error instead of example fares. A successful
-   but empty API response remains empty.
-
-The UI identifies fixture/preview states as synthetic. Never treat their
-prices, durations, availability, coverage, or booking details as live. Setting
-`CROWL_SEED_FIXTURES=false` prevents new API seed fares; it does not remove
-synthetic records already stored in the persistent PostgreSQL volume.
-Operational observations always take precedence over same-day synthetic rows;
-the API now exposes that provenance explicitly on map fares, history cells,
-journeys, and duration samples.
+Local Compose does not seed example fares, and the frontend has no fallback
+catalog or fare data. A fresh database therefore has empty fare and history
+views until collection publishes an observation. The crawler's deterministic
+fixture commands remain available only as explicit development/test tools;
+they are never part of the normal Compose or Railway startup path.
 
 Compose runs Alembic automatically. If using the API directly with an older
 local SQLite `crowl.db`, `create_all` cannot upgrade that existing file: back it
 up and remove it for a disposable development reset, or run Alembic against it
 before starting the API.
 
-### Publish the database-backed crawler fixture
+## Provider extractor state
 
-`fixture-publish` exercises the real PostgreSQL persistence path for four
-synthetic destinations across the rolling six-month horizon. It migrates and
-catalog-seeds the database through the API first, disables the API's separate
-fare fixture for that startup, then atomically publishes crawler results:
+There are 14 source-specific public-page parsers. Their sanitized fixtures and
+failure handling are tested. **FlixBus is the sole enabled live extractor, and
+only for direct Bercy Seine–Sloterdijk cards; the other 13 adapters are
+disabled.** It uses ordinary Playwright rendering and parses the resulting DOM.
+Crowl does not call provider, partner, affiliate, GDS, or undocumented browser
+APIs.
 
-```sh
-make fixture-publish
-```
-
-Its exact commands are:
-
-```sh
-CROWL_SEED_FIXTURES=false docker compose up --build -d --wait postgres api
-CROWL_SEED_FIXTURES=false docker compose --profile tools run --rm crawler fixture-publish --pretty
-```
-
-A same-day rerun is idempotent for unchanged snapshot cells. Use
-`make fixture-batch` for the smaller side-effect-free fixture and `make sources`
-to inspect provider slots.
-
-## Provider authorization state
-
-There are 14 requested source-specific adapter slots, and **all 14 live
-provider adapters are disabled; none is live or enabled**:
-
-| State | Providers | What is needed |
-|---|---|---|
-| `disabled_needs_credentials` | Transavia, Vueling, FlixBus, Trenitalia France | Credentials for an approved affiliate, partner, NDC, or distribution feed. |
-| `disabled_needs_authorization` | Ryanair, easyJet, Wizz Air, Volotea, BlaBlaCar Bus, Itabus, Alsa, OUIGO, SNCF Connect, Eurostar | Explicitly authorized machine-readable, retailer, GDS, or distribution access. |
+Before another source or route can be enabled, verify its live public result markup, exact
+fare semantics, terminal aliases, explicit route coverage, conservative rate,
+and booking-link hosts. If that is difficult or unstable, leave the source
+kill-switched and expose its skipped/blocked state on `/status`.
 
 The `strategy` in `data/sources.yaml` records the intended implementation
-shape (`http_structured`, `http_html`, Playwright, or disabled); it does not
-grant access or mean an adapter is active. Crowl does not bypass login,
-CAPTCHA, bot defense, rate limiting, or other access controls. If access cannot
-be obtained safely, that provider remains disabled and its missing coverage is
-shown rather than fabricated.
+shape (`http_html`, Playwright, or disabled); it does not mean an adapter is
+active. A normal cookie-consent control may be accepted. Crowl does not bypass
+login, CAPTCHA, bot defense, rate limiting, or other access controls. A source
+that presents one of those barriers is skipped and remains disabled; missing
+coverage is shown rather than fabricated.
 
-## Replace the city catalog
+## Maintain the city catalog
 
-The runtime currently reads `data/cities.mock.json`; keep that filename when
-the final supplied JSON arrives unless the application contract is changed at
-the same time.
+The runtime reads `data/crowl-cities-150.json` as the canonical catalog.
 
 1. Preserve the top-level `schemaVersion`, `origin`, category definitions, and
-   attribute definitions, then replace the `cities` array with the final
-   approximately 150-city list.
+   attribute definitions when updating the city list.
 2. Give every city a stable unique ID and slug, valid IANA timezone, Schengen
    country code, coordinates, visited/wishlist flags, categories, summary, and
    a 1–5 value for every defined attribute. Definitions are data-driven; do not
    hard-code them into the UI.
 3. Manually curate each photo and record meaningful alt text, creator, source
-   URL, license, crop position, and `curationStatus: "curated"`. Confirm actual
-   usage rights independently; schema validation cannot do that.
-4. Update `data/terminals.json` with the corresponding airports, stations,
-   stops, origin rules, and city-terminal links. Exact operational terminal
-   mappings remain separate from editorial city data.
+   URL, license, crop position, and `curationStatus: "curated"`. Curated HTTPS
+   assets on Wikimedia's image hosts are accepted without local AVIF/WebP
+   derivatives. Confirm actual usage rights independently; schema validation
+   cannot do that.
+4. Add airports, stations, stops, origin rules, and city-terminal links to
+   `data/terminals.json` as crawler coverage is implemented. Exact operational
+   terminal mappings remain separate from editorial city data; missing links
+   do not invalidate otherwise usable editorial cities.
 5. Run `make validate`. Production validation checks the JSON Schema,
    references, unique IDs/slugs, attributes, timezones, Schengen membership,
-   terminal links, all 14 source IDs, and photo provenance. It does not enforce
-   an approximately-150-city count, so that handoff still needs a human check.
+   every supplied terminal link, all 14 source IDs, and photo provenance.
 6. Rebuild/restart the API to import the version-controlled changes:
 
    ```sh
@@ -240,8 +212,9 @@ Available checks and builds:
 
 CI additionally applies migrations to PostgreSQL, checks model/migration
 drift, audits frontend dependencies, and builds each image. Production should
-keep `CROWL_SEED_FIXTURES=false`, keep the API/database private behind the web
-proxy, and store future provider credentials only as sealed Railway variables.
+keep `CROWL_SEED_FIXTURES=false` and keep the API/database private behind the
+web proxy. Public-page extractor configuration belongs in sealed Railway
+variables even though it must not contain login credentials or session state.
 
 The current working tree has not been committed or pushed. Railway's GitHub
 source cannot deploy it until the owner reviews the files and creates the

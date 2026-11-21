@@ -7,12 +7,19 @@ abstraction, and exits. It never runs a scheduler or a web server itself.
 The fourteen requested sources each have a named module and adapter class under
 `crowl_crawler.adapters.providers`. `data/sources.yaml` is the authoritative
 catalog for their names, modes, intended extraction strategies, feasibility,
-and kill switches; the Python registry does not repeat that metadata. Live
-slots are disabled until an authorized distribution channel is configured,
-and a catalog kill switch always wins over connector code. The service does
-not attempt to evade authentication, rate limits, CAPTCHAs, or bot defenses.
-`fixture` is the only adapter enabled by default and is meant for local
-development and contract tests.
+and kill switches; the Python registry does not repeat that metadata. Each
+provider module now contains a fail-closed parser for ordinary public-page HTML
+or JSON embedded in that HTML. No connector calls provider, partner, affiliate,
+GDS, or undocumented browser APIs. Fixture tests demonstrate parser behavior;
+they do not prove that current live markup is compatible.
+
+FlixBus is enabled only for the verified direct Paris Bercy Seine–Amsterdam
+Sloterdijk route. The other 13 live slots remain disabled, and a catalog kill
+switch always wins over connector code. Ordinary cookie-consent controls may
+be accepted, but the service does not log in or evade rate limits, CAPTCHAs,
+anti-bot defenses, or other access controls. A difficult or challenged source
+is reported and skipped. `fixture` is synthetic and available only through
+explicit development/test commands.
 
 Install the shared package and crawler from the repository root:
 
@@ -33,6 +40,50 @@ export DATABASE_URL=postgresql+psycopg://user:password@host:5432/crowl
 crowl-crawler fixture-publish
 ```
 
+`live-canary` is the safe first step for checking current provider markup. It
+runs one source, one catalog-backed origin/destination terminal pair, and one
+Friday weekend. It never opens a database or publishes a fare. Disabled and
+kill-switched sources remain network-free unless the invocation includes the
+explicit canary-only override:
+
+```sh
+export CROWL_RYANAIR_PUBLIC_PAGE_URL='https://www.ryanair.com/path-to-reviewed-public-booking-page'
+crowl-crawler live-canary \
+  --source ryanair \
+  --origin-terminal par-cdg \
+  --destination-city lisbon-pt \
+  --destination-terminal lis-humberto-delgado \
+  --weekend 2027-01-08 \
+  --override-kill-switch-for-canary \
+  --pretty
+```
+
+The override exists only in memory for that process. It does not edit
+`data/sources.yaml`, enable the Railway batch, discover broad coverage, or
+consult `DATABASE_URL`. Output contains normalized prices, journey segments,
+typed outcomes, and response/schema fingerprints, but no raw HTML or booking
+URL. A successful empty/no-service result exits 0; blocked, parser,
+configuration, timeout, or upstream failures exit 1; invalid scope or missing
+explicit override exits 2. Provider-specific public-page URL/template and
+terminal-alias configuration described below is still required.
+
+`activation-pilot-publish` is the guarded first-write path. It accepts only
+FlixBus, requires FlixBus to be the sole enabled provider, runs one exact
+round-trip cell, and permanently consumes that operational date's daily slot.
+It publishes atomically only when at least one valid winner exists:
+
+```sh
+crowl-crawler activation-pilot-publish \
+  --source flixbus \
+  --origin-terminal par-bercy-seine-bus \
+  --destination-city amsterdam-nl \
+  --destination-terminal ams-sloterdijk-bus \
+  --weekend 2026-11-27 \
+  --date 2026-11-21 \
+  --acknowledge-daily-slot \
+  --pretty
+```
+
 The database schema, city catalog, terminal catalog, origin-terminal rules,
 and migrations must exist before this command runs. A same-day rerun reuses
 the unique `FareSnapshot` cells and skips unchanged revisions. Any validation
@@ -49,8 +100,8 @@ active city, its Schengen terminal links, the complete Paris/Massy origin set,
 all fourteen requested source slots, and the rolling six-month weekend horizon
 from the database catalog. It runs enabled adapters and persists disabled slots
 as explicit `disabled` extractor/search outcomes. With the repository's default
-registry, all live providers are intentionally disabled and the job publishes
-monitoring state with zero live-source scope; it never substitutes fixture fares:
+registry, it searches only the bounded FlixBus Bercy–Sloterdijk coverage and
+never substitutes fixture fares:
 
 ```sh
 export DATABASE_URL=postgresql+psycopg://user:password@host:5432/crowl
@@ -70,17 +121,25 @@ directional prices.
 
 Publication is fail-closed at the offer boundary. An advertised fare must be
 explicitly complete for mandatory fees, confirmed for the one-adult age-22
-student profile (an ordinary adult fare remains valid), bookable rather than a
-teaser, and backed by independently bookable components. Non-EUR components
+student profile (an ordinary adult fare remains valid), explicitly priced for
+one passenger without a paid card, subscription, or membership, bookable
+rather than a teaser, and backed by independently bookable components. Non-EUR components
 use the latest prior persisted `fx_rates` record; missing, future, invalid, or
 older-than-seven-day rates exclude the offer. Original money, the exact EUR
 conversion, rate, and rate date remain on `snapshot_bookings`.
+
+The sole exception is an exact FlixBus public result-card amount. It is stored
+as `estimated` with mandatory fees not confirmed, may omit the exact-trip
+booking URL, and is always exposed as `Displayed fare — service fees may
+apply`. Passenger, itinerary, EUR, availability, and paid-entitlement checks
+still apply.
 
 Each source's approved booking domains live in `data/sources.yaml`. Only HTTPS
 links on those hosts or their subdomains survive publication. User info,
 non-standard ports, secret-looking path tokens, fragments, session/auth/cart
 parameters, and common tracking parameters are rejected or removed before a
-link is stored. The synthetic fixture is separately restricted to
+link is stored. A link is optional only for the aligned FlixBus displayed-fare
+exception. The synthetic fixture is separately restricted to
 `example.invalid`.
 
 Before an enabled adapter is called, `run` commits the immutable daily
@@ -111,18 +170,56 @@ docker build -f services/crawler/Dockerfile -t crowl-crawler .
 
 ## Extension points
 
-- Implement `SourceAdapter` in the existing named provider module after an
-  authorized provider feed is available.
+- Keep extraction limited to a provider's ordinary public HTML: use direct
+  HTTPS only when the complete result is present in the response, or ordinary
+  Playwright rendering when client-side rendering is necessary. Do not replace
+  it with a provider API, partner feed, or intercepted private browser call.
 - Keep the provider id, modes, strategy, and operational state in
   `data/sources.yaml`; do not duplicate them in the registry.
 - Set both `state: enabled` and `enabled: true`, and remove the kill switch,
-  only after the connector's access, limits, market coverage, and canary are
-  verified. Any active `kill_switch` forces a network-free disabled adapter.
+  only after stable live public markup, exact-fare semantics, terminal aliases,
+  route coverage, limits, and canaries are verified. Any active `kill_switch`
+  forces a network-free disabled adapter.
 - Produce a `BatchManifest` from the database task ledger and run it with
   `BatchCoordinator`.
-- Register an enabled adapter only after its authorized access and credentials
-  are ready; `DatabasePublisher` supports both atomic round trips and normalized
+- `DatabasePublisher` supports both atomic round trips and normalized
   directional offers.
+
+### Public-page configuration
+
+Except for the bounded FlixBus values already present in Compose and Railway,
+these variables are intentionally absent from the default environment.
+Configure only a source whose live page has been reviewed, then update its
+source-catalog state separately:
+
+- Flights: `CROWL_<SOURCE>_PUBLIC_PAGE_URL` and
+  `CROWL_<SOURCE>_PUBLIC_ROUTE_PAIRS`. Route pairs are comma-separated canonical
+  terminal IDs such as `par-bva:lis-humberto-delgado`.
+- Buses: `CROWL_<SOURCE>_PUBLIC_SEARCH_URL_TEMPLATE`,
+  `CROWL_<SOURCE>_TERMINAL_ALIASES_JSON`, and
+  `CROWL_<SOURCE>_COVERAGE_JSON`. URL templates accept `{origin}`,
+  `{destination}`, `{date}`, `{date_dot}`, and `{direction}`.
+- Trains: `CROWL_<SOURCE>_HTML_URL_TEMPLATE`,
+  `CROWL_<SOURCE>_TERMINAL_ALIASES_JSON`, and
+  `CROWL_<SOURCE>_COVERAGE_JSON`; the optional
+  `CROWL_<SOURCE>_TIMEOUT_SECONDS` is bounded to 1–60 seconds. URL templates
+  accept provider terminal aliases through `{origin}` and `{destination}`, plus
+  dates, direction, search kind, passenger, and currency fields documented in
+  `rail_html.py`.
+
+FlixBus needs two deliberately separate alias sets. Its
+`CROWL_FLIXBUS_TERMINAL_ALIASES_JSON` maps Crowl terminal IDs to the provider's
+city UUIDs used only to form the public search URL. Its
+`CROWL_FLIXBUS_STOP_ALIASES_JSON` maps each exact stop label rendered in a
+result card to a canonical Crowl terminal ID, for example
+`{"Paris (Bercy Seine)":"par-bercy-seine-bus","Amsterdam Sloterdijk":"ams-sloterdijk-bus"}`.
+Unmapped result stops are never inferred from the city UUID. Direct cards with
+exact aliases, valid weekend times, and the configured passenger/currency are
+normalized as displayed fares; connected cards remain diagnostic-only.
+
+Configuration alone is not an enablement signal. `data/sources.yaml` enables
+only FlixBus for the one verified route; the other 13 entries remain disabled
+and kill-switched until their own live-page verification is complete.
 
 No raw page, credential, cookie, checkout token, or exception message belongs
 in a health event. Only allowlisted diagnostic codes are emitted.

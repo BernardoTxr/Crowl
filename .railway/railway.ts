@@ -61,7 +61,7 @@ export default defineRailway((context) => {
       CROWL_FRESHNESS_HOURS: "36",
       CROWL_DURATION_HISTORY_DAYS: "180",
       CROWL_CORS_ORIGINS: "",
-      CROWL_SCHEMA_REVISION: "0005_synthetic_run_isolation",
+      CROWL_SCHEMA_REVISION: "0006_flixbus_fare_policy",
     },
   });
 
@@ -112,6 +112,14 @@ export default defineRailway((context) => {
       CROWL_STRICT_SCHENGEN_PATH: "true",
       CROWL_LOG_LEVEL: "INFO",
       CROWL_CRAWLER_RELEASE: "production-v1",
+      CROWL_FLIXBUS_PUBLIC_SEARCH_URL_TEMPLATE:
+        "https://shop.global.flixbus.com/search?departureCity={origin}&arrivalCity={destination}&rideDate={date_dot}&adult=1&currency=EUR",
+      CROWL_FLIXBUS_TERMINAL_ALIASES_JSON:
+        '{"par-bercy-seine-bus":"40de8964-8646-11e6-9066-549f350fcb0c","ams-sloterdijk-bus":"40dde3b8-8646-11e6-9066-549f350fcb0c"}',
+      CROWL_FLIXBUS_STOP_ALIASES_JSON:
+        '{"Paris (Bercy Seine)":"par-bercy-seine-bus","Amsterdam Sloterdijk":"ams-sloterdijk-bus"}',
+      CROWL_FLIXBUS_COVERAGE_JSON:
+        '{"supported_terminal_pairs":[["par-bercy-seine-bus","ams-sloterdijk-bus"]],"sellable_through":"2027-05-24"}',
     },
   });
 

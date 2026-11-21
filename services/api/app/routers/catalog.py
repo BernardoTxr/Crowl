@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from datetime import date, timedelta
 from math import ceil
 from typing import Any
@@ -10,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from crowl_core.catalog import CITY_CATALOG_FILENAME, CatalogValidationError, load_city_catalog
 from crowl_core.enums import TransportMode
 from crowl_core.models import City, DurationHistogramDaily, TravelWindow
 from crowl_core.travel_windows import TravelWindowSpec, generate_travel_windows
@@ -35,23 +35,11 @@ HOME_TIMEZONE = ZoneInfo("Europe/Paris")
 
 
 def _catalog_payload(request: Request) -> dict:
-    path = request.app.state.settings.data_dir / "cities.mock.json"
-    if path.exists():
-        try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            pass
-    return {
-        "catalogVariant": "mock",
-        "origin": {
-            "id": "palaiseau-paris-fr",
-            "name": "Palaiseau / Paris",
-            "timezone": "Europe/Paris",
-            "coordinates": {"lat": 48.7145, "lon": 2.2457},
-        },
-        "categoryDefinitions": [],
-        "attributeDefinitions": [],
-    }
+    path = request.app.state.settings.data_dir / CITY_CATALOG_FILENAME
+    try:
+        return load_city_catalog(path)
+    except CatalogValidationError as exc:
+        raise HTTPException(status_code=503, detail="catalog_unavailable") from exc
 
 
 @router.get("/meta", response_model=MetaResponse)
@@ -59,9 +47,7 @@ def meta(request: Request) -> MetaResponse:
     payload = _catalog_payload(request)
     origin = payload["origin"]
     return MetaResponse(
-        catalog_variant=(
-            "final" if payload.get("catalogVariant") == "final" else "mock"
-        ),
+        catalog_variant="final",
         origin=OriginMeta(
             id=origin["id"],
             name=origin["name"],
@@ -84,7 +70,7 @@ def meta(request: Request) -> MetaResponse:
             "transfer_to_terminal_excluded": True,
             "destination_transfer_excluded": True,
         },
-        modes=["all", "flight", "train", "bus", "mixed"],
+        modes=["all", "flight", "train", "bus"],
         category_definitions=payload.get("categoryDefinitions", []),
         attribute_definitions=[
             {

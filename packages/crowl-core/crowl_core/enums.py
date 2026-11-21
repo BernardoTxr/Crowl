@@ -3,6 +3,9 @@
 from enum import StrEnum
 
 
+FLIXBUS_DISPLAYED_FARE_DISCLOSURE = "Displayed fare — service fees may apply"
+
+
 class TransportMode(StrEnum):
     FLIGHT = "flight"
     TRAIN = "train"

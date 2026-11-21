@@ -62,6 +62,7 @@ class TripCandidate:
     smallest_personal_item_included: bool = True
     included_transfer_cost_eur_cents: int = 0
     itinerary_key: str = ""
+    displayed_fare_service_fees_may_apply: bool = False
 
     @property
     def mode_bucket(self) -> TransportMode:
@@ -245,7 +246,9 @@ def validate_trip(candidate: TripCandidate, context: ValidationContext) -> None:
 
     if candidate.total_price_eur_cents <= 0:
         issues.append(ValidationIssue("invalid_price", "published price must be greater than zero"))
-    if not candidate.price_complete or not candidate.mandatory_fees_included:
+    if (
+        not candidate.price_complete or not candidate.mandatory_fees_included
+    ) and not candidate.displayed_fare_service_fees_may_apply:
         issues.append(ValidationIssue("incomplete_price", "price must include all mandatory fees"))
     if not candidate.smallest_personal_item_included:
         issues.append(ValidationIssue("baggage_missing", "smallest included personal item is required"))

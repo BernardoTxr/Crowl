@@ -14,14 +14,33 @@ from zoneinfo import ZoneInfo
 
 from crowl_core.catalog import ensure_default_profile_and_rules
 from crowl_core.db import create_database_engine, create_session_factory
-from crowl_core.models import City, CityTerminalLink, OriginTerminal, Terminal
+from crowl_core.models import (
+    City,
+    CityTerminalLink,
+    CrawlRun,
+    OriginTerminal,
+    Source,
+    Terminal,
+)
 from crowl_core.travel_windows import generate_travel_windows
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
-from .adapters.registry import AdapterRegistry, build_default_registry
-from .batch import BatchCoordinator
+from .adapters.registry import (
+    REQUESTED_SOURCE_SPECS,
+    AdapterRegistry,
+    CanaryPolicyError,
+    build_default_registry,
+)
+from .batch import BatchCoordinator, BatchReport
+from .canary import (
+    CanaryConfigurationError,
+    CanaryExecutionError,
+    CanaryInputError,
+    canary_succeeded,
+    run_live_canary,
+)
 from .coverage import (
     CoverageDiscoveryError,
     discover_and_persist_coverage,
@@ -36,8 +55,23 @@ from .manifest import (
     DestinationTarget,
     FIXTURE_DESTINATIONS,
 )
-from .models import BatchStatus, CoverageDiscovery
+from .models import (
+    BatchStatus,
+    CoverageDiscovery,
+    ExtractorRunStatus,
+    SearchKind,
+    SearchOutcome,
+)
 from .persistence import DatabasePublisher, PublicationError
+
+
+_ACTIVATION_PILOT_SOURCE = "flixbus"
+_ACTIVATION_PILOT_TIMEOUT_SECONDS = 120.0
+_REQUESTED_SOURCE_SLUGS = tuple(spec.slug for spec in REQUESTED_SOURCE_SPECS)
+
+
+class ActivationPilotRefusal(ValueError):
+    """The activation pilot is unsafe or outside its explicitly bounded scope."""
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -70,6 +104,38 @@ def build_parser() -> argparse.ArgumentParser:
         "--pretty", action="store_true", help="Pretty-print the publication report."
     )
 
+    canary = subparsers.add_parser(
+        "live-canary",
+        help="Run one real public-page query without database persistence.",
+    )
+    canary.add_argument("--source", required=True, help="One source slug.")
+    canary.add_argument(
+        "--origin-terminal", required=True, help="One Paris/Massy terminal ID."
+    )
+    canary.add_argument(
+        "--destination-city", required=True, help="One destination city ID."
+    )
+    canary.add_argument(
+        "--destination-terminal", required=True, help="One linked terminal ID."
+    )
+    canary.add_argument(
+        "--weekend",
+        required=True,
+        type=_iso_date,
+        help="Weekend Friday (YYYY-MM-DD).",
+    )
+    canary.add_argument(
+        "--override-kill-switch-for-canary",
+        action="store_true",
+        help=(
+            "Allow this one DB-free invocation despite catalog disablement; "
+            "does not edit sources.yaml or enable production."
+        ),
+    )
+    canary.add_argument(
+        "--pretty", action="store_true", help="Pretty-print the canary report."
+    )
+
     fixture = subparsers.add_parser(
         "fixture-batch", help="Run a deterministic two-city fixture batch."
     )
@@ -99,6 +165,58 @@ def build_parser() -> argparse.ArgumentParser:
     publish.add_argument(
         "--pretty", action="store_true", help="Pretty-print the publication report."
     )
+
+    pilot = subparsers.add_parser(
+        "activation-pilot-publish",
+        help=(
+            "Consume one operational daily slot to collect and atomically publish "
+            "one explicitly scoped FlixBus round trip."
+        ),
+    )
+    pilot.add_argument(
+        "--source",
+        required=True,
+        choices=("flixbus",),
+        help="The only provider permitted for the activation pilot.",
+    )
+    pilot.add_argument(
+        "--origin-terminal",
+        required=True,
+        help="One exact allowed Paris/Massy origin terminal ID.",
+    )
+    pilot.add_argument(
+        "--destination-city",
+        required=True,
+        help="One exact monitored destination city ID.",
+    )
+    pilot.add_argument(
+        "--destination-terminal",
+        required=True,
+        help="One exact terminal ID linked to the destination city.",
+    )
+    pilot.add_argument(
+        "--weekend",
+        required=True,
+        type=_iso_date,
+        help="Weekend Friday (YYYY-MM-DD).",
+    )
+    pilot.add_argument(
+        "--date",
+        type=_iso_date,
+        help="Operational daily slot (YYYY-MM-DD); defaults to today in Europe/Paris.",
+    )
+    pilot.add_argument(
+        "--acknowledge-daily-slot",
+        required=True,
+        action="store_true",
+        help=(
+            "Acknowledge that the pilot permanently consumes the date's one "
+            "non-synthetic crawl slot, including on a no-offer result."
+        ),
+    )
+    pilot.add_argument(
+        "--pretty", action="store_true", help="Pretty-print the publication report."
+    )
     return parser
 
 
@@ -108,6 +226,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _list_sources(as_json=args.json, include_fixture=args.include_fixture)
     if args.command == "run":
         return asyncio.run(_production_run(scheduled_for=args.date, pretty=args.pretty))
+    if args.command == "live-canary":
+        return asyncio.run(
+            _live_canary_command(
+                source_slug=args.source,
+                origin_terminal_id=args.origin_terminal,
+                destination_city_id=args.destination_city,
+                destination_terminal_id=args.destination_terminal,
+                weekend_start=args.weekend,
+                override_kill_switch_for_canary=(args.override_kill_switch_for_canary),
+                pretty=args.pretty,
+            )
+        )
     if args.command == "fixture-batch":
         return asyncio.run(
             _fixture_batch(
@@ -120,7 +250,61 @@ def main(argv: Sequence[str] | None = None) -> int:
         return asyncio.run(
             _fixture_publish(scheduled_for=args.date, pretty=args.pretty)
         )
+    if args.command == "activation-pilot-publish":
+        return asyncio.run(
+            _activation_pilot_publish(
+                source_slug=args.source,
+                origin_terminal_id=args.origin_terminal,
+                destination_city_id=args.destination_city,
+                destination_terminal_id=args.destination_terminal,
+                weekend_start=args.weekend,
+                scheduled_for=args.date,
+                acknowledge_daily_slot=args.acknowledge_daily_slot,
+                pretty=args.pretty,
+            )
+        )
     raise AssertionError(f"unhandled command: {args.command}")
+
+
+async def _live_canary_command(
+    *,
+    source_slug: str,
+    origin_terminal_id: str,
+    destination_city_id: str,
+    destination_terminal_id: str,
+    weekend_start: date,
+    override_kill_switch_for_canary: bool,
+    pretty: bool,
+) -> int:
+    try:
+        report = await run_live_canary(
+            source_slug=source_slug,
+            origin_terminal_id=origin_terminal_id,
+            destination_city_id=destination_city_id,
+            destination_terminal_id=destination_terminal_id,
+            weekend_start=weekend_start,
+            override_kill_switch_for_canary=override_kill_switch_for_canary,
+        )
+    except (
+        CanaryPolicyError,
+        CanaryInputError,
+        CanaryConfigurationError,
+    ) as error:
+        print(f"live-canary refused: {error}", file=sys.stderr)
+        return 2
+    except CanaryExecutionError as error:
+        print(f"live-canary failed: {error}", file=sys.stderr)
+        return 1
+
+    print(
+        json.dumps(
+            report,
+            sort_keys=True,
+            indent=2 if pretty else None,
+            separators=None if pretty else (",", ":"),
+        )
+    )
+    return 0 if canary_succeeded(report) else 1
 
 
 def entrypoint() -> None:
@@ -268,6 +452,372 @@ async def _fixture_publish(*, scheduled_for: date | None, pretty: bool) -> int:
     return 0
 
 
+async def _activation_pilot_publish(
+    *,
+    source_slug: str,
+    origin_terminal_id: str,
+    destination_city_id: str,
+    destination_terminal_id: str,
+    weekend_start: date,
+    scheduled_for: date | None,
+    acknowledge_daily_slot: bool,
+    pretty: bool,
+    registry: AdapterRegistry | None = None,
+) -> int:
+    """Publish one real, explicitly acknowledged FlixBus round-trip cell.
+
+    This path deliberately consumes the normal non-synthetic daily slot.  It
+    never overrides catalog policy, never resumes or replaces another daily
+    run, and calls the publisher only after one successful result contains at
+    least one normalized offer.
+    """
+
+    if not acknowledge_daily_slot:
+        print(
+            "activation-pilot-publish refused: --acknowledge-daily-slot is required",
+            file=sys.stderr,
+        )
+        return 2
+    if source_slug != _ACTIVATION_PILOT_SOURCE:
+        print(
+            "activation-pilot-publish refused: only --source flixbus is permitted",
+            file=sys.stderr,
+        )
+        return 2
+    if weekend_start.weekday() != 4:
+        print(
+            "activation-pilot-publish refused: --weekend must be a Friday",
+            file=sys.stderr,
+        )
+        return 2
+
+    database_url = os.environ.get("DATABASE_URL", "").strip()
+    if not database_url:
+        print("activation-pilot-publish requires DATABASE_URL", file=sys.stderr)
+        return 2
+
+    paris = ZoneInfo("Europe/Paris")
+    run_date = scheduled_for or datetime.now(paris).date()
+    operational_weekends = {
+        window.friday for window in generate_travel_windows(run_date, months_ahead=6)
+    }
+    if weekend_start not in operational_weekends:
+        print(
+            "activation-pilot-publish refused: --weekend must be inside the "
+            "configured six-month look-ahead",
+            file=sys.stderr,
+        )
+        return 2
+
+    configured_registry = registry or build_default_registry(include_fixture=False)
+    source_metadata = configured_registry.metadata(include_fixture=False)
+    metadata_by_slug = {item.source_slug: item for item in source_metadata}
+    if (
+        len(_REQUESTED_SOURCE_SLUGS) != 14
+        or len(metadata_by_slug) != len(_REQUESTED_SOURCE_SLUGS)
+        or set(metadata_by_slug) != set(_REQUESTED_SOURCE_SLUGS)
+    ):
+        print(
+            "activation-pilot-publish refused: registry must contain all 14 requested sources",
+            file=sys.stderr,
+        )
+        return 2
+    selected_metadata = metadata_by_slug[source_slug]
+    if not selected_metadata.enabled:
+        print(
+            "activation-pilot-publish refused: FlixBus is not enabled by source policy",
+            file=sys.stderr,
+        )
+        return 2
+    enabled_source_slugs = {
+        item.source_slug for item in source_metadata if item.enabled
+    }
+    if enabled_source_slugs != {_ACTIVATION_PILOT_SOURCE}:
+        print(
+            "activation-pilot-publish refused: registry must enable exactly FlixBus",
+            file=sys.stderr,
+        )
+        return 2
+
+    engine = create_database_engine(database_url)
+    sessions = create_session_factory(engine)
+    lease = DailyRunLease(engine, run_date)
+    lifecycle: DatabaseRunLifecycle | None = None
+    manifest: BatchManifest | None = None
+    prepared = False
+    try:
+        if not lease.acquire():
+            raise ActivationPilotRefusal(
+                "the non-synthetic daily slot is currently leased"
+            )
+
+        with sessions() as session:
+            existing = session.scalar(
+                select(CrawlRun).where(
+                    CrawlRun.scheduled_for == run_date,
+                    CrawlRun.is_synthetic.is_(False),
+                )
+            )
+            if existing is not None:
+                raise ActivationPilotRefusal(
+                    "a non-synthetic crawl run already exists for this date"
+                )
+            _validate_activation_pilot_scope(
+                session,
+                source_slug=source_slug,
+                origin_terminal_id=origin_terminal_id,
+                destination_city_id=destination_city_id,
+                destination_terminal_id=destination_terminal_id,
+            )
+
+        release = os.environ.get("CROWL_CRAWLER_RELEASE", "activation-pilot-v1").strip()
+        if not release:
+            raise ActivationPilotRefusal("CROWL_CRAWLER_RELEASE may not be empty")
+        executable = DailyManifestBuilder(
+            origin_terminal_ids=(origin_terminal_id,),
+            config_version=release,
+        ).build(
+            scheduled_for=run_date,
+            source_slugs=(source_slug,),
+            destinations=(
+                DestinationTarget(
+                    destination_city_id,
+                    (destination_terminal_id,),
+                ),
+            ),
+            weekend_fridays=(weekend_start,),
+            canary_per_source=False,
+            include_one_way_tasks=False,
+        )
+        manifest = BatchManifest.create(
+            batch_id=executable.batch_id,
+            scheduled_for=executable.scheduled_for,
+            timezone=executable.timezone,
+            config_version=executable.config_version,
+            expected_source_slugs=_REQUESTED_SOURCE_SLUGS,
+            coverage_cells=executable.coverage_cells,
+            tasks=executable.tasks,
+            created_at=executable.created_at,
+        )
+        _validate_activation_pilot_manifest(manifest, source_slug=source_slug)
+
+        lifecycle = DatabaseRunLifecycle(sessions)
+        resume_plan = lifecycle.prepare(manifest, source_metadata=source_metadata)
+        if resume_plan.is_resume:
+            raise PublicationError("activation pilot may not resume a daily run")
+        prepared = True
+        health_sink = InMemoryHealthSink()
+        coordinator = BatchCoordinator(
+            configured_registry,
+            health_sink=health_sink,
+            request_timeout_seconds=_ACTIVATION_PILOT_TIMEOUT_SECONDS,
+            execution_recorder=lambda execution: lifecycle.record_execution(
+                manifest, execution
+            ),
+        )
+        report = await coordinator.run(
+            manifest,
+            deadline_at=(
+                datetime.now(UTC) + timedelta(seconds=_ACTIVATION_PILOT_TIMEOUT_SECONDS)
+            ),
+        )
+        if not _activation_pilot_has_publishable_result(
+            report, source_slug=source_slug
+        ):
+            lifecycle.finalize_failed_without_publication(
+                manifest,
+                report,
+                health_events=health_sink.events,
+                diagnostic_code="PILOT_NO_PUBLISHABLE_OFFER",
+            )
+            print(
+                "activation-pilot-publish stopped: FlixBus did not return one "
+                "successful result with a normalized offer; nothing was published",
+                file=sys.stderr,
+            )
+            return 1
+
+        publication = DatabasePublisher(sessions).publish(
+            manifest,
+            report,
+            health_events=health_sink.events,
+            source_metadata=source_metadata,
+            require_at_least_one_winner=True,
+        )
+        if publication.snapshots_created < 1:
+            # The publisher guard above must reject this before commit. Keep a
+            # defensive postcondition in case a custom publisher violates it.
+            raise PublicationError("activation pilot published no fare snapshot")
+    except ActivationPilotRefusal as error:
+        print(f"activation-pilot-publish refused: {error}", file=sys.stderr)
+        return 2
+    except PublicationError as error:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_failed(manifest, "PILOT_PUBLICATION_REJECTED")
+        print(f"activation-pilot-publish rejected: {error}", file=sys.stderr)
+        return 1
+    except SQLAlchemyError as error:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_failed(manifest, "PILOT_DATABASE_ERROR")
+        print(
+            f"activation-pilot-publish database error: {type(error).__name__}",
+            file=sys.stderr,
+        )
+        return 1
+    except Exception as error:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_abandoned(manifest, "PILOT_COLLECTION_INTERRUPTED")
+        print(
+            f"activation-pilot-publish interrupted: {type(error).__name__}",
+            file=sys.stderr,
+        )
+        return 1
+    except BaseException:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_abandoned(manifest, "PILOT_PROCESS_INTERRUPTED")
+        raise
+    finally:
+        lease.release()
+        engine.dispose()
+
+    output = _operational_report(report.as_dict())
+    output["kind"] = "activation_pilot_publish"
+    output["scope"] = {
+        "source": source_slug,
+        "origin_terminal_id": origin_terminal_id,
+        "destination_city_id": destination_city_id,
+        "destination_terminal_id": destination_terminal_id,
+        "weekend": weekend_start.isoformat(),
+        "scheduled_for": run_date.isoformat(),
+        "search_kind": SearchKind.ROUND_TRIP.value,
+    }
+    output["publication"] = publication.as_dict()
+    print(
+        json.dumps(
+            output,
+            sort_keys=True,
+            indent=2 if pretty else None,
+            separators=None if pretty else (",", ":"),
+        )
+    )
+    return 0
+
+
+def _validate_activation_pilot_scope(
+    session: Session,
+    *,
+    source_slug: str,
+    origin_terminal_id: str,
+    destination_city_id: str,
+    destination_terminal_id: str,
+) -> None:
+    source = session.get(Source, source_slug)
+    if source is None or not source.is_requested or not source.enabled:
+        raise ActivationPilotRefusal(
+            "FlixBus is not enabled in the persisted source catalog"
+        )
+
+    _, rule = ensure_default_profile_and_rules(session)
+    origin = session.get(Terminal, origin_terminal_id)
+    if (
+        origin is None
+        or not origin.active
+        or not origin.schengen_eligible
+        or origin.kind.value != "bus"
+    ):
+        raise ActivationPilotRefusal(
+            "origin terminal is not an active Schengen bus terminal"
+        )
+    allowed_origin = session.scalar(
+        select(OriginTerminal).where(
+            OriginTerminal.rule_version_id == rule.id,
+            OriginTerminal.terminal_id == origin_terminal_id,
+            OriginTerminal.permits_departure.is_(True),
+            OriginTerminal.permits_return.is_(True),
+        )
+    )
+    if allowed_origin is None:
+        raise ActivationPilotRefusal(
+            "origin terminal is not an allowed Paris/Massy round-trip terminal"
+        )
+
+    destination_city = session.get(City, destination_city_id)
+    destination = session.get(Terminal, destination_terminal_id)
+    if destination_city is None or not destination_city.active:
+        raise ActivationPilotRefusal("destination city is not active")
+    if (
+        destination is None
+        or not destination.active
+        or not destination.schengen_eligible
+        or destination.kind.value != "bus"
+    ):
+        raise ActivationPilotRefusal(
+            "destination terminal is not an active Schengen bus terminal"
+        )
+    if origin_terminal_id == destination_terminal_id:
+        raise ActivationPilotRefusal("origin and destination terminals must differ")
+    linked = session.scalar(
+        select(CityTerminalLink).where(
+            CityTerminalLink.city_id == destination_city_id,
+            CityTerminalLink.terminal_id == destination_terminal_id,
+        )
+    )
+    if linked is None:
+        raise ActivationPilotRefusal(
+            "destination terminal is not linked to the selected destination city"
+        )
+
+
+def _validate_activation_pilot_manifest(
+    manifest: BatchManifest, *, source_slug: str
+) -> None:
+    if tuple(manifest.expected_source_slugs) != _REQUESTED_SOURCE_SLUGS:
+        raise PublicationError(
+            "activation pilot must retain all 14 requested source slugs"
+        )
+    if len(manifest.coverage_cells) != 1 or len(manifest.tasks) != 1:
+        raise PublicationError(
+            "activation pilot must contain exactly one logical cell and task"
+        )
+    task = manifest.tasks[0]
+    cell = manifest.coverage_cells[0]
+    if (
+        task.source_slug != source_slug
+        or cell.source_slug != source_slug
+        or task.request.search_kind is not SearchKind.ROUND_TRIP
+        or task.request.direction is not None
+        or task.is_canary
+        or cell.direction != SearchKind.ROUND_TRIP.value
+    ):
+        raise PublicationError(
+            "activation pilot executable work must be one FlixBus round trip"
+        )
+
+
+def _activation_pilot_has_publishable_result(
+    report: BatchReport, *, source_slug: str
+) -> bool:
+    if report.status is not BatchStatus.SUCCEEDED:
+        return False
+    source_reports = tuple(
+        item for item in report.source_reports if item.source_slug == source_slug
+    )
+    if len(source_reports) != 1:
+        return False
+    source_report = source_reports[0]
+    if (
+        source_report.state is not ExtractorRunStatus.SUCCEEDED
+        or len(source_report.executions) != 1
+    ):
+        return False
+    result = source_report.executions[0].result
+    return (
+        result.outcome is SearchOutcome.SUCCESS_RESULTS
+        and result.completed_count >= 1
+        and len(result.offers) >= 1
+    )
+
+
 async def _production_run(
     *,
     scheduled_for: date | None,
@@ -280,7 +830,7 @@ async def _production_run(
     """Execute the configured providers, including honest disabled reports.
 
     The default registry intentionally contains no live provider until an
-    authorized adapter is installed. Such a run still persists the fourteen
+    public-page adapter is enabled. Such a run still persists the fourteen
     disabled extractor states and zero live-source scope instead of fabricating
     observations or failing the daily Railway job.
     """
@@ -477,22 +1027,22 @@ def _build_production_manifest(
     terminals_by_city: dict[str, list[str]] = {city.id: [] for city in cities}
     for city_id, terminal_id in links:
         terminals_by_city[city_id].append(terminal_id)
-    missing = sorted(
-        city_id
-        for city_id, terminal_ids in terminals_by_city.items()
-        if not terminal_ids
-    )
-    if missing:
+    mapped_city_ids = tuple(city.id for city in cities if terminals_by_city[city.id])
+    if not mapped_city_ids:
         raise PublicationError(
-            "active cities are missing Schengen terminal links: " + ", ".join(missing)
+            "catalog has no active destination city with a Schengen terminal link"
         )
 
     source_metadata = registry.metadata(include_fixture=False)
     source_slugs = tuple(item.source_slug for item in source_metadata)
     if not source_slugs:
         raise PublicationError("no requested provider adapters are configured")
+    # Editorial cities are useful to the map before their operational terminal
+    # mapping is curated.  Omit those cities from collection instead of
+    # aborting every mapped route; the API represents them as never observed.
     destinations = tuple(
-        DestinationTarget(city.id, tuple(terminals_by_city[city.id])) for city in cities
+        DestinationTarget(city_id, tuple(terminals_by_city[city_id]))
+        for city_id in mapped_city_ids
     )
     weekend_fridays = tuple(
         window.friday

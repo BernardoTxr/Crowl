@@ -11,6 +11,7 @@ from crowl_core.enums import (
     ExecutionCoverage,
     ExtractorRunStatus,
     ModeFilter,
+    PriceCompleteness,
     TransportMode,
 )
 
@@ -84,7 +85,7 @@ class MetaResponse(APIModel):
     api_version: Literal["v1"] = "v1"
     owner_mode: Literal["private_single_user"] = "private_single_user"
     currency: Literal["EUR"] = "EUR"
-    catalog_variant: Literal["mock", "final"]
+    catalog_variant: Literal["final"]
     origin: OriginMeta
     passenger: dict[str, Any]
     rules: dict[str, Any]
@@ -135,6 +136,9 @@ class MapPriceItem(APIModel):
     return_origin_terminal: TerminalBrief | None
     return_destination_terminal: TerminalBrief | None
     revision_id: int | None
+    price_completeness: PriceCompleteness | None
+    mandatory_fees_included: bool | None
+    fare_disclosure: str | None
 
 
 class MapPricesResponse(APIModel):
@@ -178,6 +182,9 @@ class PriceHistoryCell(APIModel):
     rule_version_id: int
     profile_id: int
     winning_mode: TransportMode | None
+    price_completeness: PriceCompleteness | None
+    mandatory_fees_included: bool | None
+    fare_disclosure: str | None
 
 
 class PriceScale(APIModel):
@@ -205,6 +212,7 @@ class Booking(APIModel):
     fx_rate: float
     fx_rate_date: date
     student_fare_used: bool
+    price_completeness: PriceCompleteness
     mandatory_fees_included: bool
     passenger_age: int
     passenger_student: bool
@@ -213,6 +221,7 @@ class Booking(APIModel):
     is_teaser: bool
     booking_url: str | None
     expires_at: datetime | None
+    fare_disclosure: str | None
 
 
 class Leg(APIModel):
@@ -254,6 +263,9 @@ class Journey(APIModel):
     return_duration_minutes: int | None
     stay_duration_minutes: int | None
     transfer_count: int
+    price_completeness: PriceCompleteness
+    mandatory_fees_included: bool
+    fare_disclosure: str | None
     bookings: list[Booking]
     legs: list[Leg]
 

@@ -72,6 +72,28 @@ def test_exact_business_rule_boundaries_are_valid(valid_trip) -> None:
     assert candidate.mode_bucket == TransportMode.MIXED
 
 
+def test_explicit_displayed_fare_exception_preserves_other_trip_rules(valid_trip) -> None:
+    candidate, context = valid_trip
+    displayed_fare = replace(
+        candidate,
+        price_complete=False,
+        mandatory_fees_included=False,
+        displayed_fare_service_fees_may_apply=True,
+    )
+
+    validate_trip(displayed_fare, context)
+
+    with pytest.raises(TripValidationError) as captured:
+        validate_trip(
+            replace(
+                displayed_fare,
+                displayed_fare_service_fees_may_apply=False,
+            ),
+            context,
+        )
+    assert "incomplete_price" in {issue.code for issue in captured.value.issues}
+
+
 @pytest.mark.parametrize(
     ("mutation", "issue_code"),
     [

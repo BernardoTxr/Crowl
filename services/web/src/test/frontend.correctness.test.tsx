@@ -3,10 +3,13 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { CrowlMap } from '../components/CrowlMap';
+import { CityCard } from '../components/CityCard';
 import { ItineraryPanel } from '../components/ItineraryPanel';
 import { PriceHeatmap } from '../components/PriceHeatmap';
 import type { City, Journey, Weekend } from '../types';
-import { nextNonpastWeekend } from '../utils';
+import { FLIXBUS_DISPLAYED_FARE_DISCLOSURE, nextNonpastWeekend } from '../utils';
+
+const MAP_TILE_SIZE_FOR_TEST = 512;
 
 describe('frontend interaction correctness', () => {
   const mapCity: City = {
@@ -58,6 +61,81 @@ describe('frontend interaction correctness', () => {
     expect(screen.getByText(/Latest check .*Collection failed.*batch 42.*UPSTREAM_FAILURE/)).toBeInTheDocument();
   });
 
+  it('labels FlixBus displayed-card prices wherever a winner is presented', () => {
+    const displayedFare = {
+      citySlug: 'vienna',
+      priceCents: 5_500,
+      winningMode: 'bus' as const,
+      availability: 'available' as const,
+      coverage: 'complete' as const,
+      sourceScopeRatio: 1,
+      freshness: 'fresh' as const,
+      observedAt: '2026-11-01T02:00:00Z',
+      currentObservedAt: '2026-11-01T02:00:00Z',
+      currentCrawlRunId: '42',
+      currentDiagnostic: null,
+      originTerminal: 'Paris Bercy Seine',
+      destinationTerminal: 'Vienna Erdberg',
+      priceCompleteness: 'estimated' as const,
+      mandatoryFeesIncluded: false,
+      fareDisclosure: FLIXBUS_DISPLAYED_FARE_DISCLOSURE,
+    };
+    const card = render(
+      <MemoryRouter>
+        <CityCard city={mapCity} fare={displayedFare} weekend="2027-01-08" mode="all" />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(FLIXBUS_DISPLAYED_FARE_DISCLOSURE)).toBeVisible();
+    card.unmount();
+
+    const map = render(
+      <MemoryRouter>
+        <CrowlMap cities={[mapCity]} fares={[displayedFare]} weekend="2027-01-08" mode="all" />
+      </MemoryRouter>,
+    );
+    const marker = screen.getByRole('link', {
+      name: new RegExp(`Vienna, €55, ${FLIXBUS_DISPLAYED_FARE_DISCLOSURE}`),
+    });
+    fireEvent.mouseEnter(marker);
+    expect(screen.getAllByText(FLIXBUS_DISPLAYED_FARE_DISCLOSURE).length).toBeGreaterThan(0);
+    map.unmount();
+
+    const journey: Journey = {
+      id: 'flixbus-revision', totalPriceCents: 5_500, currency: 'EUR', mode: 'bus',
+      observedAt: '2026-11-01T02:00:00Z', currentObservedAt: '2026-11-01T02:00:00Z',
+      currentCrawlRunId: '42', currentDiagnostic: null,
+      outboundDepartureAt: '2027-01-08T20:00:00Z', returnArrivalAt: '2027-01-11T05:00:00Z',
+      coverage: 'complete', sourceScopeRatio: 1, freshness: 'fresh', availability: 'available', live: true,
+      priceCompleteness: 'estimated', mandatoryFeesIncluded: false,
+      fareDisclosure: FLIXBUS_DISPLAYED_FARE_DISCLOSURE,
+      legs: [],
+      bookings: [{
+        id: 'flixbus-booking', seller: 'FlixBus', source: 'flixbus', priceCents: 5_500,
+        currency: 'EUR', bookingUrl: null, fareName: 'Displayed fare', studentFare: false,
+        priceCompleteness: 'estimated', mandatoryFeesIncluded: false,
+        fareDisclosure: FLIXBUS_DISPLAYED_FARE_DISCLOSURE,
+      }],
+    };
+    render(<ItineraryPanel journey={journey} />);
+    expect(screen.getAllByText(FLIXBUS_DISPLAYED_FARE_DISCLOSURE)).toHaveLength(2);
+    expect(screen.getByText('Link unavailable')).toBeInTheDocument();
+  });
+
+  it('shows a city that is both visited and wishlisted as visited only', () => {
+    const dualStatusCity = { ...mapCity, status: { visited: true, wishlist: true } };
+    render(
+      <MemoryRouter>
+        <CrowlMap cities={[dualStatusCity]} fares={[]} weekend="" mode="all" view={{ lat: 48.2, lon: 16.37, zoom: 5 }} />
+      </MemoryRouter>,
+    );
+
+    const marker = screen.getByRole('link', { name: 'Vienna, visited. View city.' });
+    expect(marker).not.toHaveClass('border-visited', 'border-wishlist');
+    fireEvent.mouseEnter(marker);
+    expect(screen.getByText('✓ Visited')).toBeInTheDocument();
+    expect(screen.queryByText('☆ Wishlist')).not.toBeInTheDocument();
+  });
+
   it('zooms and resets one shared viewport without detaching city links', async () => {
     const user = userEvent.setup();
     render(
@@ -65,61 +143,69 @@ describe('frontend interaction correctness', () => {
         <CrowlMap cities={[mapCity]} fares={[]} weekend="2027-01-08" mode="train" />
       </MemoryRouter>,
     );
-    const stage = screen.getByRole('region', { name: 'Interactive Schengen travel map' });
-    vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({
-      x: 0, y: 0, left: 0, top: 0, right: 1000, bottom: 620, width: 1000, height: 620,
-      toJSON: () => ({}),
-    });
-    const viewport = screen.getByTestId('map-viewport');
+    const stage = screen.getByTestId('map-stage');
+    const basemap = screen.getByRole('region', { name: 'Interactive geographic map of Europe' });
     const marker = screen.getByRole('link', { name: /Vienna, collection failed\. View city\./i });
 
-    expect(viewport).toContainElement(screen.getByRole('img', { name: /Stylised map of the Schengen Area/ }));
-    expect(viewport).toContainElement(marker);
+    expect(basemap).toHaveAccessibleName('Interactive geographic map of Europe');
+    expect(basemap).toContainElement(marker);
     expect(marker).toHaveAttribute('href', '/cities/vienna?weekend=2027-01-08&mode=train');
-    expect(screen.getByRole('button', { name: 'Zoom out' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Zoom in' }));
-    expect(screen.getByText('125%')).toBeInTheDocument();
-    expect(stage).toHaveAttribute('data-zoom', '1.25');
-    expect(viewport.style.transform).toContain('scale(1.25)');
+    expect(stage).toHaveAttribute('data-zoom', '3.40');
+    expect(screen.getByTestId('maplibre-map')).toHaveAttribute('data-map-zoom', '3.4');
     expect(screen.getByRole('button', { name: 'Reset map view' })).toBeEnabled();
 
     await user.click(screen.getByRole('button', { name: 'Reset map view' }));
-    expect(screen.getByText('100%')).toBeInTheDocument();
-    expect(viewport.style.transform).toBe('translate3d(0px, 0px, 0) scale(1)');
+    expect(stage).toHaveAttribute('data-zoom', '2.80');
+    expect(screen.getByTestId('maplibre-map')).toHaveAttribute('data-longitude', '6.5');
   });
 
-  it('supports pointer-centred wheel zoom, keyboard pan, and Home reset', () => {
-    vi.stubGlobal('PointerEvent', MouseEvent);
+  it('exposes one native keyboard map surface without a duplicate outer tab stop', () => {
     render(
       <MemoryRouter>
         <CrowlMap cities={[mapCity]} fares={[]} weekend="" mode="all" />
       </MemoryRouter>,
     );
-    const stage = screen.getByRole('region', { name: 'Interactive Schengen travel map' });
-    vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({
-      x: 0, y: 0, left: 0, top: 0, right: 1000, bottom: 620, width: 1000, height: 620,
-      toJSON: () => ({}),
-    });
-    const viewport = screen.getByTestId('map-viewport');
+    const stage = screen.getByTestId('map-stage');
+    const basemap = screen.getByRole('region', { name: 'Interactive geographic map of Europe' });
 
-    fireEvent.wheel(stage, { ctrlKey: true, deltaY: -100, clientX: 250, clientY: 155 });
-    expect(stage).toHaveAttribute('data-zoom', '1.25');
-    const zoomedTransform = viewport.style.transform;
+    expect(stage).not.toHaveAttribute('tabindex');
+    expect(basemap).toHaveAttribute('tabindex', '0');
+    basemap.focus();
+    expect(basemap).toHaveFocus();
+  });
 
-    stage.focus();
-    fireEvent.keyDown(stage, { key: 'ArrowRight' });
-    expect(viewport.style.transform).not.toBe(zoomedTransform);
-    const keyboardPannedTransform = viewport.style.transform;
+  it('fits the catalog with marker padding on a 320px viewport', () => {
+    vi.stubGlobal('innerWidth', 320);
+    const reykjavik: City = {
+      ...mapCity,
+      id: 'reykjavik-is',
+      slug: 'reykjavik',
+      name: 'Reykjavík',
+      coordinates: { lat: 64.1466, lon: -21.9426 },
+    };
+    const krakow: City = {
+      ...mapCity,
+      id: 'krakow-pl',
+      slug: 'krakow',
+      name: 'Kraków',
+      coordinates: { lat: 50.0647, lon: 19.945 },
+    };
+    render(
+      <MemoryRouter>
+        <CrowlMap cities={[reykjavik, krakow]} fares={[]} weekend="" mode="all" />
+      </MemoryRouter>,
+    );
 
-    fireEvent.pointerDown(stage, { pointerId: 1, button: 0, clientX: 500, clientY: 300 });
-    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 460, clientY: 270 });
-    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 460, clientY: 270 });
-    expect(viewport.style.transform).not.toBe(keyboardPannedTransform);
+    const map = screen.getByTestId('maplibre-map');
+    const zoom = Number(map.getAttribute('data-map-zoom'));
+    const longitude = Number(map.getAttribute('data-longitude'));
+    const projectedX = (lon: number) => 134 + ((lon - longitude) / 360) * MAP_TILE_SIZE_FOR_TEST * (2 ** zoom);
 
-    fireEvent.keyDown(stage, { key: 'Home' });
-    expect(stage).toHaveAttribute('data-zoom', '1');
-    expect(viewport.style.transform).toBe('translate3d(0px, 0px, 0) scale(1)');
+    expect(zoom).toBeLessThan(1.7);
+    expect(projectedX(reykjavik.coordinates.lon)).toBeGreaterThanOrEqual(39);
+    expect(projectedX(krakow.coordinates.lon)).toBeLessThanOrEqual(229);
   });
 
   it('restores a shared map viewport and preserves it in city navigation', async () => {
@@ -131,25 +217,19 @@ describe('frontend interaction correctness', () => {
           fares={[]}
           weekend="2027-01-08"
           mode="train"
-          view={{ lat: 48.2, lon: 16.37, zoom: 2 }}
-          navigationQuery="weekend=2027-01-08&mode=train&lat=48.200&lon=16.370&zoom=2.00"
+          view={{ lat: 48.2, lon: 16.37, zoom: 4.2 }}
+          navigationQuery="weekend=2027-01-08&mode=train&lat=48.200&lon=16.370&zoom=4.20"
           onViewChange={onViewChange}
         />
       </MemoryRouter>,
     );
-    const stage = screen.getByRole('region', { name: 'Interactive Schengen travel map' });
-    vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({
-      x: 0, y: 0, left: 0, top: 0, right: 1000, bottom: 620, width: 1000, height: 620,
-      toJSON: () => ({}),
-    });
+    const stage = screen.getByTestId('map-stage');
 
-    fireEvent(window, new Event('resize'));
-
-    await waitFor(() => expect(stage).toHaveAttribute('data-zoom', '2'));
+    await waitFor(() => expect(stage).toHaveAttribute('data-zoom', '4.20'));
     expect(screen.getByRole('link', { name: /Vienna, collection failed\. View city\./i }))
-      .toHaveAttribute('href', '/cities/vienna?weekend=2027-01-08&mode=train&lat=48.200&lon=16.370&zoom=2.00');
+      .toHaveAttribute('href', '/cities/vienna?weekend=2027-01-08&mode=train&lat=48.200&lon=16.370&zoom=4.20');
     await waitFor(() => expect(onViewChange).toHaveBeenCalled());
-    expect(onViewChange.mock.calls.at(-1)?.[0]).toMatchObject({ zoom: 2 });
+    expect(onViewChange.mock.calls.at(-1)?.[0]).toMatchObject({ zoom: 4.2, lat: 48.2, lon: 16.37 });
   });
 
   it('clusters dense projected cities deterministically and reveals focused member links', async () => {
@@ -172,11 +252,7 @@ describe('frontend interaction correctness', () => {
         <CrowlMap cities={[gamma, distant, alpha, beta]} fares={[]} weekend="" mode="all" />
       </MemoryRouter>,
     );
-    const stage = screen.getByRole('region', { name: 'Interactive Schengen travel map' });
-    vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({
-      x: 0, y: 0, left: 0, top: 0, right: 1000, bottom: 620, width: 1000, height: 620,
-      toJSON: () => ({}),
-    });
+    const stage = screen.getByTestId('map-stage');
     const cluster = screen.getByRole('button', { name: /3 nearby cities: Alpha, Beta, Gamma\. Zoom in to show city links\./ });
 
     expect(screen.getByRole('link', { name: 'Distant, wishlist. View city.' })).toBeInTheDocument();
@@ -184,7 +260,7 @@ describe('frontend interaction correctness', () => {
 
     await user.click(cluster);
 
-    expect(stage).toHaveAttribute('data-zoom', '2.25');
+    expect(stage).toHaveAttribute('data-zoom', '5.00');
     const alphaLink = await screen.findByRole('link', { name: 'Alpha, wishlist. View city.' });
     expect(screen.getByRole('link', { name: 'Beta, wishlist. View city.' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Gamma, wishlist. View city.' })).toBeInTheDocument();

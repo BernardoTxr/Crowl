@@ -60,7 +60,7 @@ class SourceSpec:
         kill_switch = bool(entry["kill_switch"])
         access_note = _public_text(
             entry["access_note"],
-            fallback="Awaiting an authorized live-fare channel.",
+            fallback="Public-page extraction is disabled.",
         )
 
         if kill_switch:
@@ -68,12 +68,7 @@ class SourceSpec:
         elif not configured_enabled or state != "enabled":
             disabled_reason = access_note
         else:
-            # The current provider classes are deliberate, network-free slots.
-            # A future live implementation must still satisfy catalog_enabled.
-            disabled_reason = (
-                "The authorized connector implementation is not installed in "
-                "this release."
-            )
+            disabled_reason = "Public-page extraction is enabled by the catalog."
 
         return cls(
             slug=slug,
@@ -82,7 +77,7 @@ class SourceSpec:
             intended_strategy=intended_strategy,
             access_basis=_public_text(
                 entry["access_basis"],
-                fallback="authorized provider channel",
+                fallback="ordinary public provider page",
             ),
             disabled_reason=disabled_reason,
             state=state,

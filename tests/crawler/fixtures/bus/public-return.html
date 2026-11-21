@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Public bus search results</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "BusTrip",
+            "identifier": "__SOURCE__-return-20270110",
+            "provider": {"@type": "Organization", "name": "__PROVIDER__"},
+            "busNumber": "BUS101",
+            "departureTime": "2027-01-10T18:00:00+01:00",
+            "arrivalTime": "2027-01-11T02:00:00+01:00",
+            "departureBusStop": {
+              "@type": "BusStop",
+              "identifier": "AMS_PROVIDER",
+              "name": "Amsterdam Sloterdijk Bus Station"
+            },
+            "arrivalBusStop": {
+              "@type": "BusStop",
+              "identifier": "PAR_PROVIDER",
+              "name": "Paris Bercy Seine Bus Station"
+            },
+            "offers": {
+              "@type": "Offer",
+              "name": "Standard",
+              "price": "22.99",
+              "priceCurrency": "EUR",
+              "availability": "https://schema.org/InStock",
+              "eligibleCustomerType": "Adult",
+              "eligibleQuantity": {"@type": "QuantitativeValue", "value": 1},
+              "requiresPaidMembership": false,
+              "url": "__BOOKING_URL__",
+              "description": "Public fare for one adult.",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "22.99",
+                "priceCurrency": "EUR",
+                "valueAddedTaxIncluded": true,
+                "description": "All mandatory taxes and fees included."
+              }
+            }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body><main><h1>Bus results</h1></main></body>
+</html>

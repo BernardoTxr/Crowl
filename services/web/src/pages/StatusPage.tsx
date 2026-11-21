@@ -32,7 +32,6 @@ export const StatusPage = () => {
   const batch = batchQuery.data?.data;
   const healthy = extractors.filter((item) => item.state === 'succeeded' && item.freshness === 'fresh').length;
   const enabledSources = extractors.filter((item) => item.enabled).length;
-  const isMock = Boolean(batchQuery.data?.isMock || extractorsQuery.data?.isMock);
   const isSynthetic = Boolean(batchQuery.data?.isSynthetic);
 
   const selectSource = (nextSource: string) => {
@@ -50,7 +49,7 @@ export const StatusPage = () => {
         <div><p className="eyebrow">Read-only monitoring</p><h1>Source health</h1><p>See what Crowl searched, what succeeded, and where coverage is incomplete. There are no configuration or retry controls here.</p></div>
         <div className="status-intro-icon" aria-hidden="true">◉</div>
       </header>
-      {isSynthetic ? <DemoNotice kind="synthetic" /> : isMock && <DemoNotice />}
+      {isSynthetic && <DemoNotice />}
       {(batchQuery.isLoading || extractorsQuery.isLoading) && <LoadingBlock label="Checking the latest collection batch…" />}
       {(batchQuery.error || extractorsQuery.error) && <ErrorBlock message="Monitoring data is temporarily unavailable." />}
       {batch && (

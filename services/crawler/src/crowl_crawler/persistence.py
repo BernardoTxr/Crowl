@@ -21,6 +21,7 @@ from crowl_core.enums import (
     Direction as DatabaseDirection,
     ExecutionCoverage,
     ExtractorRunStatus as DatabaseExtractorRunStatus,
+    PriceCompleteness as DatabasePriceCompleteness,
     PricingSemantics as DatabasePricingSemantics,
     ProtectionState,
     SearchOutcome as DatabaseSearchOutcome,
@@ -159,6 +160,7 @@ class DatabasePublisher:
         *,
         health_events: Iterable[HealthEvent] = (),
         source_metadata: Iterable[AdapterMetadata] = (),
+        require_at_least_one_winner: bool = False,
     ) -> PublicationResult:
         if report.manifest_id != manifest.manifest_id:
             raise PublicationError(
@@ -177,7 +179,14 @@ class DatabasePublisher:
             raise PublicationError("source metadata contains duplicate slugs")
 
         with self._session_factory() as session, session.begin():
-            return self._publish(session, manifest, report, events, metadata)
+            return self._publish(
+                session,
+                manifest,
+                report,
+                events,
+                metadata,
+                require_at_least_one_winner=require_at_least_one_winner,
+            )
 
     def _publish(
         self,
@@ -186,6 +195,8 @@ class DatabasePublisher:
         report: BatchReport,
         health_events: tuple[HealthEvent, ...],
         source_metadata: tuple[AdapterMetadata, ...],
+        *,
+        require_at_least_one_winner: bool,
     ) -> PublicationResult:
         _acquire_publication_lock(session, manifest.scheduled_for)
         _validate_source_reports(manifest, report)
@@ -222,6 +233,10 @@ class DatabasePublisher:
             trust_policy=self._trust_policy,
         )
         winners = _select_daily_winners(validated)
+        if require_at_least_one_winner and not winners:
+            raise PublicationError(
+                "publication requires at least one trusted, valid fare winner"
+            )
         created, revisions, unchanged = _publish_winners(
             session,
             winners=winners,
@@ -461,9 +476,7 @@ def _upsert_crawl_run(
     crawl_run.completed_at = report.completed_at
     crawl_run.published_at = report.completed_at
     if is_synthetic:
-        crawl_run.diagnostic = (
-            "Synthetic fixture batch; no live provider observation"
-        )
+        crawl_run.diagnostic = "Synthetic fixture batch; no live provider observation"
     else:
         live_sources = sum(
             item.state is not ExtractorRunStatus.DISABLED
@@ -540,8 +553,7 @@ def _upsert_extractor_run(
     )
     extractor.consecutive_failures = (
         0
-        if report.state
-        in {ExtractorRunStatus.SUCCEEDED, ExtractorRunStatus.DISABLED}
+        if report.state in {ExtractorRunStatus.SUCCEEDED, ExtractorRunStatus.DISABLED}
         else prior_failures + 1
     )
     extractor.expected_searches = report.expected_tasks
@@ -816,9 +828,7 @@ def _validated_offers(
     )
 
     validated: list[_ValidatedOffer] = []
-    trust_failures: dict[
-        tuple[str, int, DatabaseTransportMode], set[str]
-    ] = {}
+    trust_failures: dict[tuple[str, int, DatabaseTransportMode], set[str]] = {}
     directional: dict[
         tuple[str, int],
         dict[CrawlerDirection, list[_DirectionalOffer]],
@@ -905,7 +915,23 @@ def _validated_offers(
                             f"offer {offer.provider_offer_id} violates travel rules: "
                             f"{error}"
                         ) from error
-                    default_booking_index = 0 if trusted.bookings else None
+                    if not trusted.bookings:
+                        outbound_booking_index = None
+                        inbound_booking_index = None
+                    elif len(trusted.bookings) == 1:
+                        outbound_booking_index = 0
+                        inbound_booking_index = 0
+                    elif (
+                        offer.pricing_semantics is PricingSemantics.COMPOSABLE
+                        and len(trusted.bookings) == 2
+                    ):
+                        outbound_booking_index = 0
+                        inbound_booking_index = 1
+                    else:
+                        raise PublicationError(
+                            "round-trip booking components cannot be mapped "
+                            "unambiguously to itinerary directions"
+                        )
                     validated.append(
                         _ValidatedOffer(
                             offer=offer,
@@ -913,8 +939,8 @@ def _validated_offers(
                             candidate=candidate,
                             bookings=trusted.bookings,
                             travel_window=window,
-                            outbound_booking_index=default_booking_index,
-                            inbound_booking_index=default_booking_index,
+                            outbound_booking_index=outbound_booking_index,
+                            inbound_booking_index=inbound_booking_index,
                         )
                     )
                     continue
@@ -946,11 +972,12 @@ def _validated_offers(
                     itinerary=itinerary,
                     price_eur_cents=trusted.total_eur_cents,
                     observed_at=offer.observed_at,
-                    price_complete=True,
+                    price_complete=(
+                        offer.price_completeness is PriceCompleteness.COMPLETE
+                    ),
                     mandatory_fees_included=offer.mandatory_fees_included,
                     smallest_personal_item_included=(
-                        offer.included_baggage
-                        == "smallest_included_personal_item"
+                        offer.included_baggage == "smallest_included_personal_item"
                     ),
                     passenger_age=offer.passenger_age,
                     student_eligible=offer.passenger_eligibility_confirmed,
@@ -961,6 +988,11 @@ def _validated_offers(
                         len(trusted.bookings) == 1
                         and trusted.bookings[0].component.source_slug
                         == offer.source_slug
+                    ),
+                    displayed_fare_service_fees_may_apply=(
+                        offer.source_slug == "flixbus"
+                        and offer.price_completeness is PriceCompleteness.ESTIMATED
+                        and not offer.mandatory_fees_included
                     ),
                 )
                 group_key = (offer.destination_city_id, window.id)
@@ -1008,9 +1040,7 @@ def _validated_offers(
                         candidate=composed.candidate,
                         bookings=(outbound_item.bookings + inbound_item.bookings),
                         travel_window=outbound_item.travel_window,
-                        outbound_booking_index=(
-                            0 if outbound_item.bookings else None
-                        ),
+                        outbound_booking_index=(0 if outbound_item.bookings else None),
                         inbound_booking_index=(
                             len(outbound_item.bookings)
                             if inbound_item.bookings
@@ -1059,9 +1089,7 @@ def _as_composed_offer(
         if value is not None
     )
     key = hashlib.sha256(
-        (
-            outbound.candidate.offer_key + ":" + inbound.candidate.offer_key
-        ).encode()
+        (outbound.candidate.offer_key + ":" + inbound.candidate.offer_key).encode()
     ).hexdigest()
     return NormalizedOffer(
         provider_offer_id=f"composed-{key[:24]}",
@@ -1070,12 +1098,23 @@ def _as_composed_offer(
         ),
         destination_city_id=outbound.offer.destination_city_id,
         pricing_semantics=PricingSemantics.COMPOSABLE,
-        price_completeness=PriceCompleteness.COMPLETE,
+        price_completeness=(
+            PriceCompleteness.ESTIMATED
+            if PriceCompleteness.ESTIMATED
+            in {
+                outbound.offer.price_completeness,
+                inbound.offer.price_completeness,
+            }
+            else PriceCompleteness.COMPLETE
+        ),
         total_amount_minor=(
             outbound.candidate.price_eur_cents + inbound.candidate.price_eur_cents
         ),
         currency="EUR",
-        mandatory_fees_included=True,
+        mandatory_fees_included=(
+            outbound.offer.mandatory_fees_included
+            and inbound.offer.mandatory_fees_included
+        ),
         passenger_age=outbound.offer.passenger_age,
         passenger_student=outbound.offer.passenger_student,
         passenger_eligibility_confirmed=True,
@@ -1144,10 +1183,13 @@ def _as_trip_candidate(
         smallest_personal_item_included=(
             offer.included_baggage == "smallest_included_personal_item"
         ),
-        included_transfer_cost_eur_cents=(
-            offer.included_transfer_cost_eur_cents
-        ),
+        included_transfer_cost_eur_cents=(offer.included_transfer_cost_eur_cents),
         itinerary_key=_offer_signature(offer, bookings),
+        displayed_fare_service_fees_may_apply=(
+            offer.source_slug == "flixbus"
+            and offer.price_completeness is PriceCompleteness.ESTIMATED
+            and not offer.mandatory_fees_included
+        ),
     )
 
 
@@ -1193,9 +1235,7 @@ def _offer_signature(
         "amount": offer.total_amount_minor,
         "currency": offer.currency,
         "mandatory_fees_included": offer.mandatory_fees_included,
-        "included_transfer_cost_eur_cents": (
-            offer.included_transfer_cost_eur_cents
-        ),
+        "included_transfer_cost_eur_cents": (offer.included_transfer_cost_eur_cents),
         "passenger_age": offer.passenger_age,
         "passenger_student": offer.passenger_student,
         "passenger_eligibility_confirmed": offer.passenger_eligibility_confirmed,
@@ -1212,6 +1252,7 @@ def _offer_signature(
                 "fare_name": item.fare_name,
                 "student": item.student_fare_applied,
                 "mandatory_fees_included": item.mandatory_fees_included,
+                "price_completeness": item.price_completeness.value,
                 "passenger_age": item.passenger_age,
                 "passenger_student": item.passenger_student,
                 "passenger_eligibility_confirmed": (
@@ -1325,8 +1366,7 @@ def _publication_quality(
         for slug, source in sources.items()
         if source.is_requested
         and (
-            mode is DatabaseTransportMode.MIXED
-            or mode.value in source.supported_modes
+            mode is DatabaseTransportMode.MIXED or mode.value in source.supported_modes
         )
     }
     if not relevant_source_ids:
@@ -1347,9 +1387,7 @@ def _publication_quality(
     source_scope_ratio = len(enabled_reports) / len(relevant_source_ids)
     if not enabled_reports:
         execution_coverage = ExecutionCoverage.FAILED
-    elif all(
-        item.state is ExtractorRunStatus.SUCCEEDED for item in enabled_reports
-    ):
+    elif all(item.state is ExtractorRunStatus.SUCCEEDED for item in enabled_reports):
         execution_coverage = ExecutionCoverage.COMPLETE
     elif any(
         item.state in {ExtractorRunStatus.SUCCEEDED, ExtractorRunStatus.PARTIAL}
@@ -1415,8 +1453,7 @@ def _publish_winners(
             current is not None
             and current.availability == Availability.AVAILABLE
             and current.total_price_eur_cents is not None
-            and current.total_price_eur_cents
-            <= item.candidate.total_price_eur_cents
+            and current.total_price_eur_cents <= item.candidate.total_price_eur_cents
         ):
             # A daily cell records the lowest trustworthy fare observed that
             # day. Later provider volatility must never replace it with an
@@ -1485,6 +1522,9 @@ def _publish_winners(
                 fx_rate=trusted_booking.fx_rate,
                 fx_rate_date=trusted_booking.fx_rate_date,
                 student_fare_used=component.student_fare_applied,
+                price_completeness=DatabasePriceCompleteness(
+                    component.price_completeness.value
+                ),
                 mandatory_fees_included=component.mandatory_fees_included,
                 passenger_age=component.passenger_age,
                 passenger_student=component.passenger_student,
@@ -1743,9 +1783,7 @@ def _upsert_cell_observations(
     profile_id: int,
     rule_version_id: int,
     sources: dict[str, Source],
-    trust_failures: dict[
-        tuple[str, int, DatabaseTransportMode], frozenset[str]
-    ],
+    trust_failures: dict[tuple[str, int, DatabaseTransportMode], frozenset[str]],
 ) -> int:
     """Publish a current state for every monitored city/weekend/mode cell.
 
@@ -1756,20 +1794,14 @@ def _upsert_cell_observations(
 
     reports_by_source = {item.source_slug: item for item in report.source_reports}
     coverage_rows = session.scalars(
-        select(CrawlCoverageCell).where(
-            CrawlCoverageCell.crawl_run_id == crawl_run.id
-        )
+        select(CrawlCoverageCell).where(CrawlCoverageCell.crawl_run_id == crawl_run.id)
     ).all()
-    coverage_lists: dict[
-        tuple[str, str, int], list[CrawlCoverageCell]
-    ] = {}
+    coverage_lists: dict[tuple[str, str, int], list[CrawlCoverageCell]] = {}
     for row in coverage_rows:
         coverage_lists.setdefault(
             (row.source_id, row.city_id, row.travel_window_id), []
         ).append(row)
-    coverage_by_cell = {
-        key: tuple(value) for key, value in coverage_lists.items()
-    }
+    coverage_by_cell = {key: tuple(value) for key, value in coverage_lists.items()}
 
     current_fare_cells = {
         (
@@ -1833,7 +1865,11 @@ def _upsert_cell_observations(
             )
             completion_times = [
                 row.completed_at
-                for (source_slug, row_city_id, row_window_id), rows in coverage_by_cell.items()
+                for (
+                    source_slug,
+                    row_city_id,
+                    row_window_id,
+                ), rows in coverage_by_cell.items()
                 if row_city_id == city_id
                 and row_window_id == window_id
                 and _source_supports_observation_mode(sources[source_slug], mode)
@@ -1865,7 +1901,9 @@ def _upsert_cell_observations(
             observation.execution_coverage = quality.execution_coverage
             observation.source_scope_ratio = quality.source_scope_ratio
             observation.observed_at = observed_at
-            observation.trusted_revision_id = trusted.id if trusted is not None else None
+            observation.trusted_revision_id = (
+                trusted.id if trusted is not None else None
+            )
             if failure_codes and not has_current_fare:
                 observation.diagnostic = (
                     "OFFER_TRUST_REJECTED:"

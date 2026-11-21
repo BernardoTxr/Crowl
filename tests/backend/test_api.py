@@ -10,10 +10,12 @@ from sqlalchemy import create_engine, select, text
 from app.config import APISettings
 from app.main import create_app
 from crowl_core.enums import (
+    FLIXBUS_DISPLAYED_FARE_DISCLOSURE,
     Availability,
     BatchStatus,
     ExecutionCoverage,
     ExtractorRunStatus,
+    PriceCompleteness,
 )
 from crowl_core.models import (
     City,
@@ -22,6 +24,7 @@ from crowl_core.models import (
     FareCellObservation,
     FareSnapshot,
     FareSnapshotRevision,
+    SnapshotBooking,
     Source,
     TravelWindow,
 )
@@ -62,7 +65,7 @@ def test_health_and_catalog_bootstrap(client) -> None:
     }
 
     meta = client.get("/api/v1/meta").json()
-    assert meta["origin"]["name"] == "Palaiseau / Paris"
+    assert meta["origin"]["name"] == "Paris"
     assert meta["passenger"]["age"] == 22
     assert meta["rules"]["minimum_stay_hours"] == 12
     assert meta["rules"]["maximum_direction_hours"] == 12
@@ -116,7 +119,7 @@ def test_startup_reconciles_existing_catalog_rows(tmp_path) -> None:
         freshness_hours=36,
         duration_history_days=180,
         cors_origins=(),
-        expected_schema_revision="0005_synthetic_run_isolation",
+        expected_schema_revision="0006_flixbus_fare_policy",
     )
     app = create_app(settings)
     with TestClient(app) as first_client:
@@ -146,7 +149,7 @@ def test_readiness_fails_when_catalog_seed_fails(tmp_path) -> None:
         freshness_hours=36,
         duration_history_days=180,
         cors_origins=(),
-        expected_schema_revision="0005_synthetic_run_isolation",
+        expected_schema_revision="0006_flixbus_fare_policy",
     )
     app = create_app(settings)
     with TestClient(app) as failed_client:
@@ -189,7 +192,7 @@ def test_readiness_rejects_a_stale_create_all_sqlite_schema(tmp_path) -> None:
             freshness_hours=36,
             duration_history_days=180,
             cors_origins=(),
-            expected_schema_revision="0005_synthetic_run_isolation",
+            expected_schema_revision="0006_flixbus_fare_policy",
         )
     )
     with TestClient(app) as stale_client:
@@ -201,23 +204,38 @@ def test_readiness_rejects_a_stale_create_all_sqlite_schema(tmp_path) -> None:
     assert "crawl_runs: is_synthetic" in response.json()["detail"]
 
 
-def test_map_price_returns_every_city_with_price_and_exact_endpoints(client) -> None:
+def test_map_price_returns_every_city_and_exact_endpoints_for_observed_fares(client) -> None:
     weekend = client.get("/api/v1/weekends").json()["items"][0]["friday"]
     response = client.get(f"/api/v1/map-prices?weekend={weekend}&mode=all")
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["price_scale_breakpoints_eur_cents"] == [5000, 10000, 17500, 25000]
-    assert len(payload["items"]) >= 8
-    assert all(item["availability"] == "available" for item in payload["items"])
-    assert all(item["price_eur_cents"] > 0 for item in payload["items"])
-    assert all(item["origin_terminal"]["name"].startswith("Paris") for item in payload["items"])
-    assert all(item["destination_terminal"]["name"] for item in payload["items"])
-    assert all(item["return_origin_terminal"]["name"] for item in payload["items"])
-    assert all(item["return_destination_terminal"]["name"].startswith("Paris") for item in payload["items"])
-    assert all(item["rule_version_id"] > 0 for item in payload["items"])
-    assert all(item["profile_id"] > 0 for item in payload["items"])
+    assert len(payload["items"]) == 150
+    available = [
+        item for item in payload["items"] if item["availability"] == "available"
+    ]
+    unobserved = [
+        item
+        for item in payload["items"]
+        if item["availability"] == "unknown_due_failure"
+    ]
+    assert len(available) >= 8
+    assert unobserved
+    assert all(item["price_eur_cents"] > 0 for item in available)
+    assert all(item["origin_terminal"]["name"].startswith("Paris") for item in available)
+    assert all(item["destination_terminal"]["name"] for item in available)
+    assert all(item["return_origin_terminal"]["name"] for item in available)
+    assert all(item["return_destination_terminal"]["name"].startswith("Paris") for item in available)
+    assert all(item["rule_version_id"] > 0 for item in available)
+    assert all(item["profile_id"] > 0 for item in available)
+    assert all(item["price_eur_cents"] is None for item in unobserved)
+    assert all(item["origin_terminal"] is None for item in unobserved)
+    assert all(item["destination_terminal"] is None for item in unobserved)
     assert all(item["source_scope_ratio"] == 0.0 for item in payload["items"])
+    assert all(item["price_completeness"] == "complete" for item in available)
+    assert all(item["mandatory_fees_included"] is True for item in available)
+    assert all(item["fare_disclosure"] is None for item in available)
 
 
 def test_map_price_empty_window_is_explicit_failure_never_zero(client) -> None:
@@ -293,11 +311,73 @@ def test_city_history_and_journey_components_are_coherent(client) -> None:
     assert [leg["direction"] for leg in journey["legs"]] == ["outbound", "return"]
     assert journey["legs"][0]["origin_terminal"]["id"] == "par-ory"
     assert journey["legs"][0]["destination_terminal"]["id"] == "ams-schiphol"
+    assert journey["price_completeness"] == "complete"
+    assert journey["mandatory_fees_included"] is True
+    assert journey["fare_disclosure"] is None
 
     missing_revision = client.get(
         f"/api/v1/cities/amsterdam/journeys?weekend={weekend}&mode=all&revision_id=999999"
     )
     assert missing_revision.status_code == 404
+
+
+def test_flixbus_displayed_fare_policy_is_exposed_on_every_price_view(
+    client,
+    seeded_app,
+) -> None:
+    weekend = client.get("/api/v1/weekends").json()["items"][0]["friday"]
+    initial = client.get(
+        f"/api/v1/map-prices?weekend={weekend}&mode=all"
+    ).json()
+    amsterdam = next(
+        item for item in initial["items"] if item["city"]["slug"] == "amsterdam"
+    )
+    assert amsterdam["revision_id"] is not None
+
+    with seeded_app.state.session_factory() as session, session.begin():
+        booking = session.scalar(
+            select(SnapshotBooking).where(
+                SnapshotBooking.revision_id == amsterdam["revision_id"]
+            )
+        )
+        assert booking is not None
+        booking.source_id = "flixbus"
+        booking.seller = "FlixBus"
+        booking.price_completeness = PriceCompleteness.ESTIMATED
+        booking.mandatory_fees_included = False
+        booking.booking_url = None
+
+    map_item = next(
+        item
+        for item in client.get(
+            f"/api/v1/map-prices?weekend={weekend}&mode=all"
+        ).json()["items"]
+        if item["city"]["slug"] == "amsterdam"
+    )
+    assert map_item["price_completeness"] == "estimated"
+    assert map_item["mandatory_fees_included"] is False
+    assert map_item["fare_disclosure"] == FLIXBUS_DISPLAYED_FARE_DISCLOSURE
+
+    history = client.get(
+        "/api/v1/cities/amsterdam/price-history?mode=all"
+    ).json()["cells"]
+    history_cell = next(
+        cell for cell in history if cell["revision_id"] == amsterdam["revision_id"]
+    )
+    assert history_cell["price_completeness"] == "estimated"
+    assert history_cell["mandatory_fees_included"] is False
+    assert history_cell["fare_disclosure"] == FLIXBUS_DISPLAYED_FARE_DISCLOSURE
+
+    journey = client.get(
+        f"/api/v1/cities/amsterdam/journeys?weekend={weekend}&mode=all"
+    ).json()["items"][0]
+    assert journey["price_completeness"] == "estimated"
+    assert journey["mandatory_fees_included"] is False
+    assert journey["fare_disclosure"] == FLIXBUS_DISPLAYED_FARE_DISCLOSURE
+    assert journey["bookings"][0]["booking_url"] is None
+    assert journey["bookings"][0]["fare_disclosure"] == (
+        FLIXBUS_DISPLAYED_FARE_DISCLOSURE
+    )
 
 
 def test_failed_current_overlay_keeps_prior_fare_and_its_original_timestamp(
@@ -668,9 +748,16 @@ def test_status_exposes_all_14_canonical_source_ids_and_batch_counts(client) -> 
     assert {item["source"] for item in extractors["items"]} == EXPECTED_SOURCES
     assert len(extractors["items"]) == 14
     assert extractors["requested_sources"] == 14
-    assert extractors["enabled_sources"] == 0
+    assert extractors["enabled_sources"] == 1
     assert extractors["batch_id"] is None
-    assert all(item["disabled_reason"] for item in extractors["items"])
+    assert next(
+        item for item in extractors["items"] if item["source"] == "flixbus"
+    )["disabled_reason"] is None
+    assert all(
+        item["disabled_reason"]
+        for item in extractors["items"]
+        if item["source"] != "flixbus"
+    )
     assert all(item["freshness"] == "never_observed" for item in extractors["items"])
 
     runs = client.get("/api/v1/extractors/transavia/runs")

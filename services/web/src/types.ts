@@ -1,5 +1,5 @@
-export type Mode = 'all' | 'flight' | 'train' | 'bus' | 'mixed';
-export type TravelMode = Exclude<Mode, 'all'>;
+export type Mode = 'all' | 'flight' | 'train' | 'bus';
+export type TravelMode = Exclude<Mode, 'all'> | 'mixed';
 
 export type Availability =
   | 'available'
@@ -10,6 +10,7 @@ export type Availability =
 
 export type Coverage = 'complete' | 'partial' | 'failed' | 'not_applicable';
 export type Freshness = 'fresh' | 'stale' | 'never_observed';
+export type PriceCompleteness = 'complete' | 'estimated' | 'unknown';
 
 export interface Coordinates {
   lat: number;
@@ -52,7 +53,7 @@ export interface CatalogDefinition {
 }
 
 export interface CatalogMeta {
-  catalogVariant: 'mock' | 'final';
+  catalogVariant: 'final';
   categoryDefinitions: CatalogDefinition[];
   attributeDefinitions: CatalogDefinition[];
 }
@@ -96,6 +97,9 @@ export interface MapFare {
   returnDestinationTerminal?: string | null;
   ruleVersionId?: number | null;
   profileId?: number | null;
+  priceCompleteness?: PriceCompleteness | null;
+  mandatoryFeesIncluded?: boolean | null;
+  fareDisclosure?: string | null;
 }
 
 export interface HeatmapCell {
@@ -115,6 +119,9 @@ export interface HeatmapCell {
   revisionId?: string | null;
   ruleVersionId?: number | null;
   profileId?: number | null;
+  priceCompleteness?: PriceCompleteness | null;
+  mandatoryFeesIncluded?: boolean | null;
+  fareDisclosure?: string | null;
 }
 
 export interface PriceHistory {
@@ -148,6 +155,7 @@ export interface BookingComponent {
   bookingUrl?: string | null;
   fareName?: string | null;
   studentFare: boolean;
+  priceCompleteness?: PriceCompleteness;
   mandatoryFeesIncluded?: boolean;
   passengerAge?: number;
   passengerStudent?: boolean;
@@ -155,6 +163,7 @@ export interface BookingComponent {
   bookableAtObservation?: boolean;
   isTeaser?: boolean;
   expiresAt?: string | null;
+  fareDisclosure?: string | null;
 }
 
 export interface Journey {
@@ -176,6 +185,9 @@ export interface Journey {
   freshness: Freshness;
   availability: Availability;
   live: boolean;
+  priceCompleteness?: PriceCompleteness;
+  mandatoryFeesIncluded?: boolean;
+  fareDisclosure?: string | null;
   legs: JourneyLeg[];
   bookings: BookingComponent[];
 }
@@ -253,7 +265,6 @@ export interface Extractor {
 
 export interface ApiResult<T> {
   data: T;
-  isMock: boolean;
   isSynthetic?: boolean;
   emptyState?: JourneyEmptyState;
 }

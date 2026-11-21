@@ -1,13 +1,19 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { CityCard } from '../components/CityCard';
-import { CrowlMap, type MapView } from '../components/CrowlMap';
+import {
+  CrowlMap,
+  MAX_MAP_ZOOM,
+  MIN_MAP_ZOOM,
+  defaultMapViewForViewport,
+  type MapView,
+} from '../components/CrowlMap';
 import { TravelFilters } from '../components/Filters';
-import { DemoNotice, ErrorBlock, LoadingBlock } from '../components/Layout';
+import { ErrorBlock, LoadingBlock } from '../components/Layout';
 import type { City, MapFare, Mode } from '../types';
-import { formatCurrency, safeMode } from '../utils';
+import { safeMode } from '../utils';
 
 type Sort = 'price' | 'name' | 'status';
 
@@ -28,10 +34,18 @@ export const HomePage = () => {
     queryFn: () => api.getMapFares(weekend, mode),
     enabled: Boolean(weekend),
   });
+  const cities = citiesQuery.data?.data ?? [];
 
   useEffect(() => {
     document.title = 'Crowl — Schengen weekend explorer';
   }, []);
+
+  useEffect(() => {
+    if (searchParams.get('mode') !== 'mixed') return;
+    const next = new URLSearchParams(searchParams);
+    next.delete('mode');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const updateFilter = (key: 'weekend' | 'mode', value: string) => {
     const next = new URLSearchParams(searchParams);
@@ -43,7 +57,11 @@ export const HomePage = () => {
 
   const updateMapView = useCallback((view: MapView) => {
     const next = new URLSearchParams(searchParams);
-    if (view.zoom <= 1.001) {
+    const defaultView = defaultMapViewForViewport(cities);
+    const isDefaultView = Math.abs(view.zoom - defaultView.zoom) < 0.01
+      && Math.abs(view.lat - defaultView.lat) < 0.01
+      && Math.abs(view.lon - defaultView.lon) < 0.01;
+    if (isDefaultView) {
       next.delete('lat');
       next.delete('lon');
       next.delete('zoom');
@@ -55,9 +73,8 @@ export const HomePage = () => {
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [cities, searchParams, setSearchParams]);
 
-  const cities = citiesQuery.data?.data ?? [];
   const categoryLabels = useMemo(() => Object.fromEntries(
     (metaQuery.data?.data.categoryDefinitions ?? []).map((definition) => [definition.id, definition.label]),
   ), [metaQuery.data]);
@@ -71,86 +88,60 @@ export const HomePage = () => {
     fareMap,
     sort,
   ), [cities, categoryLabels, deferredSearch, fareMap, sort]);
-  const pricedFares = fares.filter((fare) => fare.priceCents !== null);
-  const lowest = pricedFares.reduce<MapFare | null>((best, item) => !best || (item.priceCents ?? Infinity) < (best.priceCents ?? Infinity) ? item : best, null);
-  const isMock = Boolean(citiesQuery.data?.isMock || metaQuery.data?.isMock || weekendsQuery.data?.isMock || faresQuery.data?.isMock);
-  const isMockCatalog = metaQuery.data?.data.catalogVariant === 'mock';
   const isSynthetic = Boolean(faresQuery.data?.isSynthetic);
   const isLoading = citiesQuery.isLoading || metaQuery.isLoading || weekendsQuery.isLoading || (weekend && faresQuery.isLoading);
+  const hasCatalog = Boolean(citiesQuery.data && metaQuery.data && weekendsQuery.data);
   const error = citiesQuery.error || metaQuery.error || weekendsQuery.error || faresQuery.error;
 
   return (
     <div className="page-shell home-page">
-      <section className="home-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">From Palaiseau / Paris</p>
-          <h1>Find a weekend worth <em>flying, riding, or rolling</em> for.</h1>
-          <p className="hero-lede">Compare complete round trips to the cities on your list—across air, rail, and bus—without hiding the actual terminals.</p>
-        </div>
-        <div className="hero-stamp" aria-label="Six month outlook">
-          <span>Looking ahead</span>
-          <strong>6</strong>
-          <span>months of weekends</span>
-        </div>
-      </section>
-
-      {isSynthetic && isMockCatalog ? <DemoNotice kind="catalog-synthetic" /> : isSynthetic ? <DemoNotice kind="synthetic" /> : isMockCatalog ? <DemoNotice kind="catalog" /> : isMock && <DemoNotice />}
       {error && <ErrorBlock message={error instanceof Error ? error.message : 'Please try again.'} />}
-      <TravelFilters
-        weekends={weekendsQuery.data?.data ?? []}
-        weekend={weekend}
-        mode={mode}
-        onWeekendChange={(value) => updateFilter('weekend', value)}
-        onModeChange={(value) => updateFilter('mode', value)}
-        allowCollection
-      />
 
-      {weekend && (
-        <section className="overview-strip" aria-label="Weekend overview">
-          <div><span>Eligible destinations</span><strong>{pricedFares.length}<small> / {cities.length}</small></strong></div>
-          <div><span>Lowest observed</span><strong>{formatCurrency(lowest?.priceCents)}</strong></div>
-          <div><span>Travel window</span><strong>60 hours</strong><small>Fri 19:00 → Mon 07:00</small></div>
-          <div><span>Price includes</span><strong>Round trip</strong><small>Mandatory fees · no extras</small></div>
-        </section>
-      )}
+      {isLoading ? <LoadingBlock label="Loading map…" /> : hasCatalog ? (
+        <>
+          <CrowlMap
+            cities={cities}
+            fares={fares}
+            weekend={weekend}
+            mode={mode}
+            view={mapView}
+            navigationQuery={searchParams.toString()}
+            onViewChange={updateMapView}
+            categoryLabels={categoryLabels}
+            attributeLabels={attributeLabels}
+            dataBadge={isSynthetic ? 'Synthetic data' : undefined}
+            controls={(
+              <TravelFilters
+                weekends={weekendsQuery.data?.data ?? []}
+                weekend={weekend}
+                mode={mode}
+                onWeekendChange={(value) => updateFilter('weekend', value)}
+                onModeChange={(value) => updateFilter('mode', value)}
+                allowCollection
+                compact
+              />
+            )}
+          />
 
-      {isLoading ? <LoadingBlock label="Mapping the next weekends…" /> : (
-        <CrowlMap
-          cities={cities}
-          fares={fares}
-          weekend={weekend}
-          mode={mode}
-          view={mapView}
-          navigationQuery={searchParams.toString()}
-          onViewChange={updateMapView}
-          categoryLabels={categoryLabels}
-          attributeLabels={attributeLabels}
-        />
-      )}
-
-      <aside className="fare-disclosure">
-        <span aria-hidden="true">i</span>
-        <p><strong>{isSynthetic ? 'Contains development fixtures.' : 'What these prices mean.'}</strong> {isSynthetic && 'Synthetic amounts are generated examples, not live fares. '}Round trip for one traveler, age 22/student where supported; mandatory fees included and no extra baggage. Travel from Palaiseau to the departure terminal and from the arrival terminal into the destination city is excluded. Transfers shown inside an itinerary are included where priced.</p>
-      </aside>
-
-      <section className="city-directory" aria-labelledby="directory-title">
-        <div className="section-heading">
-          <div><p className="eyebrow">Accessible map alternative</p><h2 id="directory-title">City directory</h2></div>
-          <Link to="/status" className="outline-button">Check source health</Link>
-        </div>
-        <div className="directory-controls">
-          <div className="search-field"><span aria-hidden="true">⌕</span><label className="sr-only" htmlFor="city-search">Search cities</label><input id="city-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by city, country, or category" /></div>
-          <div className="sort-control"><label htmlFor="city-sort">Sort by</label><div className="select-wrap"><select id="city-sort" value={sort} onChange={(event) => setSort(event.target.value as Sort)}><option value="price">Lowest price</option><option value="name">Name</option><option value="status">Visit status</option></select></div></div>
-        </div>
-        <p className="results-count" aria-live="polite">Showing {visibleCities.length} of {cities.length} monitored cities</p>
-        {visibleCities.length ? (
-          <div className="city-grid">
-            {visibleCities.map((city) => <CityCard key={city.slug} city={city} fare={fareMap.get(city.slug)} weekend={weekend} mode={mode} categoryLabels={categoryLabels} />)}
-          </div>
-        ) : (
-          <div className="empty-state"><strong>No matching city</strong><span>Try a country name or another category.</span></div>
-        )}
-      </section>
+          <section className="city-directory" aria-labelledby="directory-title">
+            <div className="section-heading">
+              <h2 id="directory-title">City directory</h2>
+            </div>
+            <div className="directory-controls">
+              <div className="search-field"><span aria-hidden="true">⌕</span><label className="sr-only" htmlFor="city-search">Search cities</label><input id="city-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by city, country, or category" /></div>
+              <div className="sort-control"><label htmlFor="city-sort">Sort by</label><div className="select-wrap"><select id="city-sort" value={sort} onChange={(event) => setSort(event.target.value as Sort)}><option value="price">Lowest price</option><option value="name">Name</option><option value="status">Visit status</option></select></div></div>
+            </div>
+            <p className="sr-only" aria-live="polite">Showing {visibleCities.length} of {cities.length} monitored cities</p>
+            {visibleCities.length ? (
+              <div className="city-grid">
+                {visibleCities.map((city) => <CityCard key={city.slug} city={city} fare={fareMap.get(city.slug)} weekend={weekend} mode={mode} categoryLabels={categoryLabels} />)}
+              </div>
+            ) : (
+              <div className="empty-state"><strong>No matching city</strong><span>Try a country name or another category.</span></div>
+            )}
+          </section>
+        </>
+      ) : null}
     </div>
   );
 };
@@ -166,11 +157,11 @@ const mapViewFromParams = (params: URLSearchParams): MapView | undefined => {
   const zoom = finiteParam(params, 'zoom');
   const lat = finiteParam(params, 'lat');
   const lon = finiteParam(params, 'lon');
-  if (zoom === null || lat === null || lon === null || zoom <= 1) return undefined;
+  if (zoom === null || lat === null || lon === null) return undefined;
   return {
-    zoom: Math.max(1, Math.min(3, zoom)),
-    lat: Math.max(34, Math.min(67, lat)),
-    lon: Math.max(-25, Math.min(32, lon)),
+    zoom: Math.max(MIN_MAP_ZOOM, Math.min(MAX_MAP_ZOOM, zoom)),
+    lat: Math.max(32, Math.min(72, lat)),
+    lon: Math.max(-32, Math.min(42, lon)),
   };
 };
 

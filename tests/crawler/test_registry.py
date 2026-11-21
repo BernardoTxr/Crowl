@@ -64,12 +64,17 @@ class RegistryTests(unittest.TestCase):
             tuple(item["id"] for item in catalog),
         )
         for item, source in zip(metadata, catalog, strict=True):
-            self.assertFalse(item.enabled)
-            self.assertEqual(item.strategy, ExtractionStrategy.DISABLED)
+            if item.source_slug == "flixbus":
+                self.assertTrue(item.enabled)
+                self.assertEqual(item.strategy, ExtractionStrategy.PLAYWRIGHT)
+                self.assertIsNone(item.disabled_reason)
+            else:
+                self.assertFalse(item.enabled)
+                self.assertEqual(item.strategy, ExtractionStrategy.DISABLED)
+                self.assertTrue(item.disabled_reason.startswith("Catalog kill switch"))
             self.assertEqual(item.intended_strategy.value, source["strategy"])
             self.assertEqual(item.display_name, source["name"])
             self.assertEqual(item.access_basis, source["access_basis"])
-            self.assertTrue(item.disabled_reason.startswith("Catalog kill switch"))
             adapter = registry.get(item.source_slug)
             self.assertEqual(
                 type(adapter).__module__,
@@ -96,7 +101,7 @@ class RegistryTests(unittest.TestCase):
             # Patch after asyncio has created its private socketpair; any new
             # socket inside an adapter is therefore an outbound-network bug.
             with patch("socket.socket", side_effect=AssertionError("network attempted")):
-                for slug in EXPECTED_SOURCE_SLUGS:
+                for slug in EXPECTED_SOURCE_SLUGS - {"flixbus"}:
                     adapter = registry.get(slug)
                     coverage = await adapter.discover_coverage()
                     canary = await adapter.canary((requests[slug],))
@@ -108,6 +113,8 @@ class RegistryTests(unittest.TestCase):
                     self.assertEqual(result.diagnostic_code, "SOURCE_DISABLED")
                     self.assertFalse(result.retryable)
                     await adapter.close()
+
+                self.assertTrue(registry.get("flixbus").metadata().enabled)
 
         asyncio.run(exercise())
 

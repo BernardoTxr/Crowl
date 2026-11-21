@@ -3,238 +3,238 @@ sources:
   - id: ryanair
     name: Ryanair
     modes: [flight]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: licensed direct distribution feed
-    access_note: Licensed direct or distribution feed required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public booking-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [ryanair.com]
-    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No licensed route inventory configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: easyjet
     name: easyJet
     modes: [flight]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: approved API, GDS, or aggregator
-    access_note: Approved API, GDS, or aggregator access required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public booking-page HTML
+    access_note: Public-page parser is implemented and fixture-tested. A read-only ordinary-page check on 2026-11-21 found that the configured booking-path assumption returns 404 and did not reach a selected exact fare; keep disabled for public booking URL drift.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [easyjet.com]
-    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No approved route inventory configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: transavia
     name: Transavia
     modes: [flight]
-    strategy: http_structured
-    state: disabled_needs_credentials
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: official affiliate API
-    access_note: Official affiliate API is the preferred first live connector.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public booking-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [transavia.com]
-    route_discovery: { method: affiliate_route_feed, status: blocked_access, provenance: Affiliate credentials not configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: wizzair
     name: Wizz Air
     modes: [flight]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized distribution API or aggregator
-    access_note: Authorized distribution access required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public booking-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [wizzair.com]
-    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No authorized route inventory configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: vueling
     name: Vueling
     modes: [flight]
-    strategy: http_structured
-    state: disabled_needs_credentials
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: Vueling NDC or direct provider
-    access_note: NDC or approved provider credentials required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public booking-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [vueling.com]
-    route_discovery: { method: ndc_route_feed, status: blocked_access, provenance: NDC credentials not configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: volotea
     name: Volotea
     modes: [flight]
     strategy: playwright
-    state: disabled_needs_authorization
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized feed or express browser-rendering permission
-    access_note: Enable a feed or browser renderer only after explicit authorization.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public booking-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [volotea.com]
-    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No feed or automation permission recorded. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: flixbus
     name: FlixBus
     modes: [bus]
-    strategy: http_structured
-    state: disabled_needs_credentials
-    enabled: false
-    kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: advanced partner API
-    access_note: Advanced partner API credentials required; GTFS is schedule-only.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
-    sale_horizon_days: null
-    attribution_required: null
-    booking_link_required: true
+    strategy: playwright
+    state: enabled
+    enabled: true
+    kill_switch: false
+    config_version: "2026-11-21-displayed-fare-v1"
+    access_basis: ordinary public search-page HTML
+    access_note: Enabled only for direct Paris Bercy Seine-Amsterdam Sloterdijk public result cards. The exact displayed one-adult EUR fare is stored as estimated; a later service fee may apply and an exact-trip booking link is optional.
+    rate_limit: { requests_per_minute: 12, max_concurrency: 1, status: verified }
+    markets: { origins: [par-bercy-seine-bus], destinations: [amsterdam-nl], status: verified }
+    sale_horizon_days: 184
+    attribution_required: true
+    booking_link_required: false
     booking_hosts: [flixbus.com]
-    route_discovery: { method: partner_route_feed, status: blocked_access, provenance: Partner credentials not configured. }
+    route_discovery: { method: curated_public_page_coverage, status: verified, provenance: Bounded live canaries on 2026-11-21 completed all six public result pages and returned valid direct round trips for both 2026-11-27 and the six-month endpoint 2027-05-21; the guarded activation then published one 45.96 EUR displayed fare for 2026-11-27. }
   - id: blablacar_bus
     name: BlaBlaCar Bus
     modes: [bus]
     strategy: playwright
-    state: disabled_needs_authorization
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized bus distributor feed or express browser-rendering permission
-    access_note: Bus inventory only; rideshare is out of scope.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public bus search-page HTML
+    access_note: Bus-only public-page parser is implemented and fixture-tested; rideshare is excluded. Keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [blablacar.com]
-    route_discovery: { method: authorized_bus_feed, status: blocked_access, provenance: No feed or automation permission recorded. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: itabus
     name: Itabus
     modes: [bus]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized retailer or machine-readable feed
-    access_note: Authorized retailer or machine-readable feed required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public search-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [itabus.it]
-    route_discovery: { method: authorized_provider_feed, status: blocked_access, provenance: No retailer route feed configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: alsa
     name: Alsa
     modes: [bus]
     strategy: playwright
-    state: disabled_needs_authorization
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized partner feed or express browser-rendering permission
-    access_note: Authorized partner feed required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public search-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [alsa.com]
-    route_discovery: { method: authorized_partner_feed, status: blocked_access, provenance: No feed or automation permission recorded. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: ouigo
     name: OUIGO
     modes: [train]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized SNCF or OUIGO distribution feed
-    access_note: Live authorized distribution feed required; open-data ranges are insufficient.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public search-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [ouigo.com]
-    route_discovery: { method: authorized_distribution_feed, status: blocked_access, provenance: Open schedule data is insufficient for live fare routes. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: sncf_connect
     name: SNCF Connect
     modes: [train]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: authorized distribution feed
-    access_note: Public schedule APIs do not provide the required live fares.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public search-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; current challenge behavior is not bypassed. Keep disabled until ordinary live markup, aliases, and coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [sncf-connect.com]
-    route_discovery: { method: authorized_distribution_feed, status: blocked_access, provenance: Public schedule data is not fare inventory. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: Public access currently presents a challenge; no bypass or verified coverage is configured. }
   - id: trenitalia_france
     name: Trenitalia France
     modes: [train]
-    strategy: http_structured
-    state: disabled_needs_credentials
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: official partner API
-    access_note: Official partner API approval required.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public search-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
-    booking_hosts: [trenitalia.com, trenitalia.fr]
-    route_discovery: { method: partner_route_feed, status: blocked_access, provenance: Partner credentials not configured. }
+    booking_hosts: [trenitalia.com, trenitalia.fr, lefrecce.it]
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: eurostar
     name: Eurostar
     modes: [train]
-    strategy: http_structured
-    state: disabled_needs_authorization
+    strategy: playwright
+    state: disabled
     enabled: false
     kill_switch: true
-    config_version: "2026-11-20"
-    access_basis: licensed feed, GDS, or authorized distributor
-    access_note: Licensed feed, GDS, or distributor required; London is excluded.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unknown_until_authorized }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unknown_until_authorized }
+    config_version: "2026-11-21"
+    access_basis: ordinary public search-page HTML
+    access_note: Public-page parser is implemented and fixture-tested; London is excluded. A read-only ordinary-page check on 2026-11-21 generated a one-adult Paris-Amsterdam search but the public results page rendered a generic error and no exact fare; keep disabled.
+    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
+    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [eurostar.com]
-    route_discovery: { method: licensed_distribution_feed, status: blocked_access, provenance: No licensed Schengen-pair route inventory configured. }
+    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified Schengen-pair public-page route coverage is configured. }

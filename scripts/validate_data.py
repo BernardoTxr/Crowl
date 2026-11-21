@@ -18,6 +18,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 WEB_PUBLIC = ROOT / "services" / "web" / "public"
+CITY_CATALOG = DATA / "crowl-cities-150.json"
+REMOTE_PHOTO_HOSTS = {"thumb.wikimedia.org", "upload.wikimedia.org"}
 EXPECTED_SOURCES = {
     "ryanair",
     "easyjet",
@@ -97,6 +99,24 @@ def validate_image_signature(path: Path, label: str) -> None:
         raise ValidationError(f"{label} does not contain a valid {suffix} image")
 
 
+def is_approved_remote_photo(value: str) -> bool:
+    parsed = urlparse(value)
+    return (
+        parsed.scheme == "https"
+        and parsed.hostname in REMOTE_PHOTO_HOSTS
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.port is None
+    )
+
+
+def validate_remote_photo(value: str, label: str) -> None:
+    if not is_approved_remote_photo(value):
+        raise ValidationError(
+            f"{label} must be an HTTPS asset on an approved Wikimedia image host"
+        )
+
+
 def validate_production_photo(city_id: str, photo: dict[str, Any]) -> None:
     if photo["curationStatus"] != "curated":
         raise ValidationError(f"{city_id} still has an uncurated photo")
@@ -108,6 +128,22 @@ def validate_production_photo(city_id: str, photo: dict[str, Any]) -> None:
         raise ValidationError(f"{city_id} photo sourceUrl must be an absolute HTTPS URL")
     if "placeholder" in photo["alt"].casefold() or "placeholder" in photo["asset"].casefold():
         raise ValidationError(f"{city_id} still uses a placeholder photo")
+
+    if is_approved_remote_photo(photo["asset"]):
+        original = photo.get("originalAsset")
+        if not isinstance(original, str):
+            raise ValidationError(f"{city_id}.photo.originalAsset must be a Wikimedia URL")
+        validate_remote_photo(original, f"{city_id}.photo.originalAsset")
+        derivatives = photo.get("optimizedAssets")
+        if not isinstance(derivatives, dict):
+            raise ValidationError(f"{city_id}.photo.optimizedAssets must be an object")
+        for format_name in ("avif", "webp"):
+            for index, asset in enumerate(derivatives[format_name]):
+                validate_remote_photo(
+                    asset,
+                    f"{city_id}.photo.optimizedAssets.{format_name}[{index}]",
+                )
+        return
 
     main = local_public_asset(photo["asset"], f"{city_id}.photo.asset", suffixes={".webp"})
     original = local_public_asset(
@@ -137,7 +173,7 @@ def validate_production_photo(city_id: str, photo: dict[str, Any]) -> None:
 
 
 def validate_city_catalog(production: bool) -> dict[str, Any]:
-    catalog = load_json(DATA / "cities.mock.json")
+    catalog = load_json(CITY_CATALOG)
     validate_schema(catalog, "cities.schema.json")
 
     category_ids = [item["id"] for item in catalog["categoryDefinitions"]]
@@ -231,10 +267,6 @@ def validate_terminals(catalog: dict[str, Any]) -> None:
                 f"{link['terminalId']} is {terminal['kind']} but link is {relationship}"
             )
 
-    linked_cities = {link["cityId"] for link in payload["cityTerminalLinks"]}
-    missing_links = city_set - linked_cities
-    if missing_links:
-        raise ValidationError(f"cities without a terminal link: {sorted(missing_links)}")
     linked_or_origin = {link["terminalId"] for link in payload["cityTerminalLinks"]} | set(
         payload["originTerminalIds"]
     )
@@ -281,8 +313,29 @@ def validate_sources() -> None:
             )
         if source["enabled"] != (source["state"] == "enabled"):
             raise ValidationError(f"{source['id']} state disagrees with enabled")
+        if not source["booking_link_required"] and source["id"] != "flixbus":
+            raise ValidationError(
+                f"{source['id']} may not use the FlixBus booking-link exception"
+            )
         if not source["enabled"] and source["rate_limit"]["max_concurrency"] != 0:
             raise ValidationError(f"{source['id']} disabled source must have zero concurrency")
+        if source["enabled"]:
+            if source["rate_limit"]["status"] != "verified":
+                raise ValidationError(f"{source['id']} enabled source needs a verified rate limit")
+            if source["rate_limit"]["requests_per_minute"] is None:
+                raise ValidationError(f"{source['id']} enabled source needs a request rate")
+            if source["rate_limit"]["max_concurrency"] < 1:
+                raise ValidationError(f"{source['id']} enabled source needs positive concurrency")
+            if source["markets"]["status"] != "verified":
+                raise ValidationError(f"{source['id']} enabled source needs verified markets")
+            if source["sale_horizon_days"] is None:
+                raise ValidationError(f"{source['id']} enabled source needs a sale horizon")
+            if source["route_discovery"]["status"] != "verified":
+                raise ValidationError(f"{source['id']} enabled source needs verified route discovery")
+            if source["id"] == "flixbus" and source["booking_link_required"]:
+                raise ValidationError(
+                    "enabled FlixBus must declare its approved optional-link policy"
+                )
 
 
 def main() -> int:

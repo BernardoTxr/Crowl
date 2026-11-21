@@ -5,10 +5,10 @@ import pytest
 from app.config import APISettings
 
 
-def test_fixture_seed_defaults_on_for_sqlite_and_off_for_postgres(monkeypatch) -> None:
+def test_fixture_seed_defaults_off_and_requires_explicit_opt_in(monkeypatch) -> None:
     monkeypatch.delenv("CROWL_SEED_FIXTURES", raising=False)
     monkeypatch.setenv("DATABASE_URL", "sqlite:///./test.db")
-    assert APISettings.from_env().seed_fixtures is True
+    assert APISettings.from_env().seed_fixtures is False
 
     monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@postgres/crowl")
     assert APISettings.from_env().seed_fixtures is False

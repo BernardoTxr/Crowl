@@ -12,6 +12,7 @@ license = { text = "Proprietary" }
 authors = [{ name = "Crowl contributors" }]
 dependencies = [
   "crowl-core==0.1.0",
+  "playwright==1.65.2",
   "psycopg[binary]==3.3.9",
   "SQLAlchemy==2.0.58",
 ]

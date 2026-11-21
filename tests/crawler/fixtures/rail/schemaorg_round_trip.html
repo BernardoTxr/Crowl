@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sanitized rail search result fixture</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Offer",
+        "identifier": "__SOURCE__-fare-20270108",
+        "name": "Standard",
+        "availability": "https://schema.org/InStock",
+        "eligibleCustomerType": "Adult",
+        "eligibleQuantity": {"@type": "QuantitativeValue", "value": 1},
+        "requiresPaidMembership": false,
+        "url": "https://www.__HOST__/booking/result?journey=public",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "78.40",
+          "priceCurrency": "EUR",
+          "valueAddedTaxIncluded": true,
+          "description": "All mandatory taxes and fees included."
+        },
+        "itemOffered": [
+          {
+            "@type": "TrainTrip",
+            "trainNumber": "TR100",
+            "provider": {"@type": "Organization", "name": "__OPERATOR__"},
+            "departureStation": {"@type": "TrainStation", "name": "Paris Gare du Nord"},
+            "arrivalStation": {"@type": "TrainStation", "name": "Amsterdam Centraal"},
+            "departureTime": "2027-01-08T20:00:00+01:00",
+            "arrivalTime": "2027-01-08T23:30:00+01:00"
+          },
+          {
+            "@type": "TrainTrip",
+            "trainNumber": "TR101",
+            "provider": {"@type": "Organization", "name": "__OPERATOR__"},
+            "departureStation": {"@type": "TrainStation", "name": "Amsterdam Centraal"},
+            "arrivalStation": {"@type": "TrainStation", "name": "Paris Gare du Nord"},
+            "departureTime": "2027-01-10T20:00:00+01:00",
+            "arrivalTime": "2027-01-10T23:30:00+01:00"
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body><main><h1>Choose your exact journey</h1></main></body>
+</html>

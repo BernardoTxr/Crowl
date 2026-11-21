@@ -1,13 +1,3 @@
-import {
-  makeMockHistory,
-  makeMockJourney,
-  makeMockMapFares,
-  makeMockWeekends,
-  mockBatch,
-  mockCatalogMeta,
-  mockCities,
-  mockExtractors,
-} from './mock';
 import type {
   ApiResult,
   Availability,
@@ -29,6 +19,7 @@ import type {
   MapFare,
   Mode,
   Photo,
+  PriceCompleteness,
   PriceHistory,
   TravelMode,
   TypicalDuration,
@@ -37,7 +28,6 @@ import type {
 import { asNumber, asString } from '../utils';
 
 const API_BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api/v1').replace(/\/$/, '');
-const USE_MOCK_FALLBACK = (import.meta.env.VITE_ENABLE_MOCK_FALLBACK as string | undefined) !== 'false';
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -78,6 +68,8 @@ const normalizeCoverage = (value: unknown): Coverage => {
 };
 
 const normalizeFreshness = (value: unknown): Freshness => value === 'never_observed' ? 'never_observed' : value === 'stale' ? 'stale' : 'fresh';
+const normalizePriceCompleteness = (value: unknown): PriceCompleteness =>
+  value === 'estimated' ? 'estimated' : value === 'unknown' ? 'unknown' : 'complete';
 
 const unwrapItems = (payload: unknown): unknown[] => {
   if (Array.isArray(payload)) return payload;
@@ -109,9 +101,10 @@ const request = async (path: string): Promise<FetchResult> => {
   }
 };
 
-const useFallback = <T>(fallback: T): ApiResult<T> => {
-  if (!USE_MOCK_FALLBACK) throw new Error('Crowl API is unavailable and mock fallback is disabled.');
-  return { data: fallback, isMock: true, isSynthetic: false };
+const requireResponse = (response: FetchResult, resource: string) => {
+  if (response.ok) return;
+  const suffix = response.status ? ` (HTTP ${response.status})` : '';
+  throw new Error(`Crowl could not load ${resource}${suffix}.`);
 };
 
 const normalizePhoto = (value: unknown, cityName: string): Photo => {
@@ -201,8 +194,11 @@ const normalizeCatalogMeta = (value: unknown): CatalogMeta => {
   const item = record(value);
   const categories = first(item.category_definitions, item.categoryDefinitions);
   const attributes = first(item.attribute_definitions, item.attributeDefinitions);
+  if (first(item.catalog_variant, item.catalogVariant) !== 'final') {
+    throw new Error('Crowl received an unsupported city catalog.');
+  }
   return {
-    catalogVariant: first(item.catalog_variant, item.catalogVariant) === 'final' ? 'final' : 'mock',
+    catalogVariant: 'final',
     categoryDefinitions: (Array.isArray(categories) ? categories : [])
       .map(normalizeDefinition)
       .filter((definition): definition is CatalogDefinition => definition !== null),
@@ -222,31 +218,35 @@ const normalizeCity = (value: unknown): City | null => {
   const coordinates = record(first(cityValue.coordinates, cityValue.coordinate));
   const status = record(cityValue.status);
   const categories = normalizeCategories(cityValue.categories);
-  const defaultCity = mockCities.find((city) => city.slug === slug);
+  const countryCode = stringOrNull(first(country.code, cityValue.country_code));
+  const countryName = stringOrNull(first(country.name, cityValue.country_name));
+  const timezone = stringOrNull(cityValue.timezone);
+  const latitude = first(coordinates.lat, coordinates.latitude, cityValue.latitude);
+  const longitude = first(coordinates.lon, coordinates.lng, coordinates.longitude, cityValue.longitude);
+  if (!countryCode || !countryName || !timezone || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
+  const attributes = normalizeAttributes(cityValue.attributes);
   return {
     id: asString(first(cityValue.id, cityValue.city_id), slug),
     slug,
     name,
     country: {
-      code: asString(first(country.code, cityValue.country_code), defaultCity?.country.code ?? ''),
-      name: asString(first(country.name, cityValue.country_name), defaultCity?.country.name ?? ''),
+      code: countryCode,
+      name: countryName,
     },
-    timezone: asString(cityValue.timezone, defaultCity?.timezone ?? 'Europe/Paris'),
+    timezone,
     coordinates: {
-      lat: asNumber(first(coordinates.lat, coordinates.latitude, cityValue.latitude), defaultCity?.coordinates.lat ?? 48.8),
-      lon: asNumber(first(coordinates.lon, coordinates.lng, coordinates.longitude, cityValue.longitude), defaultCity?.coordinates.lon ?? 2.3),
+      lat: latitude,
+      lon: longitude,
     },
     status: {
-      visited: bool(first(status.visited, cityValue.visited), defaultCity?.status.visited ?? false),
-      wishlist: bool(first(status.wishlist, cityValue.wishlist), defaultCity?.status.wishlist ?? false),
+      visited: bool(first(status.visited, cityValue.visited)),
+      wishlist: bool(first(status.wishlist, cityValue.wishlist)),
     },
-    categories: categories.ids.length ? categories.ids : defaultCity?.categories ?? [],
+    categories: categories.ids,
     categoryLabels: categories.labels,
-    summary: asString(cityValue.summary, defaultCity?.summary ?? ''),
-    attributes: Object.keys(normalizeAttributes(cityValue.attributes)).length
-      ? normalizeAttributes(cityValue.attributes)
-      : defaultCity?.attributes ?? {},
-    photo: normalizePhoto(first(item.photo, cityValue.photo, defaultCity?.photo), name),
+    summary: asString(cityValue.summary),
+    attributes,
+    photo: normalizePhoto(first(item.photo, cityValue.photo), name),
     typicalDurations: normalizeTypicalDurations(first(item.typical_durations, item.typicalDurations, cityValue.typical_durations)),
   };
 };
@@ -272,34 +272,35 @@ const normalizeWeekend = (value: unknown): Weekend | null => {
 export const api = {
   async getMeta(): Promise<ApiResult<CatalogMeta>> {
     const response = await request('/meta');
-    return response.ok
-      ? { data: normalizeCatalogMeta(response.payload), isMock: false }
-      : useFallback(mockCatalogMeta);
+    requireResponse(response, 'the catalog metadata');
+    return { data: normalizeCatalogMeta(response.payload) };
   },
 
   async getWeekends(): Promise<ApiResult<Weekend[]>> {
     const response = await request('/weekends');
+    requireResponse(response, 'the weekend calendar');
     const items = unwrapItems(response.payload).map(normalizeWeekend).filter((item): item is Weekend => item !== null);
-    return response.ok ? { data: items, isMock: false } : useFallback(makeMockWeekends());
+    return { data: items };
   },
 
   async getCities(): Promise<ApiResult<City[]>> {
     const response = await request('/cities');
+    requireResponse(response, 'the city catalog');
     const items = unwrapItems(response.payload).map(normalizeCity).filter((item): item is City => item !== null);
-    return response.ok ? { data: items, isMock: false } : useFallback(mockCities);
+    return { data: items };
   },
 
   async getCity(slug: string): Promise<ApiResult<City | null>> {
     const response = await request(`/cities/${encodeURIComponent(slug)}`);
-    const item = normalizeCity(response.payload);
-    if (response.ok) return { data: item, isMock: false };
-    if (response.status === 404) return { data: null, isMock: false };
-    return useFallback(mockCities.find((city) => city.slug === slug) ?? null);
+    if (response.status === 404) return { data: null };
+    requireResponse(response, `${slug}'s city profile`);
+    return { data: normalizeCity(response.payload) };
   },
 
   async getMapFares(weekend: string, mode: Mode): Promise<ApiResult<MapFare[]>> {
     const params = new URLSearchParams({ weekend, mode });
     const response = await request(`/map-prices?${params}`);
+    requireResponse(response, 'map fares');
     const items: MapFare[] = unwrapItems(response.payload).flatMap((entry) => {
       const item = record(entry);
       const city = record(item.city);
@@ -328,16 +329,20 @@ export const api = {
         returnDestinationTerminal: nestedString(first(item.return_destination_terminal, item.returnDestinationTerminal), 'name', 'label') || null,
         ruleVersionId: typeof ruleVersionId === 'number' ? ruleVersionId : null,
         profileId: typeof profileId === 'number' ? profileId : null,
+        priceCompleteness: priceCents === null ? null : normalizePriceCompleteness(first(item.price_completeness, item.priceCompleteness)),
+        mandatoryFeesIncluded: priceCents === null
+          ? null
+          : bool(first(item.mandatory_fees_included, item.mandatoryFeesIncluded), true),
+        fareDisclosure: stringOrNull(first(item.fare_disclosure, item.fareDisclosure)),
       }];
     });
-    return response.ok
-      ? { data: items, isMock: false, isSynthetic: items.some((item) => item.isSynthetic) }
-      : useFallback(makeMockMapFares(weekend, mode));
+    return { data: items, isSynthetic: items.some((item) => item.isSynthetic) };
   },
 
   async getPriceHistory(slug: string, mode: Mode): Promise<ApiResult<PriceHistory>> {
     const params = new URLSearchParams({ mode });
     const response = await request(`/cities/${encodeURIComponent(slug)}/price-history?${params}`);
+    requireResponse(response, `${slug}'s price history`);
     const payload = record(response.payload);
     const cells: HeatmapCell[] = unwrapItems(first(payload.cells, response.payload)).flatMap((entry) => {
       const item = record(entry);
@@ -369,36 +374,35 @@ export const api = {
         revisionId: asString(first(item.revision_id, item.revisionId)) || null,
         ruleVersionId: typeof ruleVersionId === 'number' ? ruleVersionId : null,
         profileId: typeof profileId === 'number' ? profileId : null,
+        priceCompleteness: priceCents === null ? null : normalizePriceCompleteness(first(item.price_completeness, item.priceCompleteness)),
+        mandatoryFeesIncluded: priceCents === null
+          ? null
+          : bool(first(item.mandatory_fees_included, item.mandatoryFeesIncluded), true),
+        fareDisclosure: stringOrNull(first(item.fare_disclosure, item.fareDisclosure)),
       }];
     });
     const scale = record(payload.scale);
     const p10 = first(scale.p10_eur_cents, scale.p10_cents, payload.p10_eur_cents);
     const p90 = first(scale.p90_eur_cents, scale.p90_cents, payload.p90_eur_cents);
-    if (response.ok) {
-      return {
-        data: { cells, scale: { p10Cents: asNumber(p10, 5_000), p90Cents: asNumber(p90, 25_000) } },
-        isMock: false,
-        isSynthetic: cells.some((cell) => cell.isSynthetic),
-      };
-    }
-    const city = mockCities.find((item) => item.slug === slug);
-    return useFallback(city ? makeMockHistory(city, mode) : { cells: [], scale: { p10Cents: 5_000, p90Cents: 25_000 } });
+    return {
+      data: { cells, scale: { p10Cents: asNumber(p10, 5_000), p90Cents: asNumber(p90, 25_000) } },
+      isSynthetic: cells.some((cell) => cell.isSynthetic),
+    };
   },
 
   async getJourney(slug: string, weekend: string, mode: Mode, revisionId?: string | null): Promise<ApiResult<Journey | null>> {
     const params = new URLSearchParams({ weekend, mode });
     if (revisionId) params.set('revision_id', revisionId);
     const response = await request(`/cities/${encodeURIComponent(slug)}/journeys?${params}`);
+    requireResponse(response, `${slug}'s journey details`);
     const payload = record(response.payload);
     const rawJourney = unwrapItems(response.payload)[0];
     const journey = normalizeJourney(rawJourney, payload);
-    if (response.ok) return journey ? {
+    return journey ? {
         data: journey,
-        isMock: false,
         isSynthetic: journey.isSynthetic,
       } : {
         data: null,
-        isMock: false,
         isSynthetic: false,
         emptyState: {
           availability: normalizeAvailability(payload.availability),
@@ -410,29 +414,27 @@ export const api = {
           currentDiagnostic: safeDiagnostic(first(payload.current_diagnostic, payload.currentDiagnostic)),
         },
       };
-    const city = mockCities.find((item) => item.slug === slug);
-    return useFallback(city ? makeMockJourney(city, weekend, mode) : null);
   },
 
   async getLatestBatch(): Promise<ApiResult<Batch | null>> {
     const response = await request('/batches/latest');
+    requireResponse(response, 'the latest collection batch');
     const payload = record(response.payload);
     const batchValue = payload.batch ?? response.payload;
-    if (response.ok && batchValue === null) return { data: null, isMock: false };
+    if (batchValue === null) return { data: null };
     const batch = normalizeBatch(batchValue, payload);
-    return response.ok && batch
-      ? {
-          data: batch,
-          isMock: false,
-          isSynthetic: /synthetic|fixture/i.test(batch.diagnostic ?? ''),
-        }
-      : useFallback(mockBatch);
+    if (!batch) throw new Error('Crowl received an invalid collection batch.');
+    return {
+      data: batch,
+      isSynthetic: /synthetic|fixture/i.test(batch.diagnostic ?? ''),
+    };
   },
 
   async getExtractors(): Promise<ApiResult<Extractor[]>> {
     const response = await request('/extractors');
+    requireResponse(response, 'extractor status');
     const extractors = unwrapItems(response.payload).map(normalizeExtractor).filter((item): item is Extractor => item !== null);
-    return response.ok ? { data: extractors, isMock: false } : useFallback(mockExtractors);
+    return { data: extractors };
   },
 };
 
@@ -475,6 +477,7 @@ const normalizeBooking = (value: unknown, index: number): BookingComponent | nul
     bookingUrl: stringOrNull(first(item.booking_url, item.bookingUrl)),
     fareName: stringOrNull(first(item.fare_name, item.fareName)),
     studentFare: bool(first(item.student_fare, item.studentFare, item.student_used, item.student_fare_used)),
+    priceCompleteness: normalizePriceCompleteness(first(item.price_completeness, item.priceCompleteness)),
     mandatoryFeesIncluded: bool(first(item.mandatory_fees_included, item.mandatoryFeesIncluded)),
     passengerAge: asNumber(first(item.passenger_age, item.passengerAge), 0),
     passengerStudent: bool(first(item.passenger_student, item.passengerStudent)),
@@ -482,6 +485,7 @@ const normalizeBooking = (value: unknown, index: number): BookingComponent | nul
     bookableAtObservation: bool(first(item.bookable_at_observation, item.bookableAtObservation)),
     isTeaser: bool(first(item.is_teaser, item.isTeaser)),
     expiresAt: stringOrNull(first(item.expires_at, item.expiresAt)),
+    fareDisclosure: stringOrNull(first(item.fare_disclosure, item.fareDisclosure)),
   };
 };
 
@@ -515,6 +519,9 @@ const normalizeJourney = (value: unknown, envelope: UnknownRecord): Journey | nu
     freshness: normalizeFreshness(first(item.freshness, envelope.freshness)),
     availability: normalizeAvailability(first(envelope.availability, item.availability), true),
     live: bool(first(item.live, item.is_live), !bool(item.historical)),
+    priceCompleteness: normalizePriceCompleteness(first(item.price_completeness, item.priceCompleteness)),
+    mandatoryFeesIncluded: bool(first(item.mandatory_fees_included, item.mandatoryFeesIncluded), true),
+    fareDisclosure: stringOrNull(first(item.fare_disclosure, item.fareDisclosure)),
     legs,
     bookings,
   };

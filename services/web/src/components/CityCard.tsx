@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { City, MapFare, Mode } from '../types';
-import { availabilityLabel, categoryLabel, formatCurrency, joinClassNames, modeLabel, priceBand } from '../utils';
+import { FLIXBUS_DISPLAYED_FARE_DISCLOSURE, availabilityLabel, categoryLabel, formatCurrency, joinClassNames, modeLabel, priceBand } from '../utils';
 
 interface CityCardProps {
   city: City;
@@ -22,16 +22,21 @@ export const CityCard = ({ city, fare, weekend, mode, categoryLabels = {} }: Cit
           <p className="eyebrow">{city.country.name}</p>
           <h3><Link to={`/cities/${city.slug}${query.size ? `?${query}` : ''}`}>{city.name}</Link></h3>
         </div>
-        <div className={joinClassNames('city-card-price', fare && priceBand(fare.priceCents))}>
-          {weekend
-            ? <><strong>{formatCurrency(fare?.priceCents)}</strong><span>{fare?.winningMode ? modeLabel(fare.winningMode) : availabilityLabel[fare?.availability ?? 'unknown_due_failure']}</span></>
-            : <><strong>{city.status.visited ? 'Visited' : 'Wishlist'}</strong><span>{city.status.visited ? 'Saved memory' : 'Still to discover'}</span></>}
-        </div>
+        {weekend && (
+          <div className={joinClassNames('city-card-price', fare && priceBand(fare.priceCents))}>
+            <strong>{formatCurrency(fare?.priceCents)}</strong>
+            <span>{fare?.winningMode ? modeLabel(fare.winningMode) : availabilityLabel[fare?.availability ?? 'unknown_due_failure']}</span>
+            {fare?.fareDisclosure === FLIXBUS_DISPLAYED_FARE_DISCLOSURE && (
+              <small className="fare-disclosure">{FLIXBUS_DISPLAYED_FARE_DISCLOSURE}</small>
+            )}
+          </div>
+        )}
       </div>
       <p>{city.summary}</p>
       <div className="chip-row" aria-label={`${city.name} tags`}>
-        {city.status.visited && <span className="chip chip-visited">✓ Visited</span>}
-        {city.status.wishlist && <span className="chip chip-wishlist">☆ Wishlist</span>}
+        {city.status.visited
+          ? <span className="chip chip-visited">✓ Visited</span>
+          : city.status.wishlist && <span className="chip chip-wishlist">☆ Wishlist</span>}
         {city.categories.slice(0, 3).map((category) => <span className="chip" key={category}>{categoryLabels[category] ?? categoryLabel(category)}</span>)}
       </div>
       {fare?.originTerminal && fare.destinationTerminal && (

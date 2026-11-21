@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import type { HeatmapCell, Journey, JourneyEmptyState } from '../types';
-import { availabilityLabel, formatCurrency, formatDateTime, formatDuration, modeLabel } from '../utils';
+import { FLIXBUS_DISPLAYED_FARE_DISCLOSURE, availabilityLabel, formatCurrency, formatDateTime, formatDuration, modeLabel } from '../utils';
 import { AvailabilityPill, CoveragePill, FreshnessPill, StatusPill } from './StatusPill';
 
 interface ItineraryPanelProps {
@@ -91,6 +91,7 @@ export const ItineraryPanel = ({ journey, emptyState, historicalCell, onBackToLa
         <div>
           <p className="eyebrow">Best observed round trip</p>
           <h2 id="itinerary-title">{formatCurrency(journey.totalPriceCents, journey.currency)}</h2>
+          {journey.fareDisclosure === FLIXBUS_DISPLAYED_FARE_DISCLOSURE && <p className="fare-disclosure">{FLIXBUS_DISPLAYED_FARE_DISCLOSURE}</p>}
           <p>{modeLabel(journey.mode)} · one traveler</p>
         </div>
         <div className="pill-stack">
@@ -157,6 +158,7 @@ export const ItineraryPanel = ({ journey, emptyState, historicalCell, onBackToLa
                 </span>
               </div>
               <strong>{formatCurrency(booking.priceCents, booking.currency)}</strong>
+              {booking.fareDisclosure === FLIXBUS_DISPLAYED_FARE_DISCLOSURE && <small className="fare-disclosure">{FLIXBUS_DISPLAYED_FARE_DISCLOSURE}</small>}
               {canOpenBooking
                 ? <a className="outline-button" href={booking.bookingUrl ?? undefined} target="_blank" rel="noreferrer">Check with seller</a>
                 : <span className="booking-link-unavailable">{unavailableReason}</span>}

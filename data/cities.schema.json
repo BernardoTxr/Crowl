@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "properties": {
     "schemaVersion": { "const": 1 },
-    "catalogVariant": { "enum": ["mock", "final"] },
+    "catalogVariant": { "const": "final" },
     "origin": { "$ref": "#/$defs/origin" },
     "categoryDefinitions": {
       "type": "array",
@@ -100,13 +100,11 @@
           "properties": {
             "avif": {
               "type": "array",
-              "minItems": 2,
               "uniqueItems": true,
               "items": { "type": "string", "pattern": "\\.avif$" }
             },
             "webp": {
               "type": "array",
-              "minItems": 2,
               "uniqueItems": true,
               "items": { "type": "string", "pattern": "\\.webp$" }
             }

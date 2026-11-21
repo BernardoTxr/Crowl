@@ -42,22 +42,24 @@ export const Layout = () => {
       <main id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
-      <footer className="site-footer">
-        <div>
-          <strong>Crowl</strong> monitors weekend fares from Paris to the Schengen Area.
-        </div>
-        <div>Prices are observations, not guarantees. Always recheck with the seller.</div>
-      </footer>
+      {location.pathname !== '/' && (
+        <footer className="site-footer">
+          <div>
+            <strong>Crowl</strong> monitors weekend fares from Paris to the Schengen Area.
+          </div>
+          <div>Prices are observations, not guarantees. Always recheck with the seller.</div>
+        </footer>
+      )}
     </div>
   );
 };
 
-export const DemoNotice = ({ compact = false, kind = 'fallback' }: { compact?: boolean; kind?: 'fallback' | 'synthetic' | 'catalog' | 'catalog-synthetic' }) => (
+export const DemoNotice = ({ compact = false }: { compact?: boolean }) => (
   <div className={joinClassNames('demo-notice', compact && 'is-compact')} role="status">
     <span aria-hidden="true">✦</span>
     <span>
-      <strong>{kind === 'catalog-synthetic' ? 'Mock catalog + synthetic fares' : kind === 'synthetic' ? 'Contains synthetic seed data' : kind === 'catalog' ? 'Mock city catalog' : 'Preview data'}</strong>
-      {compact ? '' : kind === 'catalog-synthetic' ? ' — city facts, photos, journey times, and generated prices remain examples until the final JSON and live extractors arrive.' : kind === 'synthetic' ? ' — generated development fares are clearly marked and are not live prices.' : kind === 'catalog' ? ' — city facts, photos, and journey-time samples remain examples until the final JSON arrives.' : ' — the API is unavailable, so Crowl is showing a realistic sample.'}
+      <strong>Contains synthetic seed data</strong>
+      {compact ? '' : ' — generated development fares are clearly marked and are not live prices.'}
     </span>
   </div>
 );

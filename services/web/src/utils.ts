@@ -1,15 +1,16 @@
 import type { Availability, BatchStatus, Coverage, Freshness, Mode, TravelMode, Weekend } from './types';
 
+export const FLIXBUS_DISPLAYED_FARE_DISCLOSURE = 'Displayed fare — service fees may apply';
+
 export const MODES: Array<{ value: Mode; label: string; icon: string }> = [
   { value: 'all', label: 'Any', icon: '◎' },
   { value: 'flight', label: 'Flight', icon: '✈' },
   { value: 'train', label: 'Train', icon: '▰' },
   { value: 'bus', label: 'Bus', icon: '▣' },
-  { value: 'mixed', label: 'Mixed', icon: '⌁' },
 ];
 
 export const modeLabel = (mode: TravelMode | null | undefined) =>
-  MODES.find((item) => item.value === mode)?.label ?? 'Unknown';
+  mode === 'mixed' ? 'Mixed' : MODES.find((item) => item.value === mode)?.label ?? 'Unknown';
 
 export const formatCurrency = (cents: number | null | undefined, currency = 'EUR') => {
   if (cents === null || cents === undefined) return '—';
@@ -87,7 +88,7 @@ export const priceBand = (priceCents: number | null) => {
 };
 
 export const safeMode = (value: string | null): Mode =>
-  value === 'flight' || value === 'train' || value === 'bus' || value === 'mixed' ? value : 'all';
+  value === 'flight' || value === 'train' || value === 'bus' ? value : 'all';
 
 export const nextNonpastWeekend = (weekends: Weekend[], now = Date.now()) => {
   const ordered = [...weekends].sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));

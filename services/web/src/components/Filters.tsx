@@ -8,6 +8,7 @@ interface FiltersProps {
   onWeekendChange: (weekend: string) => void;
   onModeChange: (mode: Mode) => void;
   allowCollection?: boolean;
+  compact?: boolean;
 }
 
 export const TravelFilters = ({
@@ -17,11 +18,12 @@ export const TravelFilters = ({
   onWeekendChange,
   onModeChange,
   allowCollection = false,
+  compact = false,
 }: FiltersProps) => {
   const activeWeekend = weekends.find((item) => item.friday === weekend);
 
   return (
-    <section className="filter-panel" aria-label="Trip filters">
+    <section className={joinClassNames('filter-panel', compact && 'is-compact')} aria-label="Trip filters">
       <div className="filter-field">
         <label htmlFor="weekend-select">Weekend</label>
         <div className="select-wrap">
@@ -36,11 +38,13 @@ export const TravelFilters = ({
             ))}
           </select>
         </div>
-        <span className="field-help">
-          {activeWeekend
-            ? `Friday after 19:00 → Monday by 07:00 · minimum 12h stay`
-            : 'Choose a weekend to reveal observed round-trip prices.'}
-        </span>
+        {!compact && (
+          <span className="field-help">
+            {activeWeekend
+              ? 'Friday after 19:00 → Monday by 07:00 · minimum 12h stay'
+              : 'Choose a weekend to reveal observed round-trip prices.'}
+          </span>
+        )}
       </div>
       <fieldset className="mode-field">
         <legend>Transport</legend>

@@ -71,7 +71,7 @@ class ConvertedMoney:
 @dataclass(frozen=True, slots=True)
 class TrustedBookingComponent:
     component: BookingComponent
-    booking_url: str
+    booking_url: str | None
     eur_amount_cents: int
     fx_rate: float
     fx_rate_date: date
@@ -184,9 +184,13 @@ class OfferTrustPolicy:
         offer: NormalizedOffer,
         passenger: PassengerProfile,
     ) -> TrustedOffer:
-        if offer.price_completeness is not PriceCompleteness.COMPLETE:
+        is_flixbus_displayed_fare = _is_flixbus_displayed_fare(offer)
+        if (
+            offer.price_completeness is not PriceCompleteness.COMPLETE
+            and not is_flixbus_displayed_fare
+        ):
             raise OfferRejected("incomplete_price", "only complete prices may be published")
-        if not offer.mandatory_fees_included:
+        if not offer.mandatory_fees_included and not is_flixbus_displayed_fare:
             raise OfferRejected("missing_mandatory_fees", "mandatory fees are not complete")
         if not offer.passenger_eligibility_confirmed:
             raise OfferRejected("unconfirmed_eligibility", "passenger eligibility is unconfirmed")
@@ -210,14 +214,35 @@ class OfferTrustPolicy:
         )
         bookings: list[TrustedBookingComponent] = []
         for component in offer.booking_components:
-            self._validate_component(component, passenger)
-            hosts = self.booking_hosts.get(component.source_slug)
-            if not hosts:
+            is_flixbus_displayed_component = (
+                is_flixbus_displayed_fare
+                and _is_flixbus_displayed_fare_component(component)
+            )
+            if is_flixbus_displayed_fare and not is_flixbus_displayed_component:
                 raise OfferRejected(
-                    "missing_booking_host_policy",
-                    f"no booking host policy exists for {component.source_slug}",
+                    "displayed_fare_component_mismatch",
+                    "every FlixBus displayed-fare booking component must carry "
+                    "the same estimated-price evidence",
                 )
-            booking_url = sanitize_booking_url(component.booking_url, hosts)
+            self._validate_component(
+                component,
+                passenger,
+                allow_flixbus_displayed_fare=is_flixbus_displayed_fare,
+            )
+            booking_url = None
+            if component.booking_url is not None:
+                hosts = self.booking_hosts.get(component.source_slug)
+                if not hosts:
+                    raise OfferRejected(
+                        "missing_booking_host_policy",
+                        f"no booking host policy exists for {component.source_slug}",
+                    )
+                booking_url = sanitize_booking_url(component.booking_url, hosts)
+            elif not is_flixbus_displayed_component:
+                raise OfferRejected(
+                    "missing_booking_url",
+                    "a published booking component needs a booking URL",
+                )
             converted = self.fx_converter.convert(
                 session,
                 amount_minor=component.amount_minor,
@@ -251,8 +276,19 @@ class OfferTrustPolicy:
     def _validate_component(
         component: BookingComponent,
         passenger: PassengerProfile,
+        *,
+        allow_flixbus_displayed_fare: bool,
     ) -> None:
-        if not component.mandatory_fees_included:
+        is_flixbus_component = (
+            allow_flixbus_displayed_fare
+            and _is_flixbus_displayed_fare_component(component)
+        )
+        if component.price_completeness is not PriceCompleteness.COMPLETE and not is_flixbus_component:
+            raise OfferRejected(
+                "incomplete_component_price",
+                "only FlixBus displayed-card components may be estimated",
+            )
+        if not component.mandatory_fees_included and not is_flixbus_component:
             raise OfferRejected(
                 "missing_component_fees",
                 "a booking component does not include mandatory fees",
@@ -280,6 +316,26 @@ class OfferTrustPolicy:
                 "component_not_bookable",
                 "a booking component is a teaser or is not independently bookable",
             )
+
+
+def _is_flixbus_displayed_fare(offer: NormalizedOffer) -> bool:
+    """Return whether the sole approved estimated-fare policy applies."""
+
+    return (
+        offer.source_slug == "flixbus"
+        and offer.price_completeness is PriceCompleteness.ESTIMATED
+        and not offer.mandatory_fees_included
+    )
+
+
+def _is_flixbus_displayed_fare_component(component: BookingComponent) -> bool:
+    """Return whether component evidence exactly matches the approved exception."""
+
+    return (
+        component.source_slug == "flixbus"
+        and component.price_completeness is PriceCompleteness.ESTIMATED
+        and not component.mandatory_fees_included
+    )
 
 
 def sanitize_booking_url(url: str, approved_hosts: tuple[str, ...]) -> str:

@@ -9,8 +9,8 @@ PYTHONPATH=packages/crowl-core:services/api uvicorn app.main:app --reload
 ```
 
 SQLite is the zero-configuration development fallback (`sqlite:///./crowl.db`).
-It creates the schema, imports `CROWL_DATA_DIR`, and seeds an explicitly
-synthetic fare grid by default. Control these independently with:
+It can create the schema and import `CROWL_DATA_DIR`. Fare fixtures are
+disabled by default. Control these behaviors independently with:
 
 - `CROWL_AUTO_CREATE_SCHEMA`
 - `CROWL_AUTO_SEED`
@@ -22,8 +22,9 @@ file. After a schema change, back up and remove the development-only
 beginning. Readiness checks required columns and returns 503 for a stale file
 instead of serving it as current.
 
-For PostgreSQL all three default to false. Run Alembic with migration-owner
-credentials, then seed only the version-controlled catalog when desired:
+For PostgreSQL all three also default to false. Run Alembic with
+migration-owner credentials, then seed only the version-controlled catalog
+when desired:
 
 ```sh
 MIGRATION_DATABASE_URL=postgresql+psycopg://... \

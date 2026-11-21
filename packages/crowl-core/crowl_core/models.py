@@ -37,6 +37,7 @@ from .enums import (
     ExecutionCoverage,
     ExtractorRunStatus,
     LinkRelationship,
+    PriceCompleteness,
     PricingSemantics,
     ProtectionState,
     SearchOutcome,
@@ -648,6 +649,9 @@ class SnapshotBooking(Base):
     fx_rate: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
     fx_rate_date: Mapped[date] = mapped_column(Date, nullable=False)
     student_fare_used: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    price_completeness: Mapped[PriceCompleteness] = mapped_column(
+        enum_type(PriceCompleteness, "booking_price_completeness"), nullable=False
+    )
     mandatory_fees_included: Mapped[bool] = mapped_column(Boolean, nullable=False)
     passenger_age: Mapped[int] = mapped_column(Integer, nullable=False)
     passenger_student: Mapped[bool] = mapped_column(Boolean, nullable=False)
@@ -666,8 +670,10 @@ class SnapshotBooking(Base):
         CheckConstraint("eur_amount_cents >= 0", name="booking_eur_amount_nonnegative"),
         CheckConstraint("fx_rate > 0", name="booking_fx_rate_positive"),
         CheckConstraint(
-            "mandatory_fees_included = true",
-            name="booking_mandatory_fees_complete",
+            "(price_completeness = 'complete' AND mandatory_fees_included = true) "
+            "OR (source_id = 'flixbus' AND price_completeness = 'estimated' "
+            "AND mandatory_fees_included = false)",
+            name="booking_price_policy",
         ),
         CheckConstraint("passenger_age = 22", name="booking_passenger_age_22"),
         CheckConstraint(

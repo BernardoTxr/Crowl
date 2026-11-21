@@ -122,17 +122,22 @@ All variables needed by the current scaffold are declared in the IaC graph:
 |---|---|
 | `api` | Private PostgreSQL `DATABASE_URL`, `PORT=8000`, catalog path, migration/seed flags, freshness threshold, 180-day duration-history horizon, and expected schema revision. Synthetic fixture fares are explicitly disabled. |
 | `web` | `PORT=80` and private `API_URL=http://api.railway.internal:8000`. |
-| `crawler` | Private PostgreSQL `DATABASE_URL`, 20-hour deadline, strict Schengen-path flag, and log level. |
+| `crawler` | Private PostgreSQL `DATABASE_URL`, 20-hour deadline, strict Schengen-path flag, log level, and the bounded public FlixBus search template, aliases, and route coverage. |
 
 `CROWL_DURATION_HISTORY_DAYS=180` bounds the daily duration histograms used for
 city-page p25/median/p75 estimates. Only validated observations inside that
 rolling window are counted.
 
-Provider credentials are intentionally absent because all live adapters are
-disabled until authorized access exists. Add future credentials as sealed
-Railway service variables; never commit them to this file. Railway documents
-typed cross-service references and sealed variables in
-[Using Variables](https://docs.railway.com/variables).
+Provider credentials are intentionally unsupported. FlixBus is enabled only
+for the verified direct Bercy Seine–Sloterdijk route; the other 13 adapters are
+disabled until their ordinary public result pages, terminal aliases, and route
+coverage have been verified. Add only documented public-page and coverage
+settings as Railway service variables; never store login credentials, cookies,
+or persistent browser state. Railway documents typed cross-service references
+and sealed variables in [Using Variables](https://docs.railway.com/variables).
+The committed FlixBus sale coverage is verified through the return date
+2027-05-24; refresh the canary and coverage value before that boundary becomes
+the rolling horizon's limiting date.
 
 Railway runs `alembic upgrade head` as the API service's pre-deploy command,
 then starts the image with Uvicorn only. Alembic takes a PostgreSQL advisory
@@ -160,13 +165,13 @@ exit; if the preceding execution is still active at the next scheduled time,
 Railway skips the new run. See the official
 [Cron Jobs documentation](https://docs.railway.com/cron-jobs).
 
-The scheduled command is `crowl-crawler run`. Until an authorized provider
-channel is configured, it resolves the real catalog and six-month manifest,
-records every requested provider as disabled with its version-controlled
-reason, publishes no fabricated fare, and exits successfully. Enabling a source
-requires an authorized adapter plus an explicit source-config change; the
-publication contract does not change. `fixture-publish` remains a manual local
-integration command and is never the Railway schedule.
+The scheduled command is `crowl-crawler run`. It resolves the real catalog and
+six-month manifest, searches only the enabled FlixBus coverage, records the
+other 13 providers as disabled with version-controlled reasons, and never
+substitutes fixture fares. Enabling another source or route requires verified
+HTML markup and coverage plus an explicit source-config change; the publication
+contract does not change. `fixture-publish` remains a manual local integration
+command and is never the Railway schedule.
 
 Inspect or trigger the job without changing its schedule:
 
@@ -194,14 +199,14 @@ see [Railway Healthchecks](https://docs.railway.com/deployments/healthchecks).
 
 Fare history is permanent product data, so a successful deployment is not the
 end of the setup. In the Railway dashboard, enable scheduled backups for the
-PostgreSQL volume before enabling any live provider. Keep a retention period
+PostgreSQL volume before the first scheduled live run. Keep a retention period
 that covers accidental catalog or migration damage, and record the selected
 policy outside the database itself. Railway's current backup controls and
 restore flow are documented under [Volume Backups](https://docs.railway.com/volumes/backups).
 
 Test recovery rather than assuming a backup is usable:
 
-1. Create an on-demand backup after the catalog and fixture smoke test.
+1. Create an on-demand backup after the catalog import and crawler smoke test.
 2. Restore it into a separate temporary environment, never over production.
 3. Run `alembic current`, `/health/ready`, and the catalog/source counts there.
 4. Compare fare snapshot, revision, booking, leg, observation, and crawl-run
@@ -212,6 +217,6 @@ Before calling production stable, observe seven consecutive scheduled crawler
 runs. Each day verify exactly one crawl run, a fresh heartbeat/completion, no
 duplicate cell observations, explicit disabled/failure states, and no
 unlabelled loss of a previously trusted fare. Actual backup activation, domain
-creation, provider credentials, and this seven-run burn-in require access to
+creation, provider configuration, and this seven-run burn-in require access to
 the owner's Railway project and therefore cannot be performed from the local
 repository.

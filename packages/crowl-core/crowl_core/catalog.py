@@ -22,6 +22,7 @@ from .enums import (
     ExecutionCoverage,
     ExtractorRunStatus,
     LinkRelationship,
+    PriceCompleteness,
     PricingSemantics,
     ProtectionState,
     TerminalKind,
@@ -84,22 +85,24 @@ SCHENGEN_COUNTRY_CODES = frozenset(
     }
 )
 
+CITY_CATALOG_FILENAME = "crowl-cities-150.json"
+
 
 SOURCE_DEFINITIONS: tuple[dict[str, Any], ...] = (
-    {"slug": "ryanair", "name": "Ryanair", "modes": ["flight"], "strategy": "http_structured"},
-    {"slug": "easyjet", "name": "easyJet", "modes": ["flight"], "strategy": "http_structured"},
-    {"slug": "transavia", "name": "Transavia", "modes": ["flight"], "strategy": "http_structured"},
-    {"slug": "wizzair", "name": "Wizz Air", "modes": ["flight"], "strategy": "http_structured"},
-    {"slug": "vueling", "name": "Vueling", "modes": ["flight"], "strategy": "http_structured"},
-    {"slug": "volotea", "name": "Volotea", "modes": ["flight"], "strategy": "disabled"},
-    {"slug": "flixbus", "name": "FlixBus", "modes": ["bus"], "strategy": "http_structured"},
-    {"slug": "blablacar_bus", "name": "BlaBlaCar Bus", "modes": ["bus"], "strategy": "disabled"},
-    {"slug": "itabus", "name": "Itabus", "modes": ["bus"], "strategy": "disabled"},
-    {"slug": "alsa", "name": "Alsa", "modes": ["bus"], "strategy": "disabled"},
-    {"slug": "ouigo", "name": "OUIGO", "modes": ["train"], "strategy": "disabled"},
-    {"slug": "sncf_connect", "name": "SNCF Connect", "modes": ["train"], "strategy": "disabled"},
-    {"slug": "trenitalia_france", "name": "Trenitalia France", "modes": ["train"], "strategy": "http_structured"},
-    {"slug": "eurostar", "name": "Eurostar", "modes": ["train"], "strategy": "disabled"},
+    {"slug": "ryanair", "name": "Ryanair", "modes": ["flight"], "strategy": "playwright"},
+    {"slug": "easyjet", "name": "easyJet", "modes": ["flight"], "strategy": "playwright"},
+    {"slug": "transavia", "name": "Transavia", "modes": ["flight"], "strategy": "playwright"},
+    {"slug": "wizzair", "name": "Wizz Air", "modes": ["flight"], "strategy": "playwright"},
+    {"slug": "vueling", "name": "Vueling", "modes": ["flight"], "strategy": "playwright"},
+    {"slug": "volotea", "name": "Volotea", "modes": ["flight"], "strategy": "playwright"},
+    {"slug": "flixbus", "name": "FlixBus", "modes": ["bus"], "strategy": "playwright"},
+    {"slug": "blablacar_bus", "name": "BlaBlaCar Bus", "modes": ["bus"], "strategy": "playwright"},
+    {"slug": "itabus", "name": "Itabus", "modes": ["bus"], "strategy": "playwright"},
+    {"slug": "alsa", "name": "Alsa", "modes": ["bus"], "strategy": "playwright"},
+    {"slug": "ouigo", "name": "OUIGO", "modes": ["train"], "strategy": "playwright"},
+    {"slug": "sncf_connect", "name": "SNCF Connect", "modes": ["train"], "strategy": "playwright"},
+    {"slug": "trenitalia_france", "name": "Trenitalia France", "modes": ["train"], "strategy": "playwright"},
+    {"slug": "eurostar", "name": "Eurostar", "modes": ["train"], "strategy": "playwright"},
 )
 
 
@@ -703,7 +706,7 @@ def seed_sources(
                 enabled=False,
                 connector_version="planned",
                 parser_version="planned",
-                disabled_reason="Awaiting an authorized live-fare channel",
+                disabled_reason="Public-page extraction is disabled",
             )
             session.add(source)
         source.name = definition["name"]
@@ -724,7 +727,7 @@ def seed_sources(
         else:
             prefix = "Catalog kill switch is active. " if definition.get("kill_switch") else ""
             source.disabled_reason = prefix + definition.get(
-                "access_note", "Awaiting an authorized live-fare channel"
+                "access_note", "Public-page extraction is disabled"
             )
         if source.connector_version in {None, ""}:
             source.connector_version = "planned"
@@ -972,7 +975,7 @@ def seed_fixture_history(
                 )
             )
             # One synthetic batch represents one immutable rule/profile pair.
-            # If the version-controlled catalog changed, retain the old mock
+            # If the version-controlled catalog changed, retain the old synthetic
             # history but do not append new cells under mismatched dimensions.
             # A fresh date (or a deliberate local fixture reset) will build a
             # clean batch with the new dimensions.
@@ -1108,6 +1111,7 @@ def seed_fixture_history(
                     fx_rate=1.0,
                     fx_rate_date=observed_on,
                     student_fare_used=False,
+                    price_completeness=PriceCompleteness.COMPLETE,
                     mandatory_fees_included=True,
                     passenger_age=22,
                     passenger_student=True,
@@ -1232,7 +1236,7 @@ def seed_development_data(
     schengen_payload = load_schengen_catalog(directory / "schengen.json")
     schengen_country_codes = frozenset(schengen_payload["countryCodes"])
     city_payload = load_city_catalog(
-        directory / "cities.mock.json",
+        directory / CITY_CATALOG_FILENAME,
         schengen_country_codes=schengen_country_codes,
     )
     terminal_payload = load_terminal_catalog(

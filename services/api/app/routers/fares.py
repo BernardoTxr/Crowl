@@ -8,7 +8,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from crowl_core.enums import Availability, ExecutionCoverage, ModeFilter, TransportMode
+from crowl_core.enums import (
+    FLIXBUS_DISPLAYED_FARE_DISCLOSURE,
+    Availability,
+    ExecutionCoverage,
+    ModeFilter,
+    PriceCompleteness,
+    TransportMode,
+)
 from crowl_core.models import (
     City,
     CrawlRun,
@@ -76,6 +83,50 @@ class _CurrentState:
     diagnostic: str | None
     revision: FareSnapshotRevision | None
     is_synthetic: bool
+
+
+@dataclass(frozen=True, slots=True)
+class _FarePolicy:
+    price_completeness: PriceCompleteness
+    mandatory_fees_included: bool
+    fare_disclosure: str | None
+
+
+def _fare_policy(session: Session, revision_id: int) -> _FarePolicy:
+    evidence = session.execute(
+        select(
+            SnapshotBooking.source_id,
+            SnapshotBooking.price_completeness,
+            SnapshotBooking.mandatory_fees_included,
+        ).where(SnapshotBooking.revision_id == revision_id)
+    ).all()
+    if not evidence:
+        return _FarePolicy(
+            price_completeness=PriceCompleteness.UNKNOWN,
+            mandatory_fees_included=False,
+            fare_disclosure=None,
+        )
+    is_displayed_fare = any(
+        source_id == "flixbus"
+        and completeness is PriceCompleteness.ESTIMATED
+        and not fees_included
+        for source_id, completeness, fees_included in evidence
+    )
+    completeness = (
+        PriceCompleteness.ESTIMATED
+        if any(
+            value is PriceCompleteness.ESTIMATED
+            for _, value, _ in evidence
+        )
+        else PriceCompleteness.COMPLETE
+    )
+    return _FarePolicy(
+        price_completeness=completeness,
+        mandatory_fees_included=all(value for _, _, value in evidence),
+        fare_disclosure=(
+            FLIXBUS_DISPLAYED_FARE_DISCLOSURE if is_displayed_fare else None
+        ),
+    )
 
 
 def _choose_revision(
@@ -302,12 +353,16 @@ def map_prices(
                     return_origin_terminal=None,
                     return_destination_terminal=None,
                     revision_id=None,
+                    price_completeness=None,
+                    mandatory_fees_included=None,
+                    fare_disclosure=None,
                 )
             )
             continue
         observed_at = as_utc(revision.observed_at)
         observed_values.append(observed_at)
         origin, destination, return_origin, return_destination = _endpoints(session, revision.id)
+        fare_policy = _fare_policy(session, revision.id)
         items.append(
             MapPriceItem(
                 city=city_summary(city),
@@ -333,6 +388,9 @@ def map_prices(
                 return_origin_terminal=return_origin,
                 return_destination_terminal=return_destination,
                 revision_id=revision.id,
+                price_completeness=fare_policy.price_completeness,
+                mandatory_fees_included=fare_policy.mandatory_fees_included,
+                fare_disclosure=fare_policy.fare_disclosure,
             )
         )
     items.sort(
@@ -395,6 +453,7 @@ def price_history(
         departure = as_utc(revision.outbound_departure_at) if revision else None
         observed_at = as_utc(revision.observed_at) if revision else None
         latest_observation = max(rows, key=lambda row: row.rank).observation
+        fare_policy = _fare_policy(session, revision.id) if revision else None
         cells.append(
             PriceHistoryCell(
                 weekend=window.friday_date,
@@ -432,6 +491,13 @@ def price_history(
                     else latest_observation.profile_id
                 ),
                 winning_mode=revision.mode_bucket if revision else None,
+                price_completeness=(
+                    fare_policy.price_completeness if fare_policy else None
+                ),
+                mandatory_fees_included=(
+                    fare_policy.mandatory_fees_included if fare_policy else None
+                ),
+                fare_disclosure=(fare_policy.fare_disclosure if fare_policy else None),
             )
         )
     cells.sort(key=lambda cell: (cell.weekend, cell.observed_on))
@@ -474,6 +540,7 @@ def _journey(
         terminal.id: terminal
         for terminal in session.scalars(select(Terminal).where(Terminal.id.in_(terminal_ids))).all()
     }
+    fare_policy = _fare_policy(session, revision.id)
     return Journey(
         revision_id=revision.id,
         rule_version_id=revision.rule_version_id,
@@ -500,6 +567,9 @@ def _journey(
         return_duration_minutes=revision.return_duration_minutes,
         stay_duration_minutes=revision.stay_duration_minutes,
         transfer_count=revision.transfer_count,
+        price_completeness=fare_policy.price_completeness,
+        mandatory_fees_included=fare_policy.mandatory_fees_included,
+        fare_disclosure=fare_policy.fare_disclosure,
         bookings=[
             Booking(
                 id=row.id,
@@ -514,6 +584,7 @@ def _journey(
                 fx_rate=row.fx_rate,
                 fx_rate_date=row.fx_rate_date,
                 student_fare_used=row.student_fare_used,
+                price_completeness=row.price_completeness,
                 mandatory_fees_included=row.mandatory_fees_included,
                 passenger_age=row.passenger_age,
                 passenger_student=row.passenger_student,
@@ -524,6 +595,13 @@ def _journey(
                 is_teaser=row.is_teaser,
                 booking_url=row.booking_url,
                 expires_at=as_utc(row.expires_at),
+                fare_disclosure=(
+                    FLIXBUS_DISPLAYED_FARE_DISCLOSURE
+                    if row.source_id == "flixbus"
+                    and row.price_completeness is PriceCompleteness.ESTIMATED
+                    and not row.mandatory_fees_included
+                    else None
+                ),
             )
             for row in booking_rows
         ],

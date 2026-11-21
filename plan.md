@@ -3,33 +3,34 @@
 > Crowl = Crow + Crawl. It is a read-only, single-owner travel-fare monitor for weekend trips from the Paris metropolitan area to cities in the Schengen Area.
 >
 > This document began as the implementation plan. The repository now contains
-> a runnable mock-data implementation; see
+> a runnable implementation using the supplied 150-city catalog; see
 > [docs/implementation-status.md](docs/implementation-status.md) for the exact
 > boundary between completed local work and external inputs still required.
 
 ### Current implementation boundary
 
-This plan contains both implemented behavior and the production target. As of
-the current mock-data release:
+This plan contains both implemented behavior and the production target. In the
+current implementation:
 
-- The local Compose stack, read-only API, crawler batch platform, fixture
-  publisher, city/status UI, history, and monitoring work with the local
-  12-city mock catalog and clearly labeled synthetic fares.
-- The map is currently an interactive, stylized SVG with city markers,
-  pan/zoom, clustering, keyboard controls, and an equivalent list. The target
-  MapLibre tile layer and Schengen boundary/mask described below are pending.
+- The local Compose stack, read-only API, crawler batch platform, city/status
+  UI, history, and monitoring use the supplied 150-city catalog. Compose does
+  not seed fare observations.
+- The map uses MapLibre with an attributed OpenFreeMap geographic basemap,
+  city markers, pan/zoom, clustering, keyboard controls, and an equivalent
+  list. The dedicated Schengen boundary/mask described below is pending.
 - Composition pairs complete outbound and return components across sources and
   modes and accepts provider-supplied multi-leg itineraries. Arbitrary
   within-direction cross-source leg chaining is pending.
-- All 14 requested provider adapter slots and status rows exist, but **all 14
-  live provider adapters are disabled** pending authorized access. No current
-  fare in the repository is a live provider result.
+- All 14 requested provider adapter slots and status rows exist. **FlixBus is
+  enabled only for the verified direct Paris Bercy Seine–Amsterdam Sloterdijk
+  route; the other 13 providers are disabled and kill-switched.** The guarded
+  2026-11-21 activation published one real €45.96 displayed-fare observation
+  for the 2026-11-27 weekend.
 - Railway infrastructure definitions exist and type-check in the working tree,
   but the repository has not yet been committed/pushed, they have not been
   applied to an owner project, and no production burn-in has occurred.
-- `data/cities.mock.json` and its development photos remain in use until the
-  final approximately 150-city JSON, terminal mappings, and final curated
-  photos are supplied.
+- `data/crowl-cities-150.json` is the canonical editorial catalog. Operational
+  terminal mappings remain incomplete and are maintained separately.
 
 ## 1. Product scope
 
@@ -43,8 +44,7 @@ The first release is a single-owner data model with no accounts and no editing i
 
 ### In scope for v1
 
-- Approximately 150 monitored Schengen cities supplied through JSON.
-- A temporary mock city list until the real JSON arrives.
+- 150 monitored Schengen cities supplied through JSON.
 - Paris-area departure and return terminals: CDG, ORY, BVA, Paris passenger rail/bus terminals, and Massy.
 - A rolling six-calendar-month weekend search horizon.
 - Flights, trains, buses, provider-supplied connections, cross-source
@@ -84,16 +84,16 @@ The first release is a single-owner data model with no accounts and no editing i
 | Destination | Exactly one destination metro area per trip; connection cities do not count as destinations. |
 | Nearby terminals | Nearby airports/stations/stops may map to a city. Their city-transfer time and cost are excluded, but the exact terminal is always shown. |
 | Passenger | One traveler, age 22, student eligibility enabled where genuinely available. Use the normal adult fare when no generally eligible student/youth fare exists. |
-| Fare | Cheapest complete round-trip fare observed as available during that daily batch, normalized to EUR, with unavoidable taxes and fees and only the smallest included personal item. |
+| Fare | Cheapest complete round-trip fare observed as available during that daily batch, normalized to EUR, with unavoidable taxes and fees and only the smallest included personal item. FlixBus is the explicit v1 exception: Crowl may use the exact fare displayed on its public result card while excluding a later online service fee, provided the UI labels it `Displayed fare — service fees may apply`. |
 | Entitlements | Do not use a fare requiring a paid card, subscription, membership, or loyalty status that is not configured. |
 | History | Store the daily best valid price for every city × weekend × mode, not every source’s full permanent history. Keep the winning journey details. |
 | Schedule | One fixed daily batch. Initial configurable default: `02:00 UTC`. |
 | Public holidays | No special behavior. |
-| Photos | Manually curated, licensed, locally stored, and attributed where required. |
+| Photos | Manually curated, licensed, and attributed; approved remote Wikimedia assets are allowed. |
 
 “Best price for each model” is interpreted as “best price for each mode.” The persisted mode buckets are `flight`, `train`, `bus`, and `mixed`; the `all` price is derived as their minimum.
 
-The unspecified second section of the city page is provisionally the latest-observed itinerary panel: exact tickets, operators, terminals, connections, duration, source, observation time, and booking link for a selected weekend.
+The unspecified second section of the city page is provisionally the latest-observed itinerary panel: exact tickets, operators, terminals, connections, duration, source, observation time, and booking link when available for a selected weekend.
 
 Historical charts cannot be truthfully backfilled. They begin accumulating after the first production batch. The default city chart will show up to 26 past and 26 future weekends, with controls to inspect all retained history.
 
@@ -132,12 +132,7 @@ Browser back/forward must restore the weekend, mode, map position, and selected 
 
 ### 4.2 Schengen map
 
-The production target is MapLibre with a configurable, properly attributed tile provider. The initial camera fits the Schengen Area, including Iceland, Norway, and Switzerland. A muted non-Schengen mask or Schengen boundary makes the geographic scope explicit. Palaiseau is a distinct crow/home marker labeled “Palaiseau / Paris” and is excluded from fare colors.
-
-The current mock release uses an interactive, stylized SVG map instead. It
-already provides city markers, pan/zoom, clustering, keyboard controls, state
-colors, tooltips, and the synchronized accessible list, but it is not a real
-geographic tile or Schengen-boundary layer.
+The current implementation uses MapLibre with a configurable, properly attributed OpenFreeMap tile style. The initial camera fits the Schengen Area, including Iceland, Norway, and Switzerland. City markers provide pan/zoom, clustering, keyboard controls, state colors, tooltips, and a synchronized accessible list. Palaiseau is a distinct home marker labeled “Palaiseau / Paris” and is excluded from fare colors. A muted non-Schengen mask or dedicated Schengen boundary remains to make the legal geographic scope explicit.
 
 The map has two states:
 
@@ -152,7 +147,7 @@ Fri 8 Jan after 19:00 → Mon 11 Jan by 07:00
 
 Mode filters are `Any`, `Flight`, `Train`, `Bus`, and `Mixed`. `Any` is the cheapest valid mode bucket. A visible disclosure says:
 
-> Round trip for one traveler, age 22/student where supported; mandatory fees included; no extra baggage. Travel from Palaiseau to the Paris departure terminal and from the arrival terminal to the destination city is excluded. Transfers inside the displayed itinerary are included where priced.
+> Round trip for one traveler, age 22/student where supported; mandatory fees included except for the explicitly labelled FlixBus displayed-fare policy; no extra baggage. Travel from Palaiseau to the Paris departure terminal and from the arrival terminal to the destination city is excluded. Transfers inside the displayed itinerary are included where priced.
 
 #### Marker states
 
@@ -225,7 +220,7 @@ Cell states must distinguish:
 
 Use a stable city-and-mode-specific robust color scale calculated over a documented rolling horizon, initially the 10th–90th percentiles, so scrolling or filtering does not change the same fare’s color. The API returns the scale breakpoints and the legend displays actual euro boundaries. Hover/focus/select reveals the price, observation date, lead days, travel window, modes, times, durations, terminals, sources, and independent availability/coverage/freshness states.
 
-The itinerary panel presents every separately purchased component with subtotal, seller/source, operator, exact terminals, connection time, protection state, and its own booking link. Unprotected/self-transfer or separate-ticket combinations receive a prominent missed-connection and price-change warning. All segment times appear in each terminal’s local time with date, timezone abbreviation, and clear overnight/day-change markers; the UI explains that weekend eligibility is evaluated in `Europe/Paris`.
+The itinerary panel presents every separately purchased component with subtotal, seller/source, operator, exact terminals, connection time, protection state, and its own booking link when available. Unprotected/self-transfer or separate-ticket combinations receive a prominent missed-connection and price-change warning. All segment times appear in each terminal’s local time with date, timezone abbreviation, and clear overnight/day-change markers; the UI explains that weekend eligibility is evaluated in `Europe/Paris`.
 
 A historical cell proves only what was observed then. Label it non-live, never present its link as currently bookable, and warn that all prices and availability must be rechecked at the provider. On narrow screens the grid scrolls horizontally with sticky weekend labels. The alternative table is paginated, and the visual grid uses roving arrow-key navigation rather than thousands of tab stops.
 
@@ -288,9 +283,9 @@ Target WCAG 2.2 AA. Use dark ink on pastel surfaces and automate contrast checks
 
 Editorial city data and operational terminal mappings must be separate. City attributes will change with the supplied list; airports, stations, provider aliases, and route coverage change on a different schedule.
 
-### 5.1 Mock city JSON contract
+### 5.1 City JSON contract
 
-Create `data/cities.mock.json` from this shape during milestone 1, then replace its `cities` array when the real list arrives. Categories and attributes are definitions, not hard-coded frontend fields.
+`data/crowl-cities-150.json` follows this shape. Categories and attributes are definitions, not hard-coded frontend fields.
 
 ```json
 {
@@ -462,7 +457,7 @@ Use one monorepo with three independently deployable services and one shared Pyt
 ├── packages/
 │   └── crowl-core/          # Rules, models, normalization, composition, settings
 ├── data/
-│   ├── cities.mock.json
+│   ├── crowl-cities-150.json
 │   ├── cities.schema.json
 │   ├── terminals.json
 │   └── sources.yaml
@@ -479,11 +474,11 @@ Use one monorepo with three independently deployable services and one shared Pyt
 | Concern | Choice |
 |---|---|
 | Web | React, TypeScript, Vite, React Router, TanStack Query. |
-| Map | Current: interactive stylized SVG. Production target: MapLibre with a configurable attributed tile provider and Schengen boundary/mask. |
+| Map | MapLibre with a configurable attributed OpenFreeMap style; dedicated Schengen boundary/mask pending. |
 | Heatmap | Apache ECharts with an accessible table fallback. |
 | API | FastAPI, Pydantic, SQLAlchemy 2, Alembic. |
 | Database | PostgreSQL, using UTC `timestamptz`, IANA timezones, JSONB only for flexible editorial attributes, and integer minor units for money. |
-| Crawling | `httpx`/structured HTTP first, select HTML parsing where complete server-rendered results exist, Playwright only for permitted browser rendering. |
+| Crawling | Public HTML only: direct HTTPS plus HTML/embedded-JSON parsing when the complete result is in the response, or ordinary Playwright rendering for client-side pages. |
 | Scheduling | Railway Cron starts one batch process daily; no scheduler runs inside a long-lived container. |
 | Queue/restarts | PostgreSQL crawl-task ledger, advisory lock, and `FOR UPDATE SKIP LOCKED`; no Redis or Celery initially. |
 | Web serving | Caddy serves the built React app and reverse-proxies same-origin `/api/*` to the private API. |
@@ -610,7 +605,7 @@ Each normalized offer includes:
 
 A provider’s bundled round-trip price remains atomic unless reliable directional prices are exposed. Never divide it in half to manufacture a one-way price.
 
-Only `complete` prices may compete for Crowl’s advertised best fare. Estimated or unknown totals can be retained for diagnostics but are not published as winners.
+Only `complete` prices may normally compete for Crowl’s advertised best fare. Estimated or unknown totals can be retained for diagnostics but are not published as winners. The sole v1 exception is an exact FlixBus public result-card fare: it may compete with `estimated` completeness and `mandatory_fees_included = false`, but every API/UI presentation must disclose `Displayed fare — service fees may apply` and it must never be described as a final checkout total.
 
 ### 8.2 Identity and deduplication
 
@@ -674,52 +669,66 @@ Every source adapter implements a versioned interface:
 
 `SearchRequest` includes a deterministic request fingerprint, batch/query IDs, `one_way` or `round_trip` search kind, direction where applicable, separate outbound/return windows, canonical terminal sets, UTC instants plus IANA timezones, passenger profile, price/baggage assumptions, and maximum duration. This supports both provider-bundled round trips and directional offers for mixed composition.
 
+Every accepted public-page fare must explicitly identify one adult passenger,
+include mandatory taxes and fees, and confirm that no unconfigured paid card,
+subscription, membership, or loyalty entitlement is required. Missing or
+contradictory evidence is parser failure, not a valid fare. FlixBus is the
+explicit v1 exception for mandatory online service fees only: its exact public
+result-card fare may be accepted without proving a later service fee, and must
+be stored and displayed as an estimated displayed fare. Passenger identity,
+exact itinerary, currency, card amount, and no-paid-entitlement checks remain
+mandatory.
+
 `ConnectorResult` includes status, retryability, safe diagnostic code, expected/completed counts, normalized offers, parser version, observation time, and a response/schema fingerprint. It must not include secrets, cookies, or full sensitive payloads in logs.
 
 ### 9.2 Extraction-strategy rule
 
-For each source, perform a small feasibility and authorization spike immediately before implementation because sites and commercial access change. Then choose the lightest permitted stable method:
+For each source, verify the public search/result page immediately before
+enablement because markup and access behavior change. Crowl does not call
+provider, partner, affiliate, GDS, schedule, distribution, or undocumented
+browser APIs. Choose only between these public-page methods:
 
-1. `http_structured` for an authorized API/feed or complete embedded JSON.
-2. `http_html` when complete actual fares are server-rendered.
-3. `playwright` only when ordinary client-side rendering is necessary and automated access is permitted.
-4. `disabled` when required authorization is unavailable or access is challenged.
+1. `http_html` when a normal HTTPS response contains the complete fare in HTML
+   or literal JSON embedded in that HTML.
+2. `playwright` when the same ordinary public page needs client-side rendering;
+   parse only the resulting DOM and embedded page data.
+3. `disabled` when the exact fare cannot be extracted easily and reliably.
 
-Undocumented private browser endpoints are not a stable API contract. Do not evade CAPTCHAs, logins, `403`, persistent `429`, or bot defenses with stealth plugins, proxy/identity rotation, or burner accounts. Record the state and skip the connector.
+Ordinary cookie-consent controls may be accepted. Do not log in, intercept
+private network calls, or evade CAPTCHAs, `403`, persistent `429`, rate limits,
+or bot defenses with stealth plugins, proxy/identity rotation, or burner
+accounts. Record the typed state and skip the connector.
 
 ### 9.3 Requested-source matrix
 
-All 14 adapters and status rows belong to the first release. “Implemented” does not imply “enabled”: a source without viable authorized access remains visible as disabled/blocked with its reason.
+All 14 adapters and status rows belong to the first release. Each parser has
+sanitized fixture coverage, but “implemented and tested” does not imply “live
+compatible” or “enabled.” FlixBus alone is enabled for one verified route; all
+other sources remain kill-switched until their stable live public markup,
+exact-price meaning, terminal aliases, and explicit route coverage are verified.
 
 | Source | Mode | Provisional primary strategy | Enablement gate |
 |---|---|---|---|
-| Ryanair | Flight | `http_structured` through a licensed/direct distribution feed | Required license/feed; otherwise disabled. |
-| easyJet | Flight | `http_structured` through an approved API, GDS, or aggregator | Approved-channel credentials; otherwise disabled. |
-| Transavia | Flight | `http_structured` official affiliate API | Best initial live reference adapter, subject to access approval. |
-| Wizz Air | Flight | `http_structured` authorized distribution API/aggregator | Written/contractual access; otherwise disabled. |
-| Vueling | Flight | `http_structured` through Vueling NDC/direct provider | NDC access and credentials. |
-| Volotea | Flight | Seek an authorized machine-readable feed; `playwright` only with express permission | No public fare feed is assumed; disabled until access is confirmed. |
-| FlixBus | Bus | `http_structured` advanced partner API; GTFS only for schedule enrichment | Partner credentials. |
-| BlaBlaCar Bus | Bus | Seek an authorized distributor/feed; `playwright` only with express permission | No public fare feed is assumed; disabled until confirmed. Rideshare is excluded. |
-| Itabus | Bus | Seek an authorized retailer/machine-readable feed | No public fare feed is assumed; disabled until confirmed. |
-| Alsa | Bus | Seek an authorized partner/feed; `playwright` only with express permission | No public fare feed is assumed; disabled until confirmed. |
-| OUIGO | Train | Authorized SNCF/OUIGO distribution feed | Public range data is not a live bookable fare. |
-| SNCF Connect | Train | Authorized distribution feed; public API only for schedule enrichment | Live-fare access is required. |
-| Trenitalia France | Train | `http_structured` official partner API | Partner/API approval. |
-| Eurostar | Train | Licensed feed, GDS, or authorized distributor | Schengen terminal pairs only; London is excluded. |
+| Ryanair | Flight | `playwright` public booking-page HTML/embedded JSON | Verify stable complete live fare markup, aliases, and coverage; otherwise skip. |
+| easyJet | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
+| Transavia | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
+| Wizz Air | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; challenge or unstable markup stays skipped. |
+| Vueling | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
+| Volotea | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; challenge or unstable markup stays skipped. |
+| FlixBus | Bus | `playwright` public rendered search-card DOM | Enabled only for verified direct Bercy Seine–Sloterdijk cards. Accept the exact one-adult displayed fare; later service fees may be excluded and must be disclosed. An exact-trip booking link is optional. |
+| BlaBlaCar Bus | Bus | `playwright` public bus search-page JSON-LD | Same gate; rideshare remains excluded. |
+| Itabus | Bus | `playwright` public search-page JSON-LD | Same gate; otherwise skip. |
+| Alsa | Bus | `playwright` public search-page JSON-LD | Same gate; otherwise skip. |
+| OUIGO | Train | `playwright` public search-page HTML/JSON-LD | Verify ordinary accessible results, aliases, and coverage; otherwise skip. |
+| SNCF Connect | Train | `playwright` public search-page HTML/JSON-LD | Current challenge behavior is not bypassed; keep skipped. |
+| Trenitalia France | Train | `playwright` public search-page HTML/JSON-LD | Verify stable complete live fare markup, aliases, and coverage; otherwise skip. |
+| Eurostar | Train | `playwright` public search-page HTML/JSON-LD | Verify Schengen-only coverage and stable markup; London remains excluded. |
 
-No source is assigned to `http_html` at planning time because no stable, complete, server-rendered live-fare result has been verified. The adapter framework still supports it if a source spike proves it appropriate.
-
-Useful primary-source starting points:
-
-- [Transavia affiliate API](https://partner.transavia.com/en-EU/products-and-services/our-api/)
-- [Vueling NDC capabilities](https://static.vueling.com/blogpartners/media/1103/vy-ndc-_-partners-services-and-functionalities.pdf)
-- [FlixBus partner API and GTFS](https://global.flixbus.com/company/partners/affiliate-partners)
-- [Trenitalia partner program](https://www.trenitalia.com/en/information/join-online-and-become-a-trenitalia-partner.html)
-- [SNCF public API limitations](https://numerique.sncf.com/faq/api/)
-- [SNCF TGV/OUIGO fare-range open data](https://ressources.data.sncf.com/explore/dataset/tarifs-tgv-inoui-ouigo/)
-
-Before enabling any adapter, record the access basis, rate limits, supported markets, booking horizon, attribution/linking requirements, and a kill switch in `data/sources.yaml`.
+If a later verification shows that a complete result is available in the
+initial public HTTPS response, change that source to `http_html`; the parser
+contract remains the same. Before enabling any adapter, record its reviewed
+public-page basis, conservative rate, supported markets, booking horizon,
+attribution/linking requirements, and kill switch in `data/sources.yaml`.
 
 ## 10. Daily batch and safeguards
 
@@ -838,7 +847,13 @@ Use separate credentials where practical:
 - Crawler role: catalog reads and operational/history writes.
 - Migration role: schema ownership.
 
-Store provider credentials only in Railway variables. Keep all services and PostgreSQL in the same European region, pin Playwright/browser versions, and cap browser contexts. Configure deployment health checks, while recognizing that they only gate deployments and do not continuously monitor crawler freshness. Enable scheduled PostgreSQL backups and test a restore procedure before treating them as protection for permanent history.
+Store public-page configuration in Railway variables and never configure login
+credentials, cookies, or persistent browser state. Keep all services and
+PostgreSQL in the same European region, pin Playwright/browser versions, and
+cap browser contexts. Configure deployment health checks, while recognizing
+that they only gate deployments and do not continuously monitor crawler
+freshness. Enable scheduled PostgreSQL backups and test a restore procedure
+before treating them as protection for permanent history.
 
 Relevant Railway documentation:
 
@@ -853,13 +868,17 @@ Relevant Railway documentation:
 ## 13. Security, compliance, and data hygiene
 
 - Review and record each provider’s current terms, allowed access method, rate limits, and attribution requirements before enabling it.
-- Prefer official affiliate/partner/distribution feeds over public-page automation.
-- Use Playwright only for normal permitted rendering; do not bypass challenges or access controls.
+- Extract only ordinary public-page HTML or literal data embedded in it. Do not
+  add provider/partner APIs, feeds, GDS integrations, or intercepted private
+  browser calls.
+- Use Playwright only for normal public-page rendering; accepting an ordinary
+  cookie-consent control is allowed, but do not bypass challenges or access
+  controls.
 - Stop a connector on CAPTCHA, persistent `403`/`429`, or authentication challenge and expose the reason on `/status`.
 - Centralize per-source rate/concurrency limits and a configuration kill switch.
 - Never commit provider tokens, cookies, Railway variables, or production dumps.
 - Sanitize logs and diagnostics. Store short-lived parser artifacts only when they contain no credentials or personal data.
-- Store only allowlisted canonical booking links with transient/session parameters removed, retain upstream expiry where known, and never describe a historical link as live. Validate outbound URLs and use safe browser attributes.
+- Store only allowlisted canonical booking links with transient/session parameters removed, retain upstream expiry where known, and never describe a historical link as live. Validate outbound URLs and use safe browser attributes. A booking link is optional for FlixBus displayed-card fares; absence of that link must not be presented as a crawler failure.
 - Serve the public site over HTTPS, keep API/PostgreSQL private, restrict CORS through same-origin proxying, and add basic public read rate limits.
 - Track image provenance and license obligations; do not use unlicensed search-result images.
 - Version the Schengen scope and rule configuration so historical rows remain auditable.
@@ -897,27 +916,29 @@ Relevant Railway documentation:
 
 ### End-to-end release test
 
-Build all images, start Compose, migrate, seed mock cities, run fixture adapters through the crawler, publish snapshots, query FastAPI, and render the map/city/status pages. Production acceptance then requires seven consecutive scheduled batches without duplicate snapshots, stuck tasks, silent empty-result regressions, or unlabeled partial data.
+Build all images, start Compose, migrate, import the city catalog, run crawler integration fixtures in an isolated test database, query FastAPI, and render the map/city/status pages. Production acceptance then requires seven consecutive scheduled batches without duplicate snapshots, stuck tasks, silent empty-result regressions, or unlabeled partial data.
 
 ## 15. Delivery milestones
 
-### Milestone 0 — access and feasibility register
+### Milestone 0 — public-page feasibility register
 
 - [x] Record the current Schengen membership source, version date, and configured country set.
 - [x] Retain the initial assumption that connection terminals must also remain inside Schengen.
 - [x] Enumerate Paris/Massy terminals and canonical aliases.
 - [x] Create one access/terms/route-coverage record for each of the 14 sources.
-- [ ] Apply for or obtain relevant affiliate/partner credentials.
+- [ ] Verify each source's ordinary public live result markup, terminal aliases,
+  route coverage, conservative rate, and terms before enablement.
 - [x] Configure `02:00 UTC` as the initial batch time.
 - [ ] Confirm the owner's final Railway region when the project is provisioned.
-- [x] Mark every requested connector disabled with its current authorization or credential reason.
+- [x] Initially mark every requested connector disabled and kill-switched;
+  remove those safeguards only for independently verified bounded coverage.
 
 ### Milestone 1 — repository foundation
 
 - [x] Create the monorepo layout, Dockerfiles, Compose environment, settings, and CI.
 - [x] Create PostgreSQL, Alembic, liveness/readiness checks, and the shared package.
 - [ ] Create and apply separate production database roles for API, crawler, and migrations; local Compose currently uses one application role.
-- [x] Add `cities.mock.json`, its JSON Schema and semantic validator, terminal/source configuration, and idempotent catalog seeding.
+- [x] Add `crowl-cities-150.json`, its JSON Schema and semantic validator, terminal/source configuration, and idempotent catalog seeding.
 - [x] Add rule/profile/config versioning.
 
 ### Milestone 2 — canonical vertical slice
@@ -927,11 +948,12 @@ Build all images, start Compose, migrate, seed mock cities, run fixture adapters
 - [x] Run one fixture-only source from search request to a published daily winner.
 - [x] Expose that data through the map, city, history, and status API views.
 
-### Milestone 3 — frontend with fixture data
+### Milestone 3 — frontend
 
 - [x] Build the reference-inspired design system and responsive shell.
-- [x] Build the current stylized interactive map, collection/price states, weekend and mode controls, tooltips, clustering, pan/zoom, and accessible list.
-- [ ] Replace the stylized SVG with the target MapLibre geographic tile layer and Schengen boundary/mask.
+- [x] Build the interactive map, collection/price states, weekend and mode controls, tooltips, clustering, pan/zoom, and accessible list.
+- [x] Replace the stylized SVG with the MapLibre geographic tile layer.
+- [ ] Add a dedicated Schengen boundary/non-Schengen mask.
 - [x] Build the city hero, attributes, typical-duration cards, heatmap, accessible table, and itinerary panel.
 - [x] Build the read-only `/status` page with missing/degraded/blocked states.
 
@@ -944,18 +966,24 @@ Build all images, start Compose, migrate, seed mock cities, run fixture adapters
 
 ### Milestone 5 — requested adapters
 
-- [x] Add an isolated disabled adapter slot, configuration, contract coverage, and status entry for every requested source.
-- [ ] Enable every source with permitted, usable access.
-- [x] Show all 14 unavailable sources as disabled with a sanitized reason; never silently omit them.
+- [x] Add an isolated public-HTML/embedded-JSON parser, sanitized fixtures,
+  configuration, contract coverage, and status entry for every requested source.
+- [x] Enable only verified, bounded, ordinary public-page extraction; currently
+  this is FlixBus Bercy Seine–Sloterdijk only.
+- [x] Show all 14 sources and give every unavailable source a sanitized disabled reason; never silently omit one.
 - [x] Prune searches using configured/discovered route coverage and sale horizons when those facts are available.
-- [ ] Implement and enable live provider search/parsing only after an authorized access path is available; all 14 are currently disabled.
+- [ ] Verify live public markup, exact fare semantics, terminal aliases, and
+  route coverage source by source; one bounded FlixBus route is verified and
+  the remaining 13 sources are disabled.
+- [x] Publish one guarded real activation winner end to end and expose its
+  displayed-fare disclosure through SQL, API, map, and city-page contracts.
 
 ### Milestone 6 — real city catalog and photos
 
-- [x] Keep a validated 12-city mock catalog, mock terminal mappings, and locally stored development photos for local evaluation.
-- [ ] Validate and import the supplied approximately 150-city JSON.
+- [x] Validate and import the supplied 150-city JSON.
 - [ ] Complete city-to-terminal mappings and nearby-airport rules.
-- [ ] Manually curate, license-check, optimize, and attribute one hero image per city.
+- [x] Supply manually curated, attributed Wikimedia hero-photo metadata for each city.
+- [ ] Independently license-check the supplied photos and optionally generate locally hosted responsive derivatives.
 - [ ] Tune price bands and map clustering from real data.
 
 ### Milestone 7 — Railway release
@@ -998,7 +1026,9 @@ Because snapshots, rule versions, coverage, and winning journey details are alre
 
 ## 18. Inputs still required before the production release
 
-- The final approximately 150-city JSON and final attribute/category definitions.
-- Provider affiliate/API/distribution credentials or written permissions where applicable.
+- Complete terminal mappings for the supplied 150-city JSON where crawler
+  coverage is desired.
+- Source-by-source live public-page verification and curated terminal/route
+  configuration. Difficult or challenged sources can remain skipped.
 - The exact production batch time if `02:00 UTC` is not desired.
 - A Railway project/environment and production secrets at deployment time.

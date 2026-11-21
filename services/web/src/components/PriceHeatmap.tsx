@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { HeatmapCell, PriceHistory } from '../types';
-import { availabilityLabel, formatCurrency, formatDate, formatDateTime, joinClassNames } from '../utils';
+import { FLIXBUS_DISPLAYED_FARE_DISCLOSURE, availabilityLabel, formatCurrency, formatDate, formatDateTime, joinClassNames } from '../utils';
 
 interface PriceHeatmapProps {
   history: PriceHistory;
@@ -79,6 +79,7 @@ export const PriceHeatmap = ({ history, scheduledWeekends = [], selected, onSele
   const style = { '--heat-columns': leads.length } as CSSProperties;
   const tablePageCount = Math.max(1, Math.ceil(weekends.length / TABLE_PAGE_SIZE));
   const tableWeekends = weekends.slice(tablePage * TABLE_PAGE_SIZE, (tablePage + 1) * TABLE_PAGE_SIZE);
+  const hasDisplayedFare = history.cells.some((cell) => cell.fareDisclosure === FLIXBUS_DISPLAYED_FARE_DISCLOSURE);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -128,6 +129,7 @@ export const PriceHeatmap = ({ history, scheduledWeekends = [], selected, onSele
           </button>
         )}
       </div>
+      {hasDisplayedFare && <p className="fare-disclosure">{FLIXBUS_DISPLAYED_FARE_DISCLOSURE}</p>}
       <div className="heatmap-scroll" role="region" aria-label="Historical price heatmap" tabIndex={0}>
         <div className="heatmap-header" style={style}>
           <span className="sticky-label">Trip weekend</span>
@@ -174,7 +176,8 @@ export const PriceHeatmap = ({ history, scheduledWeekends = [], selected, onSele
                     const latestCheck = cell.currentObservedAt
                       ? `, latest check ${formatDateTime(cell.currentObservedAt)}: ${availabilityLabel[cell.availability]}${cell.currentDiagnostic ? ` (${cell.currentDiagnostic})` : ''}`
                       : '';
-                    const label = `${formatDate(`${weekend}T12:00:00Z`)}, batch date ${formatDate(`${cell.observedOn}T12:00:00Z`)}, ${lead} days before departure: ${cell.priceCents === null ? availabilityLabel[cell.availability] : formatCurrency(cell.priceCents)}${retainedFare}${latestCheck}${cell.coverage === 'partial' ? ', partial coverage' : ''}${cell.freshness === 'stale' ? ', stale fare' : ''}, ${Math.round(cell.sourceScopeRatio * 100)}% requested-source scope`;
+                    const disclosure = cell.fareDisclosure === FLIXBUS_DISPLAYED_FARE_DISCLOSURE ? `, ${FLIXBUS_DISPLAYED_FARE_DISCLOSURE}` : '';
+                    const label = `${formatDate(`${weekend}T12:00:00Z`)}, batch date ${formatDate(`${cell.observedOn}T12:00:00Z`)}, ${lead} days before departure: ${cell.priceCents === null ? availabilityLabel[cell.availability] : formatCurrency(cell.priceCents)}${disclosure}${retainedFare}${latestCheck}${cell.coverage === 'partial' ? ', partial coverage' : ''}${cell.freshness === 'stale' ? ', stale fare' : ''}, ${Math.round(cell.sourceScopeRatio * 100)}% requested-source scope`;
                     return (
                       <button
                         type="button"
@@ -236,7 +239,7 @@ export const PriceHeatmap = ({ history, scheduledWeekends = [], selected, onSele
                     const emptyLabel = notDue
                       ? `Not due until ${formatDate(`${expectedOn}T12:00:00Z`)}`
                       : `Missing crawl on ${formatDate(`${expectedOn}T12:00:00Z`)}`;
-                    return <td key={lead}>{cell ? cell.priceCents === null ? availabilityLabel[cell.availability] : `${formatCurrency(cell.priceCents)}${cell.availability !== 'available' ? ` · latest: ${availabilityLabel[cell.availability]}` : ''}` : emptyLabel}</td>;
+                    return <td key={lead}>{cell ? cell.priceCents === null ? availabilityLabel[cell.availability] : <>{formatCurrency(cell.priceCents)}{cell.availability !== 'available' ? ` · latest: ${availabilityLabel[cell.availability]}` : ''}{cell.fareDisclosure === FLIXBUS_DISPLAYED_FARE_DISCLOSURE && <small className="fare-disclosure">{FLIXBUS_DISPLAYED_FARE_DISCLOSURE}</small>}</> : emptyLabel}</td>;
                   })}
                 </tr>
               ))}

@@ -72,7 +72,7 @@ logs: ## Follow recent logs from PostgreSQL, API, and web.
 ps: ## Show local Compose service state.
 	$(COMPOSE) ps
 
-sources: ## List the 14 requested live-provider slots (all currently disabled).
+sources: ## List the 14 requested provider slots and their current states.
 	$(COMPOSE) --profile tools run --rm --no-deps crawler sources
 
 fixture-batch: ## Run the side-effect-free synthetic crawler fixture.

@@ -10,11 +10,11 @@ from ...models import AdapterMetadata, ExtractionStrategy
 
 
 class CatalogDisabledProviderAdapter(DisabledSourceAdapter):
-    """A named provider slot that cannot perform network requests.
+    """Fallback provider slot that cannot perform network requests.
 
-    Each source gets its own module and class so an authorized implementation
-    can replace only that source later. Until then, every method resolves to a
-    typed disabled result inherited from :class:`DisabledSourceAdapter`.
+    Crowl's requested providers have concrete public-page adapters. This base
+    remains only as a fail-closed fallback for a future catalog entry whose
+    parser has not yet been written.
     """
 
     source_slug: ClassVar[str]
@@ -32,7 +32,7 @@ class CatalogDisabledProviderAdapter(DisabledSourceAdapter):
             strategy=ExtractionStrategy.DISABLED,
             intended_strategy=spec.intended_strategy,
             connector_version=f"{spec.config_version}-slot",
-            parser_version="not-implemented",
+            parser_version="disabled-slot-v1",
             enabled=False,
             disabled_reason=spec.disabled_reason,
             access_basis=spec.access_basis,

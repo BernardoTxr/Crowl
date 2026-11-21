@@ -117,6 +117,38 @@ def test_composes_different_sources_modes_and_paris_return_terminal() -> None:
     assert winner.candidate.inbound.segments[-1].destination_terminal_id == "massy-tgv"
 
 
+def test_only_flixbus_displayed_fare_may_compete_without_service_fees() -> None:
+    displayed_outbound = replace(
+        _offer(
+            Direction.OUTBOUND,
+            TransportMode.BUS,
+            2_500,
+            source="flixbus",
+            offer_key="flixbus-displayed",
+        ),
+        price_complete=False,
+        mandatory_fees_included=False,
+        displayed_fare_service_fees_may_apply=True,
+    )
+    complete_return = _offer(
+        Direction.RETURN,
+        TransportMode.BUS,
+        3_000,
+        source="complete-bus",
+        offer_key="complete-return",
+    )
+
+    winner = _compose([displayed_outbound], [complete_return]).winner()
+    assert winner is not None
+    assert winner.total_price_eur_cents == 5_500
+    assert winner.candidate.displayed_fare_service_fees_may_apply
+    assert not winner.candidate.price_complete
+    assert not winner.candidate.mandatory_fees_included
+
+    unrelated_estimate = replace(displayed_outbound, source_id="other-bus")
+    assert _compose([unrelated_estimate], [complete_return]).winner() is None
+
+
 def test_returns_cheapest_candidates_for_each_mode_and_overall() -> None:
     outbound = [
         _offer(Direction.OUTBOUND, mode, price, source=f"{mode}-out", offer_key=f"{mode}-out")

@@ -330,11 +330,18 @@ class CoveragePruningTests(unittest.TestCase):
                     extractor.diagnostic, "COVERAGE_DISCOVERY_REJECTED"
                 )
                 self.assertEqual(extractor.consecutive_failures, 1)
+                flixbus = next(
+                    row for row in extractor_rows if row.source_id == "flixbus"
+                )
+                self.assertEqual(flixbus.status.value, "failed")
+                self.assertEqual(
+                    flixbus.diagnostic, "COVERAGE_DISCOVERY_BATCH_ABORTED"
+                )
                 self.assertTrue(
                     all(
                         row.status.value == "disabled"
                         for row in extractor_rows
-                        if row.source_id != "ryanair"
+                        if row.source_id not in {"ryanair", "flixbus"}
                     )
                 )
                 self.assertTrue(

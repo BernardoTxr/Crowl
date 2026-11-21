@@ -258,7 +258,7 @@ class BookingComponent:
     source_slug: str
     amount_minor: int
     currency: str
-    booking_url: str
+    booking_url: str | None
     fare_name: str
     mandatory_fees_included: bool
     passenger_age: int
@@ -267,13 +267,14 @@ class BookingComponent:
     bookable: bool
     is_teaser: bool
     student_fare_applied: bool = False
+    price_completeness: PriceCompleteness = PriceCompleteness.COMPLETE
 
     def __post_init__(self) -> None:
         if self.amount_minor <= 0:
             raise ValueError("booking component amount must be positive")
         if self.currency != self.currency.upper() or len(self.currency) != 3:
             raise ValueError("booking component currency is invalid")
-        if not self.booking_url.startswith("https://"):
+        if self.booking_url is not None and not self.booking_url.startswith("https://"):
             raise ValueError("booking URL must use HTTPS")
         if not 0 <= self.passenger_age <= 120:
             raise ValueError("booking component passenger age is invalid")

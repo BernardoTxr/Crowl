@@ -26,7 +26,8 @@ from crowl_core.models import (
     TravelWindow,
 )
 
-from .batch import TaskExecution
+from .batch import BatchReport, TaskExecution
+from .health import HealthEvent
 from .manifest import BatchManifest, CoverageCell, ManifestTask
 from .models import (
     SUCCESSFUL_SEARCH_OUTCOMES,
@@ -41,7 +42,10 @@ from .persistence import (
     _coverage_outcome_priority,
     _ensure_travel_windows,
     _sync_sources,
+    _upsert_extractor_run,
     _validate_catalog_contract,
+    _validate_source_reports,
+    _write_health_events,
 )
 
 
@@ -503,6 +507,63 @@ class DatabaseRunLifecycle:
 
     def mark_abandoned(self, manifest: BatchManifest, diagnostic_code: str) -> None:
         self._mark_terminal(manifest, DatabaseBatchStatus.ABANDONED, diagnostic_code)
+
+    def finalize_failed_without_publication(
+        self,
+        manifest: BatchManifest,
+        report: BatchReport,
+        *,
+        health_events: Iterable[HealthEvent],
+        diagnostic_code: str,
+    ) -> None:
+        """Terminalize a collected batch while preserving its audit evidence.
+
+        This is intentionally separate from ``mark_failed``. The latter is an
+        interruption path and must fail unfinished extractors. Here collection
+        has completed and publication is being withheld, so the coordinator's
+        source states and health events are the authoritative record.
+        """
+
+        validate_diagnostic_code(diagnostic_code)
+        if report.manifest_id != manifest.manifest_id:
+            raise PublicationError(
+                "batch report does not belong to the supplied manifest"
+            )
+        if report.batch_id != manifest.batch_id:
+            raise PublicationError(
+                "batch report ID does not match the supplied manifest"
+            )
+        _validate_source_reports(manifest, report)
+        events = tuple(health_events)
+        if any(event.batch_id != manifest.batch_id for event in events):
+            raise PublicationError("health event belongs to a different batch")
+
+        with self._session_factory() as session, session.begin():
+            crawl_run = _matching_run(session, manifest)
+            if (
+                crawl_run.status is not DatabaseBatchStatus.RUNNING
+                or crawl_run.published_at is not None
+            ):
+                raise PublicationError(
+                    "only an unpublished running batch may be terminalized"
+                )
+
+            for source_report in report.source_reports:
+                _upsert_extractor_run(session, crawl_run, source_report, report)
+            _write_health_events(
+                session,
+                crawl_run_id=crawl_run.id,
+                known_source_slugs=frozenset(manifest.expected_source_slugs),
+                events=events,
+            )
+
+            crawl_run.status = DatabaseBatchStatus.FAILED
+            crawl_run.started_at = report.started_at
+            crawl_run.heartbeat_at = report.completed_at
+            crawl_run.completed_at = report.completed_at
+            crawl_run.published_at = None
+            crawl_run.diagnostic = diagnostic_code
+            _refresh_crawl_counts(session, crawl_run)
 
     def _mark_terminal(
         self,

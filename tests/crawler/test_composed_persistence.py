@@ -64,6 +64,7 @@ class ScenarioAdapter(SourceAdapter):
         one_way_direction: Direction | None = None,
         one_way_price: int | None = None,
         atomic_round_trip_price: int | None = None,
+        split_round_trip: bool = False,
         included_transfer_cost_eur_cents: int = 0,
     ) -> None:
         self.source_slug = source_slug
@@ -71,6 +72,7 @@ class ScenarioAdapter(SourceAdapter):
         self.one_way_direction = one_way_direction
         self.one_way_price = one_way_price
         self.atomic_round_trip_price = atomic_round_trip_price
+        self.split_round_trip = split_round_trip
         self.included_transfer_cost_eur_cents = included_transfer_cost_eur_cents
         self._metadata = AdapterMetadata(
             source_slug=source_slug,
@@ -187,38 +189,39 @@ class ScenarioAdapter(SourceAdapter):
                     is_teaser=False,
                 ),
             ),
-            included_transfer_cost_eur_cents=(
-                self.included_transfer_cost_eur_cents
-            ),
+            included_transfer_cost_eur_cents=(self.included_transfer_cost_eur_cents),
             expires_at=OBSERVED_AT + timedelta(minutes=30),
         )
         return _result(offer)
 
-    def _atomic_result(
-        self, request: SearchRequest, price: int
-    ) -> ConnectorResult:
-        offer = NormalizedOffer(
-            provider_offer_id=f"{self.source_slug}-atomic",
-            source_slug=self.source_slug,
-            destination_city_id=request.destination_city_id,
-            pricing_semantics=PricingSemantics.ROUND_TRIP_ONLY,
-            price_completeness=PriceCompleteness.COMPLETE,
-            total_amount_minor=price,
-            currency="EUR",
-            mandatory_fees_included=True,
-            passenger_age=request.passenger.age,
-            passenger_student=request.passenger.student,
-            passenger_eligibility_confirmed=True,
-            bookable=True,
-            is_teaser=False,
-            observed_at=OBSERVED_AT,
-            outbound_segments=(
-                _directional_segment(Direction.OUTBOUND, self.mode, self.source_slug),
-            ),
-            return_segments=(
-                _directional_segment(Direction.RETURN, self.mode, self.source_slug),
-            ),
-            booking_components=(
+    def _atomic_result(self, request: SearchRequest, price: int) -> ConnectorResult:
+        if self.split_round_trip:
+            outbound_amount = price // 2
+            component_amounts = (outbound_amount, price - outbound_amount)
+            components = tuple(
+                BookingComponent(
+                    seller=f"{self.source_slug} direct",
+                    source_slug=self.source_slug,
+                    amount_minor=amount,
+                    currency="EUR",
+                    booking_url=(
+                        f"https://{_BOOKING_HOSTS[self.source_slug]}/{direction}"
+                    ),
+                    fare_name="Scenario split one way",
+                    mandatory_fees_included=True,
+                    passenger_age=request.passenger.age,
+                    passenger_student=request.passenger.student,
+                    passenger_eligibility_confirmed=True,
+                    bookable=True,
+                    is_teaser=False,
+                )
+                for direction, amount in zip(
+                    ("outbound", "return"), component_amounts, strict=True
+                )
+            )
+            pricing_semantics = PricingSemantics.COMPOSABLE
+        else:
+            components = (
                 BookingComponent(
                     seller=f"{self.source_slug} direct",
                     source_slug=self.source_slug,
@@ -235,7 +238,30 @@ class ScenarioAdapter(SourceAdapter):
                     bookable=True,
                     is_teaser=False,
                 ),
+            )
+            pricing_semantics = PricingSemantics.ROUND_TRIP_ONLY
+        offer = NormalizedOffer(
+            provider_offer_id=f"{self.source_slug}-atomic",
+            source_slug=self.source_slug,
+            destination_city_id=request.destination_city_id,
+            pricing_semantics=pricing_semantics,
+            price_completeness=PriceCompleteness.COMPLETE,
+            total_amount_minor=price,
+            currency="EUR",
+            mandatory_fees_included=True,
+            passenger_age=request.passenger.age,
+            passenger_student=request.passenger.student,
+            passenger_eligibility_confirmed=True,
+            bookable=True,
+            is_teaser=False,
+            observed_at=OBSERVED_AT,
+            outbound_segments=(
+                _directional_segment(Direction.OUTBOUND, self.mode, self.source_slug),
             ),
+            return_segments=(
+                _directional_segment(Direction.RETURN, self.mode, self.source_slug),
+            ),
+            booking_components=components,
             expires_at=OBSERVED_AT + timedelta(minutes=30),
         )
         return _result(offer)
@@ -253,9 +279,7 @@ def _directional_segment(
         departs_at = datetime(2027, 1, 8, 20, 0, tzinfo=PARIS)
         arrives_at = datetime(2027, 1, 8, 21, 30, tzinfo=AMSTERDAM)
         origin = "par-ory" if mode is TransportMode.FLIGHT else "massy-tgv"
-        destination = (
-            "ams-schiphol" if mode is TransportMode.FLIGHT else "ams-centraal"
-        )
+        destination = "ams-schiphol" if mode is TransportMode.FLIGHT else "ams-centraal"
     else:
         departs_at = datetime(2027, 1, 10, 18, 0, tzinfo=AMSTERDAM)
         arrives_at = datetime(2027, 1, 10, 21, 30, tzinfo=PARIS)
@@ -406,6 +430,31 @@ class TestComposedPublication:
         assert bookings[0].pricing_semantics.value == "round_trip_only"
         assert len(legs) == 2
         assert {item.booking_id for item in legs} == {bookings[0].id}
+
+    def test_split_round_trip_legs_keep_their_directional_booking_links(self) -> None:
+        self._publish(
+            (
+                ScenarioAdapter(
+                    source_slug="transavia",
+                    mode=TransportMode.FLIGHT,
+                    atomic_round_trip_price=8_500,
+                    split_round_trip=True,
+                ),
+            )
+        )
+
+        with self.sessions() as session:
+            bookings = session.scalars(
+                select(SnapshotBooking).order_by(SnapshotBooking.component_order)
+            ).all()
+            legs = session.scalars(
+                select(SnapshotLeg).order_by(SnapshotLeg.direction)
+            ).all()
+        assert len(bookings) == 2
+        assert len(legs) == 2
+        booking_by_direction = {item.direction: item.booking_id for item in legs}
+        assert booking_by_direction[DatabaseDirection.OUTBOUND] == bookings[0].id
+        assert booking_by_direction[DatabaseDirection.RETURN] == bookings[1].id
 
     def test_directional_transfer_cost_flows_through_round_trip_composition(
         self,

@@ -41,7 +41,7 @@ class APISettings:
             data_dir=Path(os.getenv("CROWL_DATA_DIR", str(default_data_dir))),
             auto_create_schema=_boolean("CROWL_AUTO_CREATE_SCHEMA", is_sqlite),
             auto_seed=_boolean("CROWL_AUTO_SEED", is_sqlite),
-            seed_fixtures=_boolean("CROWL_SEED_FIXTURES", is_sqlite),
+            seed_fixtures=_boolean("CROWL_SEED_FIXTURES", False),
             freshness_hours=int(os.getenv("CROWL_FRESHNESS_HOURS", "36")),
             duration_history_days=_positive_integer("CROWL_DURATION_HISTORY_DAYS", 180),
             cors_origins=tuple(
@@ -52,6 +52,6 @@ class APISettings:
                 if origin.strip()
             ),
             expected_schema_revision=os.getenv(
-                "CROWL_SCHEMA_REVISION", "0005_synthetic_run_isolation"
+                "CROWL_SCHEMA_REVISION", "0006_flixbus_fare_policy"
             ),
         )

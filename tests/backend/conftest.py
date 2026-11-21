@@ -30,7 +30,7 @@ def seeded_app(tmp_path: Path):
         freshness_hours=24 * 3650,
         duration_history_days=180,
         cors_origins=("http://localhost:5173",),
-        expected_schema_revision="0005_synthetic_run_isolation",
+        expected_schema_revision="0006_flixbus_fare_policy",
     )
     app = create_app(
         settings,

@@ -50,6 +50,7 @@ class OneWayCandidate:
     student_eligible: bool = True
     included_transfer_cost_eur_cents: int = 0
     direct_operator_booking: bool = False
+    displayed_fare_service_fees_may_apply: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -258,7 +259,11 @@ def _prepare_direction(
 def _eligible_one_way(candidate: OneWayCandidate, expected_direction: Direction) -> bool:
     if candidate.itinerary.direction != expected_direction or not candidate.itinerary.segments:
         return False
-    if not candidate.price_complete or not candidate.mandatory_fees_included:
+    incomplete = not candidate.price_complete or not candidate.mandatory_fees_included
+    if incomplete and not (
+        candidate.source_id == "flixbus"
+        and candidate.displayed_fare_service_fees_may_apply
+    ):
         return False
     if not candidate.smallest_personal_item_included or candidate.price_eur_cents <= 0:
         return False
@@ -371,6 +376,10 @@ def _compose_pair(
             + inbound.included_transfer_cost_eur_cents
         ),
         itinerary_key=identity,
+        displayed_fare_service_fees_may_apply=(
+            outbound.displayed_fare_service_fees_may_apply
+            or inbound.displayed_fare_service_fees_may_apply
+        ),
     )
     try:
         validate_trip(candidate, validation_context)

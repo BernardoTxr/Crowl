@@ -183,12 +183,12 @@ def _seed_valid_revision(connection) -> dict[str, int | str]:
                 revision_id, component_order, source_id, seller,
                 pricing_semantics, original_amount_minor, original_currency,
                 eur_amount_cents, fx_rate, fx_rate_date, student_fare_used,
-                mandatory_fees_included, passenger_age, passenger_student,
+                price_completeness, mandatory_fees_included, passenger_age, passenger_student,
                 passenger_eligibility_confirmed, bookable_at_observation,
                 is_teaser
             ) VALUES (
                 :revision_id, 0, :source_id, 'Test Source', 'round_trip', 1000,
-                'EUR', 1000, 1.0, :rate_date, false, true, 22, true, true,
+                'EUR', 1000, 1.0, :rate_date, false, 'complete', true, 22, true, true,
                 true, false
             ) RETURNING id
             """
@@ -296,12 +296,12 @@ def test_leg_cannot_reference_another_revisions_booking() -> None:
                     revision_id, component_order, source_id, seller,
                     pricing_semantics, original_amount_minor, original_currency,
                     eur_amount_cents, fx_rate, fx_rate_date, student_fare_used,
-                    mandatory_fees_included, passenger_age, passenger_student,
+                    price_completeness, mandatory_fees_included, passenger_age, passenger_student,
                     passenger_eligibility_confirmed, bookable_at_observation,
                     is_teaser
                 ) VALUES (
                     :revision_id, 0, :source_id, 'Test Source', 'round_trip',
-                    1000, 'EUR', 1000, 1.0, '2034-12-01', false, true, 22,
+                    1000, 'EUR', 1000, 1.0, '2034-12-01', false, 'complete', true, 22,
                     true, true, true, false
                 ) RETURNING id
                 """
@@ -347,6 +347,65 @@ def test_available_revision_booking_components_must_sum_to_total() -> None:
         )
         with pytest.raises(IntegrityError, match="sum to its total price"):
             connection.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
+    finally:
+        transaction.rollback()
+        connection.close()
+        engine.dispose()
+
+
+def test_flixbus_displayed_fare_policy_is_accepted() -> None:
+    engine, connection, transaction = _connection()
+    try:
+        data = _seed_valid_revision(connection)
+        connection.execute(
+            text(
+                """
+                INSERT INTO sources (
+                    slug, name, supported_modes, strategy, is_requested, enabled,
+                    disabled_reason, connector_version, parser_version,
+                    created_at, updated_at
+                ) VALUES (
+                    'flixbus', 'FlixBus', CAST('["bus"]' AS jsonb), 'playwright',
+                    true, true, NULL, 'test', 'test', now(), now()
+                ) ON CONFLICT (slug) DO NOTHING
+                """
+            )
+        )
+        connection.execute(
+            text(
+                """
+                UPDATE snapshot_bookings
+                   SET source_id = 'flixbus',
+                       price_completeness = 'estimated',
+                       mandatory_fees_included = false
+                 WHERE id = :booking_id
+                """
+            ),
+            data,
+        )
+        connection.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
+    finally:
+        transaction.rollback()
+        connection.close()
+        engine.dispose()
+
+
+def test_non_flixbus_incomplete_fare_policy_is_rejected() -> None:
+    engine, connection, transaction = _connection()
+    try:
+        data = _seed_valid_revision(connection)
+        with pytest.raises(IntegrityError, match="booking_price_policy"):
+            connection.execute(
+                text(
+                    """
+                    UPDATE snapshot_bookings
+                       SET price_completeness = 'estimated',
+                           mandatory_fees_included = false
+                     WHERE id = :booking_id
+                    """
+                ),
+                data,
+            )
     finally:
         transaction.rollback()
         connection.close()

@@ -34,7 +34,6 @@ describe('FastAPI contract normalization', () => {
     const detail = await api.getCity('vienna');
     const journey = await api.getJourney('vienna', '2027-01-08', 'train');
 
-    expect(detail.isMock).toBe(false);
     expect(detail.data?.typicalDurations?.[0]).toMatchObject({ mode: 'train', medianMinutes: 650, sampleCount: 18 });
     expect(journey.data).toMatchObject({ id: '99', ruleVersionId: 4, profileId: 2, totalPriceCents: 12340, live: false, observedAt: '2026-12-01T02:00:00Z', currentObservedAt: '2026-12-02T03:00:00Z', currentCrawlRunId: '101', currentDiagnostic: 'CURRENT_FARE_AVAILABLE' });
     expect(journey.isSynthetic).toBe(false);
@@ -74,7 +73,6 @@ describe('FastAPI contract normalization', () => {
 
     expect(journey).toMatchObject({
       data: null,
-      isMock: false,
       isSynthetic: false,
       emptyState: {
         availability: 'no_valid_option',
@@ -86,7 +84,7 @@ describe('FastAPI contract normalization', () => {
         currentDiagnostic: 'NO_VALID_OPTION',
       },
     });
-    expect(history).toMatchObject({ data: { cells: [] }, isMock: false, isSynthetic: false });
+    expect(history).toMatchObject({ data: { cells: [] }, isSynthetic: false });
   });
 
   it('requests the exact revision selected from the history heatmap', async () => {
@@ -120,5 +118,11 @@ describe('FastAPI contract normalization', () => {
       '/api/v1/cities/vienna/journeys?weekend=2027-01-08&mode=all&revision_id=41',
       expect.any(Object),
     );
+  });
+
+  it('surfaces API failures instead of substituting catalog or fare data', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new TypeError('network unavailable'));
+
+    await expect(api.getCities()).rejects.toThrow('Crowl could not load the city catalog.');
   });
 });
