@@ -1,10 +1,9 @@
 # Crowl implementation status
 
-Crowl is runnable locally today with the supplied 150-city catalog. FlixBus is
-enabled only for one verified direct Paris Bercy Seine–Amsterdam Sloterdijk
-route; the other 13 providers are disabled. A fresh database starts with no
-fares, but the bounded local activation on 2026-11-21 published one real
-displayed-fare observation for the 2026-11-27 weekend.
+Crowl is runnable locally with the supplied 150-city catalog. FlixBus is
+enabled for direct trips from Paris Bercy Seine to Amsterdam Sloterdijk and
+Brussels Gare du Midi. The other 13 providers are disabled. A fresh database
+starts collecting history with its first successful scheduled run.
 
 ## Working now
 
@@ -38,14 +37,18 @@ displayed-fare observation for the 2026-11-27 weekend.
 - Durable daily-run bookkeeping, a full pre-network work ledger, source-level
   health, a single-run lease, interruption recovery, resumable safe empty
   outcomes, and atomic publication.
-- One isolated adapter, fail-closed public-HTML/embedded-JSON parser, sanitized
-  fixture suite, and status row for each of the 14 requested providers. FlixBus
-  is enabled for one bounded route; disabled, challenged, or unavailable
-  sources are recorded explicitly and never produce invented fares.
-- DB-free FlixBus canaries against Paris Bercy Seine–Amsterdam Sloterdijk
-  completed all six date searches for both 2026-11-27 and the six-month endpoint
-  2027-05-21. The rendered DOM parser accepts only exact direct-stop cards and
-  applies the weekend, 12-hour direction, and 12-hour stay rules.
+- Fourteen provider adapters and status rows. Invalid or missing coverage
+  fails its source while verified sources continue. The coordinator applies
+  per-source concurrency and allows each active search to use its own timeout
+  within the overall batch deadline.
+- DB-free FlixBus canaries verified both Amsterdam and Brussels with six dated
+  pages per round trip. The Brussels canaries returned displayed fares of
+  €27.46 for 2026-11-27 and €25.96 for 2027-05-21. The rendered DOM parser
+  checks exact direct stops, weekend timing, and the 12-hour limits.
+- A live daily-run check against a disposable PostgreSQL database completed
+  all six FlixBus tasks for the 2026-11-27 weekend and published two snapshots:
+  Amsterdam at €45.96 and Brussels at €27.46. This check used the installed
+  Chrome browser and a sale horizon limited to that weekend.
 - The guarded activation pilot completed on 2026-11-21 and atomically published
   a €45.96 displayed fare for 2026-11-27: €18.98 outbound and €26.98 return.
   Both components are stored as `estimated`, with fees unconfirmed and no
@@ -54,8 +57,8 @@ displayed-fare observation for the 2026-11-27 weekend.
   and all 14 source health states.
 - Docker Compose for PostgreSQL, API, web, and the one-shot crawler; CI checks;
   Alembic migrations; and Railway project-level infrastructure definitions for
-  a private API/database, public web service, and daily crawler cron. The Railway
-  definition has not been committed/pushed, provisioned, or burn-in tested.
+  a private API/database, public web service, and daily crawler cron. Railway
+  provisioning and scheduled-run verification are pending.
 - The supplied 150-city editorial catalog, with categories, attributes,
   visited/wishlist state, coordinates, and manually curated Wikimedia photo
   metadata. Remote image assets are permitted without generated local
@@ -68,21 +71,25 @@ displayed-fare observation for the 2026-11-27 weekend.
 - Add arbitrary within-direction cross-source leg chaining. The current
   composition boundary is provider-supplied multi-leg itineraries plus pairing
   complete outbound and return components across sources and modes.
-- Complete operational terminal mappings for the 138 catalog cities that do
+- Complete operational terminal mappings for the 136 catalog cities that do
   not yet have one. Those cities remain fully available to the map, directory,
   and city pages, but cannot receive crawler coverage until linked.
 
 ## Still requires live-page verification or external input
 
-- Per-source verification of stable ordinary public result markup, exact-fare
-  semantics, terminal aliases, explicit route coverage, conservative limits,
-  and booking domains for the remaining 13 disabled providers and any new
-  FlixBus route. The extractors use public HTML or JSON embedded in it,
-  directly or after ordinary Playwright rendering; they do not call provider,
-  partner, affiliate, GDS, or undocumented browser APIs. Normal cookie-consent
-  handling is allowed. CAPTCHA, login, persistent rate limiting, anti-bot
-  defenses, and access controls are not bypassed; difficult sources stay
-  skipped and kill-switched.
+- The Ryanair rendered public fare canary and OUIGO official MCP returned
+  exact live results. Enabling their booking links on Crowl requires provider
+  authorization. The Ryanair MCP documentation describes fare tools, but the
+  live tool list only exposed network and route tools when tested.
+  [OUIGO sales-site terms](https://www.ouigo.com/infos-legales-site-de-ventes) ·
+  [Ryanair terms](https://www.ryanair.com/gb/en/lp/legal/terms-of-use) ·
+  [Ryanair MCP docs](https://services-api.ryanair.com/mcp-server/docs)
+- Per-source verification of exact fares, terminal aliases, explicit route
+  coverage, usage terms, limits, and booking domains. A documented official
+  fare-search interface is an option when the provider permits the planned
+  usage. Public-page adapters use ordinary HTTP or Playwright rendering.
+  A CAPTCHA, login challenge, or rate limit is reported as a source failure
+  or access restriction.
 - Production history. The one local activation observation proves the path;
   history in a fresh Railway database starts only after its own scheduled live
   runs and cannot be truthfully backfilled.

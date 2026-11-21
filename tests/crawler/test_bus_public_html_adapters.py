@@ -646,6 +646,48 @@ class BusPublicHtmlAdapterTests(unittest.TestCase):
         self.assertEqual(result.outcome, SearchOutcome.NO_SERVICE)
         self.assertEqual(result.diagnostic_code, "FLIXBUS_NO_SERVICE")
 
+    def test_hidden_empty_message_does_not_confirm_no_service(self) -> None:
+        html = """
+        <html><body>
+          <script>window.copy = {empty: "No trips available"};</script>
+          <div hidden>No trips available</div>
+          <main>Loading results</main>
+        </body></html>
+        """
+
+        for case in CASES:
+            with self.subTest(source=case.slug):
+                result = _run(case, override_html=html)
+                self.assertEqual(result.outcome, SearchOutcome.PARSE_SCHEMA_ERROR)
+                self.assertEqual(result.offers, ())
+
+    def test_flixbus_city_aliases_may_cover_multiple_exact_stops(self) -> None:
+        case = CASES[0]
+        environment = _flixbus_environment(case)
+        environment["CROWL_FLIXBUS_TERMINAL_ALIASES_JSON"] = json.dumps(
+            {
+                "par-bercy-seine-bus": "PAR_PROVIDER",
+                "par-porte-maillot-bus": "PAR_PROVIDER",
+                "ams-sloterdijk-bus": "AMS_PROVIDER",
+            }
+        )
+        adapter = FlixBusAdapter(
+            _spec(case),
+            loader=FlixBusRenderedFixtureLoader(),
+            clock=lambda: OBSERVED_AT,
+            environ=environment,
+            minimum_request_interval_seconds=0,
+        )
+
+        result = asyncio.run(adapter.search(_request()))
+
+        self.assertEqual(result.outcome, SearchOutcome.SUCCESS_RESULTS)
+        self.assertEqual(len(result.offers), 1)
+        self.assertEqual(
+            result.offers[0].outbound_segments[0].departure_terminal_id,
+            "par-bercy-seine-bus",
+        )
+
     def test_missing_public_page_configuration_fails_before_rendering(self) -> None:
         case = CASES[2]
         adapter = case.adapter_type(

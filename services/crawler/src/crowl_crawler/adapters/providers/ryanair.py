@@ -1,8 +1,6 @@
 """Ryanair public booking-page extractor.
 
-Only literal JSON embedded in the rendered public page is parsed. The adapter
-does not call private/undocumented web APIs and never handles login or
-challenge pages.
+The adapter reads exact Basic fares from the rendered flight-selection page.
 """
 
 from __future__ import annotations
@@ -10,6 +8,7 @@ from __future__ import annotations
 import hashlib
 
 from ...models import ExtractionStrategy, SearchKind, SearchOutcome
+from ._ryanair_public_html import parse_ryanair_results
 from .flight_http import (
     ConfiguredFlightAdapter,
     FlightHttpRequest,
@@ -33,8 +32,8 @@ from .flight_http import (
 class RyanairAdapter(ConfiguredFlightAdapter):
     source_slug = "ryanair"
     operator_name = "Ryanair"
-    connector_version = "ryanair-public-page-v1"
-    parser_version = "ryanair-embedded-fares-v1"
+    connector_version = "ryanair-public-page-v2"
+    parser_version = "ryanair-public-fares-v2"
     runtime_strategy = ExtractionStrategy.PLAYWRIGHT
     public_page_hosts = ("ryanair.com",)
 
@@ -52,8 +51,9 @@ class RyanairAdapter(ConfiguredFlightAdapter):
                 "dateIn": (
                     context.selected_return_date.isoformat()
                     if context.selected_return_date is not None
-                    else None
+                    else ""
                 ),
+                "isReturn": "true" if context.selected_return_date else "false",
                 "originIata": context.query_origin.iata,
                 "destinationIata": context.query_destination.iata,
             },
@@ -62,6 +62,11 @@ class RyanairAdapter(ConfiguredFlightAdapter):
     def parse_response(
         self, body: bytes, context: FlightSearchContext
     ) -> ParsedFlightResponse:
+        if b"<journey-container" in body:
+            return parse_ryanair_results(
+                body.decode("utf-8"), context,
+                self.build_request(self._public_page_url, context).url,
+            )
         state = mapping_with_keys(embedded_json_documents(body), ("fares",))
         fares = required_sequence(state["fares"], "fares")
         if not fares:

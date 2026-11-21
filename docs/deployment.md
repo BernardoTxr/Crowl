@@ -128,10 +128,9 @@ All variables needed by the current scaffold are declared in the IaC graph:
 city-page p25/median/p75 estimates. Only validated observations inside that
 rolling window are counted.
 
-Provider credentials are intentionally unsupported. FlixBus is enabled only
-for the verified direct Bercy Seine–Sloterdijk route; the other 13 adapters are
-disabled until their ordinary public result pages, terminal aliases, and route
-coverage have been verified. Add only documented public-page and coverage
+FlixBus is enabled for direct routes from Paris Bercy Seine to Amsterdam
+Sloterdijk and Brussels Gare du Midi. The source catalog records the
+activation blockers for the other 13 adapters. Use documented provider search and coverage
 settings as Railway service variables; never store login credentials, cookies,
 or persistent browser state. Railway documents typed cross-service references
 and sealed variables in [Using Variables](https://docs.railway.com/variables).
@@ -169,9 +168,12 @@ The scheduled command is `crowl-crawler run`. It resolves the real catalog and
 six-month manifest, searches only the enabled FlixBus coverage, records the
 other 13 providers as disabled with version-controlled reasons, and never
 substitutes fixture fares. Enabling another source or route requires verified
-HTML markup and coverage plus an explicit source-config change; the publication
+fare results and coverage plus an explicit source-config change; the publication
 contract does not change. `fixture-publish` remains a manual local integration
 command and is never the Railway schedule.
+
+The crawler records one immutable manifest per Paris calendar date. If a
+manifest already exists, verify changed routes with the next daily batch.
 
 Inspect or trigger the job without changing its schedule:
 

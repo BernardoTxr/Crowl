@@ -829,10 +829,7 @@ async def _production_run(
 ) -> int:
     """Execute the configured providers, including honest disabled reports.
 
-    The default registry intentionally contains no live provider until an
-    public-page adapter is enabled. Such a run still persists the fourteen
-    disabled extractor states and zero live-source scope instead of fabricating
-    observations or failing the daily Railway job.
+    Only enabled providers with validated coverage receive fare-search tasks.
     """
 
     database_url = os.environ.get("DATABASE_URL", "").strip()
@@ -1055,7 +1052,9 @@ def _build_production_manifest(
         item.source_slug for item in source_metadata if item.enabled
     )
     coverage = source_coverage or {}
-    if set(coverage) != set(enabled_source_slugs):
+    if set(coverage) - set(enabled_source_slugs) or (
+        enabled_source_slugs and not coverage
+    ):
         raise PublicationError(
             "validated coverage discovery does not match enabled providers"
         )
@@ -1064,7 +1063,7 @@ def _build_production_manifest(
         config_version=release,
     ).build(
         scheduled_for=scheduled_for,
-        source_slugs=enabled_source_slugs,
+        source_slugs=tuple(slug for slug in enabled_source_slugs if slug in coverage),
         destinations=destinations,
         weekend_fridays=weekend_fridays,
         include_one_way_tasks=True,
@@ -1082,6 +1081,7 @@ def _build_production_manifest(
         coverage_cells=executable_manifest.coverage_cells,
         tasks=executable_manifest.tasks,
         created_at=executable_manifest.created_at,
+        coverage_failed_source_slugs=set(enabled_source_slugs) - set(coverage),
     )
 
 

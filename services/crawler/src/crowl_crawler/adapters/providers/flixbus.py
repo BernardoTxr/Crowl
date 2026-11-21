@@ -11,8 +11,10 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import os
 import re
 import time
+from collections import OrderedDict
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -31,18 +33,24 @@ from ...models import (
     Segment,
     TransportMode,
 )
-from ..catalog import SourceSpec
+from ..catalog import SourceSpec, source_catalog_path
 from ._bus_public_html import (
     MAX_TRIPS_PER_SEARCH,
+    PlaywrightPublicPageLoader,
     PublicHtmlBusAdapter,
-    PublicPageLoader,
     PublicPageConfigurationError,
+    PublicPageLoader,
     PublicPageSchemaError,
     RenderedCandidateInspection,
     RenderedPage,
+    _classify_page_failure,
+    _is_explicit_empty,
 )
 
 _CARD_PREFIX = "search-result-item "
+_RESULT_CARD_SELECTOR = '[data-e2e^="search-result-item search-result-item-"]'
+_CACHE_MAX_PAGES = 18
+_CACHE_TTL_SECONDS = 180
 _CARD_ID = re.compile(
     r"^search-result-item-(?P<kind>direct|ic):(?P<identifier>[A-Za-z0-9:/-]{1,700})$"
 )
@@ -87,6 +95,7 @@ class _PacedPublicPageLoader:
         self._minimum_interval_seconds = minimum_interval_seconds
         self._lock = asyncio.Lock()
         self._last_started_at: float | None = None
+        self._pages: OrderedDict[str, tuple[float, RenderedPage]] = OrderedDict()
 
     async def load(
         self,
@@ -97,6 +106,10 @@ class _PacedPublicPageLoader:
     ) -> RenderedPage:
         async with self._lock:
             now = time.monotonic()
+            cached = self._pages.pop(url, None)
+            if cached is not None and now - cached[0] < _CACHE_TTL_SECONDS:
+                self._pages[url] = cached
+                return cached[1]
             if self._last_started_at is not None:
                 wait_seconds = (
                     self._minimum_interval_seconds
@@ -105,13 +118,21 @@ class _PacedPublicPageLoader:
                 if wait_seconds > 0:
                     await asyncio.sleep(wait_seconds)
             self._last_started_at = time.monotonic()
-            return await self._delegate.load(
+            page = await self._delegate.load(
                 url,
                 allowed_hosts=allowed_hosts,
                 consent_labels=consent_labels,
             )
+            if _classify_page_failure(page) is None and (
+                _CARD_PREFIX in page.html or _is_explicit_empty(page)
+            ):
+                self._pages[url] = (time.monotonic(), page)
+                if len(self._pages) > _CACHE_MAX_PAGES:
+                    self._pages.popitem(last=False)
+            return page
 
     async def close(self) -> None:
+        self._pages.clear()
         await self._delegate.close()
 
 
@@ -297,6 +318,21 @@ def parse_flixbus_rendered_candidates(
     return tuple(collector.candidates)
 
 
+def _catalog_search_settings() -> dict[str, str]:
+    path = source_catalog_path().with_name("flixbus-routes.json")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return {
+            "CROWL_FLIXBUS_TERMINAL_ALIASES_JSON": json.dumps(payload["terminal_city_ids"]),
+            "CROWL_FLIXBUS_STOP_ALIASES_JSON": json.dumps(payload["stop_labels"]),
+            "CROWL_FLIXBUS_COVERAGE_JSON": json.dumps(payload["coverage"]),
+        }
+    except FileNotFoundError:
+        return {}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {"CROWL_FLIXBUS_COVERAGE_JSON": "invalid"}
+
+
 class FlixBusAdapter(PublicHtmlBusAdapter):
     source_slug = "flixbus"
     public_hosts = ("flixbus.com",)
@@ -306,7 +342,7 @@ class FlixBusAdapter(PublicHtmlBusAdapter):
         "&arrivalCity={destination}&rideDate={date_dot}&adult=1"
         "&currency=EUR"
     )
-    parser_version = "flixbus-rendered-dom-v3"
+    parser_version = "flixbus-rendered-dom-v4"
     rendered_cards_authoritative = True
 
     def __init__(
@@ -318,7 +354,14 @@ class FlixBusAdapter(PublicHtmlBusAdapter):
         environ: Mapping[str, str] | None = None,
         minimum_request_interval_seconds: float = 5.0,
     ) -> None:
-        super().__init__(spec, loader=loader, clock=clock, environ=environ)
+        if environ is None and spec.catalog_enabled:
+            environ = {**_catalog_search_settings(), **os.environ}
+        super().__init__(
+            spec,
+            loader=loader or PlaywrightPublicPageLoader(ready_selector=_RESULT_CARD_SELECTOR),
+            clock=clock,
+            environ=environ,
+        )
         self._loader = _PacedPublicPageLoader(
             self._loader,
             minimum_interval_seconds=minimum_request_interval_seconds,

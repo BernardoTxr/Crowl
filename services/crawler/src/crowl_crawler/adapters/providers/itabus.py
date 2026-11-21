@@ -8,6 +8,7 @@ class ItabusAdapter(PublicHtmlBusAdapter):
     public_hosts = ("itabus.it",)
     provider_names = ("Itabus",)
     parser_version = "itabus-public-html-v1"
+    consent_labels = (*PublicHtmlBusAdapter.consent_labels, "Agree and close")
 
 
 ADAPTER_CLASS = ItabusAdapter

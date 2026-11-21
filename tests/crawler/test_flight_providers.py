@@ -175,6 +175,71 @@ def _adapter(
 
 
 class FlightProviderTests(unittest.TestCase):
+    def test_ryanair_exact_rendered_basic_fare_and_date_pinning(self) -> None:
+        body = (FIXTURES / "ryanair-rendered-basic.html").read_bytes()
+        manifest = DailyManifestBuilder(origin_terminal_ids=("par-bva",)).build(
+            scheduled_for=date(2026, 11, 21),
+            source_slugs=("ryanair",),
+            destinations=(DestinationTarget("barcelona-es", ("bcn-el-prat",)),),
+            weekend_fridays=(date(2026, 12, 4),),
+            canary_per_source=False,
+        )
+        request = manifest.tasks[0].request
+        assert request.return_window is not None
+        request = replace(
+            request,
+            outbound_window=replace(
+                request.outbound_window,
+                starts_at=datetime(2026, 12, 5, 7, tzinfo=UTC),
+                ends_at=datetime(2026, 12, 5, 22, tzinfo=UTC),
+            ),
+            return_window=replace(
+                request.return_window,
+                starts_at=datetime(2026, 12, 6, 7, tzinfo=UTC),
+                ends_at=datetime(2026, 12, 6, 22, tzinfo=UTC),
+            ),
+        )
+        cases = (
+            (body, SearchOutcome.SUCCESS_RESULTS),
+            (
+                body.replace(
+                    b'data-ref="2026-12-05" data-selected',
+                    b'data-ref="2026-12-07" data-selected',
+                ),
+                SearchOutcome.PARSE_SCHEMA_ERROR,
+            ),
+            (body.replace(b"84.67", b"from 84.67"), SearchOutcome.PARSE_SCHEMA_ERROR),
+            (
+                body.replace(
+                    b'data-ref="regular-price-select"',
+                    b'disabled data-ref="regular-price-select"',
+                ),
+                SearchOutcome.PARSE_SCHEMA_ERROR,
+            ),
+        )
+        for page, expected in cases:
+            with self.subTest(expected=expected):
+                client = StaticPageClient(page)
+                adapter = RyanairAdapter(
+                    _enabled_spec("ryanair"),
+                    http_client=client,
+                    public_page_url="https://www.ryanair.com/gb/en/trip/flights/select",
+                    supported_terminal_pairs=(("par-bva", "bcn-el-prat"),),
+                )
+                result = asyncio.run(adapter.search(request))
+                self.assertEqual(result.outcome, expected)
+                if expected is SearchOutcome.SUCCESS_RESULTS:
+                    (offer,) = result.offers
+                    self.assertEqual(offer.total_amount_minor, 11_266)
+                    self.assertEqual(offer.outbound_segments[0].service_number, "FR 3122")
+                    self.assertEqual(offer.return_segments[0].service_number, "FR 3121")
+                    self.assertEqual(
+                        offer.booking_components[0].booking_url, client.requests[0].url
+                    )
+                    self.assertIsNotNone(result.schema_fingerprint)
+                else:
+                    self.assertEqual(result.offers, ())
+
     def test_each_airline_parses_sanitized_public_page_without_live_network(
         self,
     ) -> None:
@@ -342,6 +407,13 @@ class FlightProviderTests(unittest.TestCase):
             (
                 b"<html><div class='g-recaptcha'>captcha</div></html>",
                 200,
+                SearchOutcome.CAPTCHA_CHALLENGE,
+                "EASYJET_CAPTCHA_CHALLENGE",
+                False,
+            ),
+            (
+                b"<title>Let's confirm you are human</title>",
+                405,
                 SearchOutcome.CAPTCHA_CHALLENGE,
                 "EASYJET_CAPTCHA_CHALLENGE",
                 False,

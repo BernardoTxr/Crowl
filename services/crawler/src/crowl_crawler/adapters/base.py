@@ -9,6 +9,9 @@ from ..models import AdapterMetadata, ConnectorResult, CoverageDiscovery, Search
 class SourceAdapter(ABC):
     """Versioned connector contract implemented by every source slot."""
 
+    search_timeout_seconds: float | None = None
+    maximum_concurrent_searches: int | None = None
+
     @abstractmethod
     def metadata(self) -> AdapterMetadata:
         raise NotImplementedError

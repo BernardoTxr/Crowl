@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head><title>Ryanair</title><script>const messages = ["forbidden", "hcaptcha"];</script></head>
+<body>
+  <div aria-hidden="true">Please verify you are human.</div>
+  <flights-trip-details>
+    <div class="details__bottom-bar">Return <span>5 Dec – 6 Dec</span><icon iconid="glyphs/person"></icon>1</div>
+  </flights-trip-details>
+  <journey-container data-ref="outbound">
+    <button data-e2e="date-item" data-ref="2026-12-04"><flights-price-simple>€9.99</flights-price-simple></button>
+    <button data-e2e="date-item" data-ref="2026-12-05" data-selected="true">Saturday</button>
+    <flight-list>
+      <flight-card-new data-e2e="flight-card--outbound">
+        <div data-ref="flight-segment.departure">
+          <span class="flight-info__hour">12:55</span><span data-ref="origin-airport__BVA">Paris Beauvais</span>
+        </div>
+        <div class="card-flight-num__content" data-ref="FR 3122">FR 3122</div>
+        <div data-ref="flight_duration">1h 45m</div>
+        <div data-ref="flight-segment.arrival">
+          <span class="flight-info__hour">14:40</span><span data-ref="destination-airport__BCN">Barcelona</span>
+        </div>
+        <span class="flight-card-summary__fare">Basic Fare</span>
+        <flights-price-simple>€27.99</flights-price-simple>
+        <button data-ref="regular-price-select">Select</button>
+      </flight-card-new>
+    </flight-list>
+  </journey-container>
+  <journey-container data-ref="inbound">
+    <button data-e2e="date-item" data-ref="2026-12-06" data-selected="true">Sunday</button>
+    <flight-list>
+      <flight-card-new data-e2e="flight-card--inbound">
+        <div data-ref="flight-segment.departure">
+          <span class="flight-info__hour">18:45</span><span data-ref="origin-airport__BCN">Barcelona</span>
+        </div>
+        <div class="card-flight-num__content" data-ref="FR 3121">FR 3121</div>
+        <div data-ref="flight_duration">2h</div>
+        <div data-ref="flight-segment.arrival">
+          <span class="flight-info__hour">20:45</span><span data-ref="destination-airport__BVA">Paris Beauvais</span>
+        </div>
+        <span class="flight-card-summary__fare">Basic Fare</span>
+        <flights-price-simple>€84.67</flights-price-simple>
+        <button data-ref="regular-price-select">Select</button>
+      </flight-card-new>
+    </flight-list>
+  </journey-container>
+</body>
+</html>

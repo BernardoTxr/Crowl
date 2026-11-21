@@ -7,15 +7,14 @@ abstraction, and exits. It never runs a scheduler or a web server itself.
 The fourteen requested sources each have a named module and adapter class under
 `crowl_crawler.adapters.providers`. `data/sources.yaml` is the authoritative
 catalog for their names, modes, intended extraction strategies, feasibility,
-and kill switches; the Python registry does not repeat that metadata. Each
-provider module now contains a fail-closed parser for ordinary public-page HTML
-or JSON embedded in that HTML. No connector calls provider, partner, affiliate,
-GDS, or undocumented browser APIs. Fixture tests demonstrate parser behavior;
-they do not prove that current live markup is compatible.
+and kill switches; the Python registry does not repeat that metadata. Sources
+can use ordinary public-page HTML, JSON embedded in the page, or a documented
+official fare-search interface where the provider permits the planned usage.
+Use a live canary to verify the current response.
 
-FlixBus is enabled only for the verified direct Paris Bercy Seine–Amsterdam
-Sloterdijk route. The other 13 live slots remain disabled, and a catalog kill
-switch always wins over connector code. Ordinary cookie-consent controls may
+FlixBus is enabled for direct trips from Paris Bercy Seine to Amsterdam
+Sloterdijk and Brussels Gare du Midi. The other 13 live slots remain disabled.
+A catalog kill switch applies to the scheduled batch. Ordinary cookie-consent controls may
 be accepted, but the service does not log in or evade rate limits, CAPTCHAs,
 anti-bot defenses, or other access controls. A difficult or challenged source
 is reported and skipped. `fixture` is synthetic and available only through
@@ -47,13 +46,13 @@ kill-switched sources remain network-free unless the invocation includes the
 explicit canary-only override:
 
 ```sh
-export CROWL_RYANAIR_PUBLIC_PAGE_URL='https://www.ryanair.com/path-to-reviewed-public-booking-page'
+export CROWL_RYANAIR_PUBLIC_PAGE_URL='https://www.ryanair.com/gb/en/trip/flights/select'
 crowl-crawler live-canary \
   --source ryanair \
-  --origin-terminal par-cdg \
-  --destination-city lisbon-pt \
-  --destination-terminal lis-humberto-delgado \
-  --weekend 2027-01-08 \
+  --origin-terminal par-bva \
+  --destination-city barcelona-es \
+  --destination-terminal bcn-el-prat \
+  --weekend 2026-12-04 \
   --override-kill-switch-for-canary \
   --pretty
 ```
@@ -66,6 +65,28 @@ URL. A successful empty/no-service result exits 0; blocked, parser,
 configuration, timeout, or upstream failures exit 1; invalid scope or missing
 explicit override exits 2. Provider-specific public-page URL/template and
 terminal-alias configuration described below is still required.
+
+The OUIGO adapter uses the official MCP when the catalog selects
+`http_structured`. It queries exactly one adult and accepts priced direct
+trains on the verified Paris–Brussels and Paris–Lyon pairs. The following
+read-only check uses a verified weekend as an example. Select a Friday that
+is still on sale when running a new check.
+
+```sh
+crowl-crawler live-canary \
+  --source ouigo \
+  --origin-terminal par-gare-du-nord \
+  --destination-city brussels-be \
+  --destination-terminal brussels-midi \
+  --weekend 2026-12-04 \
+  --override-kill-switch-for-canary \
+  --pretty
+```
+
+Keep the daily OUIGO job disabled until authorized to publish booking links
+on Crowl. The dated coverage setting for authorized use is in `.env.example`.
+[OUIGO MCP](https://www.ouigo.com/infos-pratiques/mcp-ouigo) ·
+[OUIGO sales-site terms](https://www.ouigo.com/infos-legales-site-de-ventes)
 
 `activation-pilot-publish` is the guarded first-write path. It accepts only
 FlixBus, requires FlixBus to be the sole enabled provider, runs one exact
@@ -100,7 +121,7 @@ active city, its Schengen terminal links, the complete Paris/Massy origin set,
 all fourteen requested source slots, and the rolling six-month weekend horizon
 from the database catalog. It runs enabled adapters and persists disabled slots
 as explicit `disabled` extractor/search outcomes. With the repository's default
-registry, it searches only the bounded FlixBus Bercy–Sloterdijk coverage and
+registry, it searches the bounded FlixBus Amsterdam and Brussels coverage and
 never substitutes fixture fares:
 
 ```sh
@@ -108,7 +129,7 @@ export DATABASE_URL=postgresql+psycopg://user:password@host:5432/crowl
 crowl-crawler run
 ```
 
-For every enabled adapter, the production manifest requests both an atomic
+For every enabled adapter with validated coverage, the production manifest requests both an atomic
 round trip and directional outbound/return offers. An adapter may return a
 typed unsupported-route result for search kinds it cannot sell. Publication
 accepts connector-normalized, complete EUR round trips and independently
@@ -118,6 +139,12 @@ same weekend, duration, stay, terminal, and Schengen rules before selection.
 The two booking components and their respective legs remain separate in SQL.
 A provider's bundled round trip is always atomic and is never divided into
 directional prices.
+
+A coverage discovery failure is recorded against its source. The same batch
+continues searching the other sources with validated coverage. Each adapter's
+search timeout starts after it acquires capacity, and its own concurrency
+limit controls how many searches can run together. An upstream rate-limit
+response stops the source's remaining searches for that batch.
 
 Publication is fail-closed at the offer boundary. An advertised fare must be
 explicitly complete for mandatory fees, confirmed for the one-adult age-22
@@ -170,10 +197,9 @@ docker build -f services/crawler/Dockerfile -t crowl-crawler .
 
 ## Extension points
 
-- Keep extraction limited to a provider's ordinary public HTML: use direct
-  HTTPS only when the complete result is present in the response, or ordinary
-  Playwright rendering when client-side rendering is necessary. Do not replace
-  it with a provider API, partner feed, or intercepted private browser call.
+- Use a documented official fare-search interface when its terms permit the
+  planned usage. For public HTML, use direct HTTPS when the response contains
+  the complete fare, or ordinary Playwright rendering for client-side pages.
 - Keep the provider id, modes, strategy, and operational state in
   `data/sources.yaml`; do not duplicate them in the registry.
 - Set both `state: enabled` and `enabled: true`, and remove the kill switch,
@@ -218,7 +244,7 @@ exact aliases, valid weekend times, and the configured passenger/currency are
 normalized as displayed fares; connected cards remain diagnostic-only.
 
 Configuration alone is not an enablement signal. `data/sources.yaml` enables
-only FlixBus for the one verified route; the other 13 entries remain disabled
+only FlixBus for the two verified routes; the other 13 entries remain disabled
 and kill-switched until their own live-page verification is complete.
 
 No raw page, credential, cookie, checkout token, or exception message belongs

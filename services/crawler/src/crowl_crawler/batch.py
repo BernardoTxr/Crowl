@@ -128,14 +128,14 @@ class BatchCoordinator:
         *,
         health_sink: HealthSink | None = None,
         retry_policy: RetryPolicy | None = None,
-        request_timeout_seconds: float = 30.0,
+        request_timeout_seconds: float | None = None,
         maximum_concurrent_sources: int = 4,
         maximum_concurrent_requests: int = 8,
         suspicious_empty_minimum: int = 10,
         clock: Callable[[], datetime] | None = None,
         execution_recorder: Callable[[TaskExecution], TaskExecution] | None = None,
     ) -> None:
-        if request_timeout_seconds <= 0:
+        if request_timeout_seconds is not None and request_timeout_seconds <= 0:
             raise ValueError("request timeout must be positive")
         if maximum_concurrent_sources < 1 or maximum_concurrent_requests < 1:
             raise ValueError("concurrency limits must be positive")
@@ -323,7 +323,10 @@ class BatchCoordinator:
             return execution
 
         try:
-            if not metadata.enabled:
+            if metadata.source_slug in manifest.coverage_failed_source_slugs:
+                state = ExtractorRunStatus.FAILED
+                diagnostic_code = "COVERAGE_DISCOVERY_REJECTED"
+            elif not metadata.enabled:
                 for task in tasks:
                     execution = resumed_executions.get(task.task_id)
                     if execution is not None:
@@ -360,13 +363,23 @@ class BatchCoordinator:
                     executions_by_id[task.task_id].result.outcome
                     for task in canary_tasks
                 )
-                quarantine = bool(canary_outcomes) and all(
+                abort_source = bool(canary_outcomes) and all(
                     outcome in BLOCKING_SEARCH_OUTCOMES
-                    or outcome is SearchOutcome.PARSE_SCHEMA_ERROR
+                    or outcome in {
+                        SearchOutcome.PARSE_SCHEMA_ERROR,
+                        SearchOutcome.CONFIGURATION_ERROR,
+                        SearchOutcome.RATE_LIMITED,
+                    }
                     for outcome in canary_outcomes
                 )
-                if quarantine:
-                    if all(
+                if abort_source:
+                    if SearchOutcome.RATE_LIMITED in canary_outcomes:
+                        state = ExtractorRunStatus.BLOCKED
+                        diagnostic_code = "CANARY_RATE_LIMITED"
+                    elif SearchOutcome.CONFIGURATION_ERROR in canary_outcomes:
+                        state = ExtractorRunStatus.FAILED
+                        diagnostic_code = "CANARY_CONFIGURATION_ERROR"
+                    elif all(
                         outcome in BLOCKING_SEARCH_OUTCOMES
                         for outcome in canary_outcomes
                     ):
@@ -387,19 +400,44 @@ class BatchCoordinator:
                         for task in normal_tasks
                         if task.task_id not in resumed_executions
                     )
-                    normal_executions = await asyncio.gather(
-                        *(
-                            self._execute_task_with_retry(
+                    source_requests = asyncio.Semaphore(
+                        adapter.maximum_concurrent_searches
+                        or self.maximum_concurrent_requests
+                    )
+                    access_restricted = False
+
+                    async def guarded_search(task: ManifestTask) -> TaskExecution | None:
+                        nonlocal access_restricted
+                        async with source_requests:
+                            if access_restricted:
+                                return None
+                            execution = await self._execute_task_with_retry(
                                 adapter,
                                 task,
                                 request_semaphore=request_semaphore,
                                 deadline_at=deadline_at,
                             )
-                            for task in pending_normal_tasks
-                        )
+                            outcome = execution.result.outcome
+                            if (
+                                outcome in BLOCKING_SEARCH_OUTCOMES
+                                or outcome is SearchOutcome.RATE_LIMITED
+                            ):
+                                access_restricted = True
+                            return execution
+
+                    searches = tuple(
+                        asyncio.create_task(guarded_search(task))
+                        for task in pending_normal_tasks
                     )
-                    for execution in normal_executions:
-                        await accept(execution, resumed=False)
+                    try:
+                        for search in searches:
+                            if execution := await search:
+                                await accept(execution, resumed=False)
+                    finally:
+                        for search in searches:
+                            if not search.done():
+                                search.cancel()
+                        await asyncio.gather(*searches, return_exceptions=True)
                     executions = [
                         executions_by_id[task.task_id]
                         for task in tasks
@@ -481,12 +519,13 @@ class BatchCoordinator:
             return ()
         if self._deadline_reached(deadline_at):
             return tuple(self._deadline_execution(task, adapter) for task in tasks)
-        timeout = self._effective_timeout(deadline_at)
         try:
             async with request_semaphore:
+                if self._deadline_reached(deadline_at):
+                    return tuple(self._deadline_execution(task, adapter) for task in tasks)
                 results = await asyncio.wait_for(
                     adapter.canary(tuple(task.request for task in tasks)),
-                    timeout=timeout,
+                    timeout=self._effective_timeout(adapter, deadline_at, len(tasks)),
                 )
         except TimeoutError:
             results = tuple(self._timeout_result(adapter) for _ in tasks)
@@ -518,9 +557,11 @@ class BatchCoordinator:
             return self._deadline_execution(task, adapter)
         try:
             async with request_semaphore:
+                if self._deadline_reached(deadline_at):
+                    return self._deadline_execution(task, adapter)
                 result = await asyncio.wait_for(
                     adapter.search(task.request),
-                    timeout=self._effective_timeout(deadline_at),
+                    timeout=self._effective_timeout(adapter, deadline_at),
                 )
         except TimeoutError:
             result = self._timeout_result(adapter)
@@ -545,20 +586,24 @@ class BatchCoordinator:
     ) -> TaskExecution:
         attempts = 0
         result: ConnectorResult | None = None
-        while attempts < self.retry_policy.maximum_attempts:
-            attempts += 1
+        for attempt in range(1, self.retry_policy.maximum_attempts + 1):
             execution = await self._execute_task_once(
                 adapter,
                 task,
                 request_semaphore=request_semaphore,
                 deadline_at=deadline_at,
             )
+            attempts += execution.attempts
             result = execution.result
-            if not result.retryable or self._deadline_reached(deadline_at):
+            if (
+                not result.retryable
+                or result.outcome is SearchOutcome.RATE_LIMITED
+                or self._deadline_reached(deadline_at)
+            ):
                 break
-            if attempts < self.retry_policy.maximum_attempts:
+            if attempt < self.retry_policy.maximum_attempts:
                 delay = min(
-                    self.retry_policy.initial_backoff_seconds * (2 ** (attempts - 1)),
+                    self.retry_policy.initial_backoff_seconds * (2 ** (attempt - 1)),
                     self.retry_policy.maximum_backoff_seconds,
                 )
                 await asyncio.sleep(delay)
@@ -657,6 +702,10 @@ class BatchCoordinator:
             or outcome is SearchOutcome.PARTIAL_SUCCESS
             for outcome in outcomes
         )
+        if SearchOutcome.RATE_LIMITED in outcomes:
+            if has_success:
+                return ExtractorRunStatus.PARTIAL, "SOURCE_RATE_LIMITED"
+            return ExtractorRunStatus.BLOCKED, "SOURCE_RATE_LIMITED"
         if has_success:
             return ExtractorRunStatus.PARTIAL, "SOURCE_PARTIAL"
         return ExtractorRunStatus.FAILED, "SOURCE_FAILED"
@@ -664,11 +713,19 @@ class BatchCoordinator:
     def _deadline_reached(self, deadline_at: datetime | None) -> bool:
         return deadline_at is not None and self.clock() >= deadline_at
 
-    def _effective_timeout(self, deadline_at: datetime | None) -> float:
+    def _effective_timeout(
+        self,
+        adapter: SourceAdapter,
+        deadline_at: datetime | None,
+        search_count: int = 1,
+    ) -> float:
+        timeout = self.request_timeout_seconds
+        if timeout is None:
+            timeout = (adapter.search_timeout_seconds or 30.0) * search_count
         if deadline_at is None:
-            return self.request_timeout_seconds
+            return timeout
         remaining = (deadline_at - self.clock()).total_seconds()
-        return max(0.001, min(self.request_timeout_seconds, remaining))
+        return max(0.001, min(timeout, remaining))
 
     def _deadline_execution(
         self, task: ManifestTask, adapter: SourceAdapter

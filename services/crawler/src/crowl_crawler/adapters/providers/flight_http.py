@@ -57,6 +57,7 @@ from ...models import (
     Segment,
     TransportMode,
 )
+from ._html_text import visible_html_text
 
 
 DEFAULT_TIMEOUT_SECONDS = 15.0
@@ -66,23 +67,28 @@ MAXIMUM_DATES_PER_DIRECTION = 3
 MINIMUM_DESTINATION_STAY = timedelta(hours=12)
 SEARCH_DEADLINE_SECONDS = 120
 _CAPTCHA_MARKERS = (
-    b"cf-chl-",
-    b"g-recaptcha",
-    b"hcaptcha",
-    b"captcha challenge",
-    b"verify you are human",
+    "captcha",
+    "verify you are human",
+    "verify that you are human",
+    "confirm you are human",
 )
 _BLOCKED_MARKERS = (
-    b"access denied",
-    b"request blocked",
-    b"temporarily blocked",
-    b"you have been blocked",
-    b"forbidden",
+    "access denied",
+    "request blocked",
+    "temporarily blocked",
+    "you have been blocked",
+    "forbidden",
 )
 _MAINTENANCE_MARKERS = (
-    b"under maintenance",
-    b"temporarily unavailable",
-    b"service unavailable",
+    "under maintenance",
+    "temporarily unavailable",
+    "service unavailable",
+)
+_CONSENT_MARKERS = (
+    "cookie consent required",
+    "consent-required",
+    "please accept cookies to continue",
+    "privacy choices before continuing",
 )
 _CONSENT_LABELS = (
     "Accept all",
@@ -408,6 +414,7 @@ class RawFlightOffer:
 class ParsedFlightResponse:
     offers: tuple[RawFlightOffer, ...]
     empty_outcome: SearchOutcome = SearchOutcome.SUCCESS_EMPTY
+    schema_fingerprint: str | None = None
 
     def __post_init__(self) -> None:
         if self.empty_outcome not in {
@@ -465,6 +472,8 @@ class ConfiguredFlightAdapter(SourceAdapter):
     runtime_strategy = ExtractionStrategy.HTTP_STRUCTURED
     public_page_hosts: tuple[str, ...] = ()
     sale_horizon_days = DEFAULT_SALE_HORIZON_DAYS
+    search_timeout_seconds = SEARCH_DEADLINE_SECONDS + 5
+    maximum_concurrent_searches = 1
 
     def __init__(
         self,
@@ -713,25 +722,35 @@ class ConfiguredFlightAdapter(SourceAdapter):
             return self._pair_failure(SearchOutcome.RATE_LIMITED, "RATE_LIMITED")
         if response.status in {408, 504}:
             return self._pair_failure(SearchOutcome.TIMEOUT, "UPSTREAM_TIMEOUT")
-        if response.status < 200 or response.status >= 300:
-            return self._pair_failure(SearchOutcome.UPSTREAM_ERROR, "HTTP_ERROR")
         content_type = response.headers.get("content-type", "").lower()
-        if content_type and not (
+        is_html = not content_type or (
             content_type.startswith("text/html")
             or content_type.startswith("application/xhtml+xml")
-        ):
-            return self._pair_failure(
-                SearchOutcome.PARSE_SCHEMA_ERROR,
-                "NON_HTML_RESPONSE",
-            )
-        if _contains_captcha(response.body):
+        )
+        # A challenge can be returned with a 200 or a non-success status such
+        # as 405. Page bundles and hidden templates are not challenge evidence.
+        visible_text = (
+            visible_html_text(
+                response.body.decode("utf-8", errors="replace"), body_only=False
+            ).casefold()
+            if is_html
+            else ""
+        )
+        if any(marker in visible_text for marker in _CAPTCHA_MARKERS):
             return self._pair_failure(
                 SearchOutcome.CAPTCHA_CHALLENGE,
                 "CAPTCHA_CHALLENGE",
             )
-        if _contains_marker(response.body, _BLOCKED_MARKERS):
+        if response.status < 200 or response.status >= 300:
+            return self._pair_failure(SearchOutcome.UPSTREAM_ERROR, "HTTP_ERROR")
+        if not is_html:
+            return self._pair_failure(
+                SearchOutcome.PARSE_SCHEMA_ERROR,
+                "NON_HTML_RESPONSE",
+            )
+        if any(marker in visible_text for marker in _BLOCKED_MARKERS):
             return self._pair_failure(SearchOutcome.BLOCKED, "ACCESS_BLOCKED")
-        if _contains_marker(response.body, _MAINTENANCE_MARKERS):
+        if any(marker in visible_text for marker in _MAINTENANCE_MARKERS):
             return self._pair_failure(
                 SearchOutcome.UPSTREAM_ERROR,
                 "MAINTENANCE",
@@ -755,12 +774,7 @@ class ConfiguredFlightAdapter(SourceAdapter):
             KeyError,
             json.JSONDecodeError,
         ):
-            if _contains_captcha(response.body):
-                return self._pair_failure(
-                    SearchOutcome.CAPTCHA_CHALLENGE,
-                    "CAPTCHA_CHALLENGE",
-                )
-            if _contains_consent_wall(response.body):
+            if any(marker in visible_text for marker in _CONSENT_MARKERS):
                 return self._pair_failure(
                     SearchOutcome.BLOCKED,
                     "CONSENT_REQUIRED",
@@ -769,7 +783,7 @@ class ConfiguredFlightAdapter(SourceAdapter):
                 SearchOutcome.PARSE_SCHEMA_ERROR,
                 "SCHEMA_MISMATCH",
             )
-        schema_fingerprint = _schema_fingerprint(response.body)
+        schema_fingerprint = parsed.schema_fingerprint or _schema_fingerprint(response.body)
         if not normalized:
             return _PairResult(
                 outcome=parsed.empty_outcome,
@@ -1350,26 +1364,6 @@ def _route_environment(variable: str) -> tuple[tuple[str, str], ...]:
             )
         pairs.append((values[0], values[1]))
     return tuple(pairs)
-
-
-def _contains_captcha(body: bytes) -> bool:
-    return _contains_marker(body, _CAPTCHA_MARKERS)
-
-
-def _contains_marker(body: bytes, markers: Sequence[bytes]) -> bool:
-    sample = body[:262_144].lower()
-    return any(marker in sample for marker in markers)
-
-
-def _contains_consent_wall(body: bytes) -> bool:
-    sample = body[:262_144].lower()
-    markers = (
-        b"cookie consent required",
-        b"consent-required",
-        b"please accept cookies to continue",
-        b"privacy choices before continuing",
-    )
-    return any(marker in sample for marker in markers)
 
 
 def _offer_matches_request(offer: NormalizedOffer, request: SearchRequest) -> bool:

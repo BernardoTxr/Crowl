@@ -223,6 +223,15 @@ class RailHtmlProviderTests(unittest.TestCase):
             ),
             (
                 HtmlPage(
+                    403,
+                    "text/html",
+                    b"<html><body><h1>Access denied</h1></body></html>",
+                    "https://www.eurostar.com/search",
+                ),
+                SearchOutcome.BLOCKED,
+            ),
+            (
+                HtmlPage(
                     429,
                     "text/html",
                     b"<html><body>Too many requests</body></html>",
@@ -280,6 +289,54 @@ class RailHtmlProviderTests(unittest.TestCase):
                 )
                 result = asyncio.run(adapter.search(_request()))
                 self.assertEqual(result.outcome, expected)
+
+    def test_unrelated_page_copy_does_not_classify_the_search(self) -> None:
+        extras = (
+            b'<script>const error = "Verify that you are human";</script>'
+            b'<div hidden><p>Access denied</p></div>'
+            b'<footer><label>CAPTCHA</label><p>No trains available</p></footer>'
+        )
+        for body, expected in (
+            (
+                _fixture("eurostar", "eurostar.com", "Eurostar").replace(
+                    b"</body>", extras + b"</body>"
+                ),
+                SearchOutcome.SUCCESS_RESULTS,
+            ),
+            (
+                b"<html><body>Loading" + extras + b"</body></html>",
+                SearchOutcome.PARSE_SCHEMA_ERROR,
+            ),
+        ):
+            with self.subTest(expected=expected):
+                adapter = EurostarAdapter(
+                    _spec("eurostar", "Eurostar", "eurostar.com"),
+                    loader=FakeHtmlLoader(
+                        HtmlPage(200, "text/html", body, "https://www.eurostar.com/search")
+                    ),
+                    clock=lambda: OBSERVED_AT,
+                    environment=_environment("eurostar", "eurostar.com"),
+                )
+                result = asyncio.run(adapter.search(_request()))
+                self.assertEqual(result.outcome, expected)
+
+    def test_eurostar_reports_rendered_search_error_as_upstream_failure(self) -> None:
+        page = HtmlPage(
+            200,
+            "text/html",
+            "<html><body><h1>Oups, une erreur s’est produite</h1></body></html>".encode(),
+            "https://www.eurostar.com/search",
+        )
+        adapter = EurostarAdapter(
+            _spec("eurostar", "Eurostar", "eurostar.com"),
+            loader=FakeHtmlLoader(page),
+            clock=lambda: OBSERVED_AT,
+            environment=_environment("eurostar", "eurostar.com"),
+        )
+        result = asyncio.run(adapter.search(_request()))
+        self.assertEqual(result.outcome, SearchOutcome.UPSTREAM_ERROR)
+        self.assertEqual(result.diagnostic_code, "RAIL_HTML_RESULTS_UNAVAILABLE")
+        self.assertEqual(result.completed_count, 0)
 
     def test_unapproved_result_url_is_a_schema_failure(self) -> None:
         page = HtmlPage(

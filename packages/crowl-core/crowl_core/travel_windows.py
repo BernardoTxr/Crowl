@@ -45,9 +45,10 @@ class TravelWindowSpec:
 
     @property
     def label(self) -> str:
+        monday = self.friday + timedelta(days=3)
         return (
-            f"Fri {self.friday:%-d %b} after 19:00 → "
-            f"Mon {(self.friday + timedelta(days=3)):%-d %b} by 07:00"
+            f"Fri {self.friday.day} {self.friday:%b} after 19:00 → "
+            f"Mon {monday.day} {monday:%b} by 07:00"
         )
 
 

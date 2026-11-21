@@ -39,6 +39,7 @@ from ...models import (
 )
 from ..base import SourceAdapter
 from ..catalog import SourceSpec
+from ._html_text import visible_html_text as _visible_body_text
 
 MAX_PAGE_BYTES = 4_000_000
 MAX_SEARCH_PAGES = 8
@@ -82,25 +83,6 @@ _SCHEMA_FINGERPRINT = hashlib.sha256(
     b"public-html-jsonld-v1:BusTrip:Offer:UnitPriceSpecification"
 ).hexdigest()
 _API_PATH = re.compile(r"(?:^|/)(?:api|graphql|rest)(?:/|$)", re.IGNORECASE)
-_NON_VISIBLE_TEXT_TAGS = frozenset({"script", "style", "template", "noscript"})
-_HTML_VOID_ELEMENTS = frozenset(
-    {
-        "area",
-        "base",
-        "br",
-        "col",
-        "embed",
-        "hr",
-        "img",
-        "input",
-        "link",
-        "meta",
-        "param",
-        "source",
-        "track",
-        "wbr",
-    }
-)
 
 
 class PublicPageSchemaError(ValueError):
@@ -146,6 +128,9 @@ class PlaywrightPublicPageLoader:
     network-free.  Only a visible cookie-consent button may be accepted.
     """
 
+    def __init__(self, *, ready_selector: str | None = None) -> None:
+        self._ready_selector = ready_selector
+
     async def load(
         self,
         url: str,
@@ -172,9 +157,6 @@ class PlaywrightPublicPageLoader:
                     context = await browser.new_context(
                         locale="en-GB",
                         timezone_id="Europe/Paris",
-                        user_agent=(
-                            "Mozilla/5.0 (compatible; Crowl/0.1; public fare monitor)"
-                        ),
                     )
                     page = await context.new_page()
                     response = await page.goto(
@@ -182,22 +164,31 @@ class PlaywrightPublicPageLoader:
                         wait_until="domcontentloaded",
                         timeout=PAGE_TIMEOUT_MS,
                     )
-                    for label in consent_labels:
+                    if not _url_host_allowed(page.url, allowed_hosts):
+                        raise PublicPageLoadError(
+                            SearchOutcome.BLOCKED, "UNEXPECTED_REDIRECT"
+                        )
+                    if consent_labels:
+                        consent_names = "|".join(map(re.escape, consent_labels))
                         button = page.get_by_role(
                             "button",
-                            name=re.compile(rf"^{re.escape(label)}$", re.IGNORECASE),
+                            name=re.compile(rf"^(?:{consent_names})$", re.IGNORECASE),
                         ).first
                         try:
-                            if await button.is_visible(timeout=300):
-                                await button.click(timeout=1_500)
-                                break
+                            await button.wait_for(state="visible", timeout=1_800)
+                            await button.click(timeout=1_500)
                         except PlaywrightTimeoutError:
-                            continue
+                            pass
                     try:
-                        await page.wait_for_load_state("networkidle", timeout=5_000)
+                        if self._ready_selector is None:
+                            await page.wait_for_load_state("networkidle", timeout=5_000)
+                        else:
+                            await page.locator(self._ready_selector).first.wait_for(
+                                state="visible", timeout=8_000
+                            )
                     except PlaywrightTimeoutError:
-                        # Some public pages keep analytics sockets open.  The
-                        # DOM snapshot below is still deterministic to parse.
+                        # The parser classifies empty, blocked and incomplete
+                        # pages using the rendered DOM after this bounded wait.
                         pass
                     final_url = page.url
                     if not _url_host_allowed(final_url, allowed_hosts):
@@ -283,6 +274,8 @@ class RenderedCandidateInspection:
 class PublicHtmlBusAdapter(SourceAdapter):
     """Base for provider-specific public-page adapters."""
 
+    search_timeout_seconds = SEARCH_DEADLINE_SECONDS + 5
+    maximum_concurrent_searches = 1
     source_slug: ClassVar[str]
     public_hosts: ClassVar[tuple[str, ...]]
     provider_names: ClassVar[tuple[str, ...]]
@@ -439,42 +432,37 @@ class PublicHtmlBusAdapter(SourceAdapter):
             )
 
         try:
-            outbound, returns, saw_explicit_empty = _parse_pages(
-                pages,
-                source_slug=self.source_slug,
-                provider_names=self.provider_names,
-                booking_hosts=self._spec.booking_hosts,
-                terminal_aliases=terminal_aliases,
-                request=request,
-            )
-            offers = _normalize_offers(
-                outbound,
-                returns,
-                source_slug=self.source_slug,
-                display_name=self._spec.name,
-                request=request,
-                observed_at=observed_at,
-            )
             candidate_inspection = self._inspect_rendered_candidates(
                 pages,
                 request=request,
                 observed_at=observed_at,
             )
             if self.rendered_cards_authoritative:
-                if candidate_inspection is None:
+                offers = candidate_inspection.offers if candidate_inspection else ()
+                all_pages_empty = all(_is_explicit_empty(page) for _, page in pages)
+            else:
+                outbound, returns, all_pages_empty = _parse_pages(
+                    pages,
+                    source_slug=self.source_slug,
+                    provider_names=self.provider_names,
+                    booking_hosts=self._spec.booking_hosts,
+                    terminal_aliases=terminal_aliases,
+                    request=request,
+                )
+                offers = _normalize_offers(
+                    outbound,
+                    returns,
+                    source_slug=self.source_slug,
+                    display_name=self._spec.name,
+                    request=request,
+                    observed_at=observed_at,
+                )
+                if candidate_inspection is not None and candidate_inspection.offers:
                     if offers:
                         raise PublicPageSchemaError(
-                            "structured fares are not authoritative for this provider"
+                            "rendered and structured fares are ambiguous"
                         )
-                    offers = ()
-                else:
                     offers = candidate_inspection.offers
-            elif candidate_inspection is not None and candidate_inspection.offers:
-                if offers:
-                    raise PublicPageSchemaError(
-                        "rendered and structured fares are ambiguous"
-                    )
-                offers = candidate_inspection.offers
         except (PublicPageSchemaError, ValueError, InvalidOperation):
             return ConnectorResult.failure(
                 outcome=SearchOutcome.PARSE_SCHEMA_ERROR,
@@ -514,7 +502,7 @@ class PublicHtmlBusAdapter(SourceAdapter):
                 response_fingerprint=page_fingerprint,
                 schema_fingerprint=candidate_inspection.schema_fingerprint,
             )
-        elif saw_explicit_empty:
+        elif all_pages_empty:
             outcome = SearchOutcome.NO_SERVICE
             suffix = "NO_SERVICE"
         else:
@@ -672,81 +660,6 @@ class _JsonLdCollector(HTMLParser):
             raise PublicPageSchemaError("invalid JSON-LD") from error
 
 
-class _VisibleBodyTextCollector(HTMLParser):
-    """Collect rendered body text while ignoring scripts and hidden nodes."""
-
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self._stack: list[tuple[str, bool, bool]] = []
-        self._chunks: list[str] = []
-        self._characters = 0
-
-    @property
-    def text(self) -> str:
-        return " ".join(" ".join(self._chunks).split())
-
-    def handle_starttag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
-        normalized_tag = tag.casefold()
-        attributes = {name.casefold(): value or "" for name, value in attrs}
-        parent_in_body = self._stack[-1][1] if self._stack else False
-        parent_hidden = self._stack[-1][2] if self._stack else False
-        in_body = parent_in_body or normalized_tag == "body"
-        compact_style = re.sub(r"\s+", "", attributes.get("style", "").casefold())
-        hidden = (
-            parent_hidden
-            or normalized_tag in _NON_VISIBLE_TEXT_TAGS
-            or "hidden" in attributes
-            or attributes.get("aria-hidden", "").casefold() == "true"
-            or "display:none" in compact_style
-            or "visibility:hidden" in compact_style
-        )
-        self._stack.append((normalized_tag, in_body, hidden))
-        if normalized_tag in _HTML_VOID_ELEMENTS:
-            self._stack.pop()
-
-    def handle_startendtag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
-        self.handle_starttag(tag, attrs)
-        if tag.casefold() not in _HTML_VOID_ELEMENTS:
-            self.handle_endtag(tag)
-
-    def handle_endtag(self, tag: str) -> None:
-        normalized_tag = tag.casefold()
-        matching_index = next(
-            (
-                index
-                for index in range(len(self._stack) - 1, -1, -1)
-                if self._stack[index][0] == normalized_tag
-            ),
-            None,
-        )
-        if matching_index is not None:
-            del self._stack[matching_index:]
-
-    def handle_data(self, data: str) -> None:
-        if (
-            not self._stack
-            or not self._stack[-1][1]
-            or self._stack[-1][2]
-            or self._characters >= 1_000_000
-        ):
-            return
-        remaining = 1_000_000 - self._characters
-        chunk = data[:remaining]
-        self._chunks.append(chunk)
-        self._characters += len(chunk)
-
-
-def _visible_body_text(html: str) -> str:
-    collector = _VisibleBodyTextCollector()
-    collector.feed(html)
-    collector.close()
-    return collector.text
-
-
 def _parse_pages(
     pages: Sequence[tuple[Direction, RenderedPage]],
     *,
@@ -758,13 +671,12 @@ def _parse_pages(
 ) -> tuple[tuple[_ParsedOneWay, ...], tuple[_ParsedOneWay, ...], bool]:
     outbound: dict[str, _ParsedOneWay] = {}
     returns: dict[str, _ParsedOneWay] = {}
-    saw_empty = False
+    all_pages_empty = True
     reverse_aliases = {value: key for key, value in terminal_aliases.items()}
     if len(reverse_aliases) != len(terminal_aliases):
         raise PublicPageSchemaError("terminal aliases must be one-to-one")
     for page_direction, page in pages:
-        if _NO_RESULTS.search(page.html):
-            saw_empty = True
+        all_pages_empty = all_pages_empty and _is_explicit_empty(page)
         collector = _JsonLdCollector()
         collector.feed(page.html)
         trip_nodes: list[Mapping[str, Any]] = []
@@ -800,7 +712,7 @@ def _parse_pages(
                     "provider offer ID identifies conflicting bus trips"
                 )
             target[parsed.provider_offer_id] = parsed
-    return tuple(outbound.values()), tuple(returns.values()), saw_empty
+    return tuple(outbound.values()), tuple(returns.values()), all_pages_empty
 
 
 def _find_bus_trips(value: object) -> list[Mapping[str, Any]]:
@@ -1077,6 +989,10 @@ def _classify_page_failure(page: RenderedPage) -> PublicPageLoadError | None:
     if _MAINTENANCE.search(visible_text):
         return PublicPageLoadError(SearchOutcome.UPSTREAM_ERROR, "PAGE_MAINTENANCE")
     return None
+
+
+def _is_explicit_empty(page: RenderedPage) -> bool:
+    return _NO_RESULTS.search(_visible_body_text(page.html)) is not None
 
 
 def _parse_coverage(payload: object) -> tuple[tuple[tuple[str, str], ...], date]:

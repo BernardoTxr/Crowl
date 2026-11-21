@@ -646,6 +646,83 @@ class CliTests(unittest.TestCase):
             self.assertEqual(payload["status"], "succeeded")
             self.assertEqual(payload["publication"]["snapshots_created"], 0)
 
+    def test_one_failed_coverage_discovery_does_not_discard_another_source_fare(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            database_url = self._seed_pilot_database(directory, enable_flixbus=True)
+            flixbus = _PilotFlixBusAdapter(with_offer=True)
+
+            async def flixbus_canary(requests):
+                return tuple([await flixbus.search(request) for request in requests])
+
+            async def flixbus_search(request):
+                if request.return_window is not None:
+                    return await _PilotFlixBusAdapter.search(flixbus, request)
+                return ConnectorResult(
+                    outcome=SearchOutcome.SKIPPED_UNSUPPORTED_ROUTE,
+                    retryable=False,
+                    diagnostic_code="TEST_ROUND_TRIP_ONLY",
+                    expected_count=1,
+                    completed_count=1,
+                    offers=(),
+                    parser_version=flixbus.metadata().parser_version,
+                    observed_at=datetime.now(UTC),
+                )
+
+            flixbus.discover_coverage = AsyncMock(
+                return_value=CoverageDiscovery(
+                    source_slug="flixbus",
+                    supported_terminal_pairs=((PILOT_ORIGIN, PILOT_DESTINATION_TERMINAL),),
+                    sellable_through=PILOT_WEEKEND + timedelta(days=3),
+                    observed_at=datetime.now(UTC),
+                    diagnostic_code="FLIXBUS_COVERAGE_OK",
+                )
+            )
+            flixbus.canary = flixbus_canary
+            flixbus.search = flixbus_search
+
+            unsupported = _PilotFlixBusAdapter(with_offer=False)
+            unsupported.metadata = Mock(
+                return_value=replace(
+                    unsupported.metadata(),
+                    source_slug="blablacar_bus",
+                    display_name="BlaBlaCar Bus",
+                )
+            )
+            unsupported.discover_coverage = AsyncMock(
+                return_value=CoverageDiscovery(
+                    source_slug="blablacar_bus",
+                    supported_terminal_pairs=(),
+                    sellable_through=None,
+                    observed_at=datetime.now(UTC),
+                    diagnostic_code="BLABLACAR_BUS_COVERAGE_UNCONFIGURED",
+                )
+            )
+            output = io.StringIO()
+            with (
+                patch.dict(os.environ, {"DATABASE_URL": database_url}, clear=True),
+                redirect_stdout(output),
+            ):
+                exit_code = asyncio.run(
+                    _production_run(
+                        scheduled_for=PILOT_DATE,
+                        pretty=False,
+                        registry=AdapterRegistry((unsupported, flixbus)),
+                        fx_syncer=None,
+                    )
+                )
+            self.assertEqual(exit_code, 0, output.getvalue())
+            payload = json.loads(output.getvalue())
+            self.assertEqual(payload["status"], "partial")
+            self.assertEqual(
+                {row["source_slug"]: row["state"] for row in payload["sources"]},
+                {"blablacar_bus": "failed", "flixbus": "succeeded"},
+            )
+            self.assertGreater(payload["publication"]["snapshots_created"], 0)
+            self.assertFalse(unsupported.requests)
+            self.assertTrue(unsupported.closed)
+
     @staticmethod
     def _seed_pilot_database(directory: str, *, enable_flixbus: bool) -> str:
         database_path = Path(directory) / "crowl.sqlite3"

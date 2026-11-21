@@ -53,7 +53,9 @@ async def discover_and_persist_coverage(
     The intent rows are committed for every enabled source before any adapter is
     invoked. This gives coverage discovery the same pre-network audit property
     as fare collection, whose complete request ledger is committed later by
-    ``DatabaseRunLifecycle.prepare``.
+    ``DatabaseRunLifecycle.prepare``. Failed sources are omitted from the
+    returned coverage. If every enabled source fails, there is no fare-search
+    manifest and the caller records a failed batch.
     """
 
     now = (clock or (lambda: datetime.now(UTC)))()
@@ -86,7 +88,10 @@ async def discover_and_persist_coverage(
     # All intents above are durably committed before the first provider network
     # operation. Providers are independent, so discovery can run concurrently.
     raw_results = await asyncio.gather(
-        *(adapter.discover_coverage() for adapter in adapters),
+        *(
+            asyncio.wait_for(adapter.discover_coverage(), timeout=30)
+            for adapter in adapters
+        ),
         return_exceptions=True,
     )
 
@@ -160,7 +165,7 @@ async def discover_and_persist_coverage(
                 ),
             )
 
-    if failures:
+    if failures and not validated:
         # This run will not reach the coordinator, which normally owns adapter
         # cleanup after fare searches.
         await asyncio.gather(
@@ -394,8 +399,8 @@ def _validate_discovery(
         normalized_pairs.append((origin_terminal_id, destination_terminal_id))
     if len(set(normalized_pairs)) != len(normalized_pairs):
         raise CoverageDiscoveryError("coverage contains duplicate terminal pairs")
-    if normalized_pairs and discovery.sellable_through is None:
-        raise CoverageDiscoveryError("supported routes need a sale horizon")
+    if not normalized_pairs or discovery.sellable_through is None:
+        raise CoverageDiscoveryError("enabled provider coverage needs routes and a sale horizon")
 
     return CoverageDiscovery(
         source_slug=discovery.source_slug,

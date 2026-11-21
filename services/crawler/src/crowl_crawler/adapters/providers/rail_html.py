@@ -56,21 +56,26 @@ MAXIMUM_OFFERS = 500
 DEFAULT_TIMEOUT_SECONDS = 25.0
 MAXIMUM_SEARCH_PAGES = 8
 SEARCH_DEADLINE_SECONDS = 120
-_CHALLENGE_MARKERS = (
-    "captcha",
+_CAPTCHA_MARKERS = (
+    "captcha challenge",
+    "complete the captcha",
+    "solve the captcha",
     "verify you are human",
+    "verify that you are human",
     "vérifiez que vous êtes humain",
-    "enable javascript and disable any ad blocker",
-    "access denied",
+    "security challenge",
     "unusual traffic",
 )
-_TEASER_MARKERS = (
-    "from price",
-    "prices from",
-    "starting at",
-    "à partir de",
-    "dès ",
+_BLOCKED_MARKERS = (
+    "enable javascript and disable any ad blocker",
+    "access denied",
+    "request blocked",
 )
+_IGNORED_TEXT_TAGS = frozenset({"footer", "nav", "script", "style", "template"})
+_VOID_TAGS = frozenset({
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+    "meta", "param", "source", "track", "wbr",
+})
 _FEE_INCLUDED = re.compile(
     r"(?:mandatory\s+)?(?:tax(?:es)?|fees?).{0,60}included|"
     r"included.{0,60}(?:mandatory\s+)?(?:tax(?:es)?|fees?)",
@@ -271,20 +276,33 @@ class _StructuredHtmlParser(HTMLParser):
         self.text_parts: list[str] = []
         self._capturing_json = False
         self._script_parts: list[str] = []
+        self._ignored_tags: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag.lower() != "script" or len(self.scripts) >= MAXIMUM_JSON_SCRIPTS:
-            return
         attributes = {key.lower(): value for key, value in attrs}
-        script_type = (attributes.get("type") or "").lower().split(";", 1)[0]
-        if script_type == "application/ld+json":
+        hidden = (
+            "hidden" in attributes
+            or (attributes.get("aria-hidden") or "").casefold() == "true"
+        )
+        script_type = (attributes.get("type") or "").split(";", 1)[0].strip().lower()
+        if (
+            not self._ignored_tags
+            and not hidden
+            and tag == "script"
+            and script_type == "application/ld+json"
+            and len(self.scripts) < MAXIMUM_JSON_SCRIPTS
+        ):
             self._capturing_json = True
             self._script_parts = []
+        elif tag not in _VOID_TAGS and (
+            self._ignored_tags or hidden or tag in _IGNORED_TEXT_TAGS
+        ):
+            self._ignored_tags.append(tag)
 
     def handle_data(self, data: str) -> None:
         if self._capturing_json:
             self._script_parts.append(data)
-        elif data.strip():
+        elif not self._ignored_tags and data.strip():
             self.text_parts.append(data.strip())
 
     def handle_endtag(self, tag: str) -> None:
@@ -292,6 +310,9 @@ class _StructuredHtmlParser(HTMLParser):
             self.scripts.append("".join(self._script_parts))
             self._capturing_json = False
             self._script_parts = []
+        elif tag in self._ignored_tags:
+            while self._ignored_tags.pop() != tag:
+                pass
 
     @property
     def normalized_text(self) -> str:
@@ -364,8 +385,11 @@ class PublicHtmlRailAdapter(SourceAdapter):
 
     source_slug: ClassVar[str]
     operator_name: ClassVar[str]
-    parser_version: ClassVar[str] = "schemaorg-rail-v1"
+    parser_version: ClassVar[str] = "schemaorg-rail-v2"
     extra_page_hosts: ClassVar[tuple[str, ...]] = ()
+    unavailable_markers: ClassVar[tuple[str, ...]] = ()
+    search_timeout_seconds = SEARCH_DEADLINE_SECONDS + 5
+    maximum_concurrent_searches = 1
     empty_markers: ClassVar[tuple[str, ...]] = (
         "no trains found",
         "no journeys found",
@@ -547,6 +571,7 @@ class PublicHtmlRailAdapter(SourceAdapter):
                         observed_at=observed_at,
                         terminal_names=self._terminal_names,
                         empty_markers=self.empty_markers,
+                        unavailable_markers=self.unavailable_markers,
                     )
                     if parsed.outcome not in {
                         SearchOutcome.SUCCESS_RESULTS,
@@ -854,34 +879,30 @@ def _parse_html_page(
     observed_at: datetime,
     terminal_names: Mapping[str, str],
     empty_markers: tuple[str, ...],
+    unavailable_markers: tuple[str, ...],
 ) -> ConnectorResult:
     if not raw_html or len(raw_html) > MAXIMUM_HTML_BYTES:
         raise ValueError("rail HTML body is invalid")
     decoded = raw_html.decode("utf-8", errors="strict")
     parser = _StructuredHtmlParser()
     parser.feed(decoded)
-    page_text = parser.normalized_text
-    if any(marker in page_text for marker in _CHALLENGE_MARKERS):
-        outcome = (
-            SearchOutcome.CAPTCHA_CHALLENGE
-            if "captcha" in page_text or "human" in page_text
-            else SearchOutcome.BLOCKED
-        )
+    page_text = parser.normalized_text.replace("’", "'")
+    if page_text == "captcha" or any(marker in page_text for marker in _CAPTCHA_MARKERS):
         return ConnectorResult.failure(
-            outcome=outcome,
-            diagnostic_code=(
-                "RAIL_HTML_CAPTCHA"
-                if outcome is SearchOutcome.CAPTCHA_CHALLENGE
-                else "RAIL_HTML_BLOCKED"
-            ),
+            outcome=SearchOutcome.CAPTCHA_CHALLENGE,
+            diagnostic_code="RAIL_HTML_CAPTCHA",
             parser_version=parser_version,
             observed_at=observed_at,
             retryable=False,
         )
-    if any(marker in page_text for marker in _TEASER_MARKERS):
-        # A page may contain marketing copy alongside valid exact offers.  The
-        # individual offer parser below still requires complete price markup.
-        pass
+    if any(marker in page_text for marker in _BLOCKED_MARKERS):
+        return ConnectorResult.failure(
+            outcome=SearchOutcome.BLOCKED,
+            diagnostic_code="RAIL_HTML_BLOCKED",
+            parser_version=parser_version,
+            observed_at=observed_at,
+            retryable=False,
+        )
 
     raw_offers: list[Mapping[str, Any]] = []
     decoded_scripts: list[object] = []
@@ -940,6 +961,16 @@ def _parse_html_page(
         )
     if raw_offers:
         raise ValueError("rail page offers did not satisfy the search contract")
+    if any(marker in page_text for marker in unavailable_markers):
+        return replace(
+            ConnectorResult.failure(
+                outcome=SearchOutcome.UPSTREAM_ERROR,
+                diagnostic_code="RAIL_HTML_RESULTS_UNAVAILABLE",
+                parser_version=parser_version,
+                observed_at=observed_at,
+            ),
+            response_fingerprint=response_fingerprint,
+        )
     if any(marker in page_text for marker in empty_markers):
         return ConnectorResult(
             outcome=SearchOutcome.SUCCESS_EMPTY,

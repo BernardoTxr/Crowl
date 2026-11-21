@@ -4,12 +4,12 @@ sources:
     name: Ryanair
     modes: [flight]
     strategy: playwright
-    state: disabled
+    state: disabled_needs_authorization
     enabled: false
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public booking-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: Public results were verified on Beauvais–Barcelona. The official MCP endpoint exposed route and airport tools during testing, with no active fare-search tool. Production booking-link publication requires Ryanair authorization.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -43,7 +43,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public booking-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The public flow showed the search form. Exact fares remain unverified and access to the published professional API requires a distribution agreement.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -60,7 +60,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public booking-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The public booking page returned HTTP 405 with a human-verification challenge.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -77,7 +77,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public booking-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The booking URL tested opened a login form. The public route page showed advertised prices without a verified dated result.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -94,7 +94,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public booking-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The public route flow did not expose a verified exact fare. The website terms restrict reuse of site content without prior written permission.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -109,16 +109,16 @@ sources:
     state: enabled
     enabled: true
     kill_switch: false
-    config_version: "2026-11-21-displayed-fare-v1"
+    config_version: "2026-11-21-displayed-fare-v2"
     access_basis: ordinary public search-page HTML
-    access_note: Enabled only for direct Paris Bercy Seine-Amsterdam Sloterdijk public result cards. The exact displayed one-adult EUR fare is stored as estimated; a later service fee may apply and an exact-trip booking link is optional.
+    access_note: Enabled for direct public result cards between Paris Bercy Seine and Amsterdam Sloterdijk or Brussels Gare du Midi. The exact displayed one-adult EUR fare is estimated because a service fee may apply.
     rate_limit: { requests_per_minute: 12, max_concurrency: 1, status: verified }
-    markets: { origins: [par-bercy-seine-bus], destinations: [amsterdam-nl], status: verified }
+    markets: { origins: [par-bercy-seine-bus], destinations: [amsterdam-nl, brussels-be], status: verified }
     sale_horizon_days: 184
     attribution_required: true
     booking_link_required: false
     booking_hosts: [flixbus.com]
-    route_discovery: { method: curated_public_page_coverage, status: verified, provenance: Bounded live canaries on 2026-11-21 completed all six public result pages and returned valid direct round trips for both 2026-11-27 and the six-month endpoint 2027-05-21; the guarded activation then published one 45.96 EUR displayed fare for 2026-11-27. }
+    route_discovery: { method: curated_public_page_coverage, status: verified, provenance: "Live canaries confirmed Amsterdam and Brussels direct round trips for 2026-11-27 and 2027-05-21. The verified return horizon ends 2027-05-24." }
   - id: blablacar_bus
     name: BlaBlaCar Bus
     modes: [bus]
@@ -128,13 +128,13 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public bus search-page HTML
-    access_note: Bus-only public-page parser is implemented and fixture-tested; rideshare is excluded. Keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: Public results show dated bus cards. The final adult total remains unverified because the booking may add a service fee. Rideshare is excluded.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
-    booking_hosts: [blablacar.com]
+    booking_hosts: [blablacar.com, blablacar.fr]
     route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
   - id: itabus
     name: Itabus
@@ -145,7 +145,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public search-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The public itinerary pages show route details and starting prices. A bookable departure with the final dated fare remains unverified.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -162,7 +162,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public search-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The public search form and terms describe a booking flow with possible added fees. A dated final fare remains unverified.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -173,20 +173,20 @@ sources:
   - id: ouigo
     name: OUIGO
     modes: [train]
-    strategy: playwright
-    state: disabled
+    strategy: http_structured
+    state: disabled_needs_authorization
     enabled: false
     kill_switch: true
-    config_version: "2026-11-21"
-    access_basis: ordinary public search-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    config_version: "2026-11-21-official-mcp-v1"
+    access_basis: documented official OUIGO MCP fare search
+    access_note: The official MCP returned exact dated adult fares for Paris–Lyon and Paris–Brussels. Production publication of links to OUIGO sales requires prior express authorization from SNCF Voyageurs.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
+    markets: { origins: [par-gare-de-lyon, par-gare-du-nord], destinations: [lyon-fr, brussels-be], status: verified }
     sale_horizon_days: null
     attribution_required: null
     booking_link_required: true
     booking_hosts: [ouigo.com]
-    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
+    route_discovery: { method: curated_official_mcp_coverage, status: verified, provenance: "Official station codes and exact one-adult fares were verified both ways through 2027-05-24." }
   - id: sncf_connect
     name: SNCF Connect
     modes: [train]
@@ -196,7 +196,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public search-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; current challenge behavior is not bypassed. Keep disabled until ordinary live markup, aliases, and coverage are verified.
+    access_note: The public booking results returned HTTP 403. The official open timetable API provides schedules and routing; no fare response was verified.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null
@@ -213,7 +213,7 @@ sources:
     kill_switch: true
     config_version: "2026-11-21"
     access_basis: ordinary public search-page HTML
-    access_note: Public-page parser is implemented and fixture-tested; keep disabled until stable live markup, terminal aliases, and route coverage are verified.
+    access_note: The French public form and LeFrecce landing were inspected. A public dated fare with complete booking evidence remains unverified.
     rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
     markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
     sale_horizon_days: null

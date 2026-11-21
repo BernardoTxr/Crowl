@@ -22,13 +22,12 @@ current implementation:
   modes and accepts provider-supplied multi-leg itineraries. Arbitrary
   within-direction cross-source leg chaining is pending.
 - All 14 requested provider adapter slots and status rows exist. **FlixBus is
-  enabled only for the verified direct Paris Bercy Seine–Amsterdam Sloterdijk
-  route; the other 13 providers are disabled and kill-switched.** The guarded
+  enabled for direct Paris Bercy Seine routes to Amsterdam Sloterdijk and
+  Brussels Gare du Midi.** The other 13 providers are disabled. The guarded
   2026-11-21 activation published one real €45.96 displayed-fare observation
   for the 2026-11-27 weekend.
-- Railway infrastructure definitions exist and type-check in the working tree,
-  but the repository has not yet been committed/pushed, they have not been
-  applied to an owner project, and no production burn-in has occurred.
+- Railway infrastructure definitions are versioned and type-check. Applying
+  them to an owner project and verifying scheduled production runs are pending.
 - `data/crowl-cities-150.json` is the canonical editorial catalog. Operational
   terminal mappings remain incomplete and are maintained separately.
 
@@ -683,16 +682,18 @@ mandatory.
 
 ### 9.2 Extraction-strategy rule
 
-For each source, verify the public search/result page immediately before
-enablement because markup and access behavior change. Crowl does not call
-provider, partner, affiliate, GDS, schedule, distribution, or undocumented
-browser APIs. Choose only between these public-page methods:
+Verify the provider's current access terms and the live fare response before
+enabling a source. Documented official search interfaces may be used when
+the provider permits the planned usage.
 
-1. `http_html` when a normal HTTPS response contains the complete fare in HTML
+1. `http_structured` for an official, documented fare-search interface, with
+   its published limits and required permissions.
+2. `http_html` when a normal HTTPS response contains the complete fare in HTML
    or literal JSON embedded in that HTML.
-2. `playwright` when the same ordinary public page needs client-side rendering;
+3. `playwright` when the same ordinary public page needs client-side rendering;
    parse only the resulting DOM and embedded page data.
-3. `disabled` when the exact fare cannot be extracted easily and reliably.
+4. `disabled` when the exact fare cannot be extracted reliably with the
+   available access.
 
 Ordinary cookie-consent controls may be accepted. Do not log in, intercept
 private network calls, or evade CAPTCHAs, `403`, persistent `429`, rate limits,
@@ -701,11 +702,10 @@ accounts. Record the typed state and skip the connector.
 
 ### 9.3 Requested-source matrix
 
-All 14 adapters and status rows belong to the first release. Each parser has
-sanitized fixture coverage, but “implemented and tested” does not imply “live
-compatible” or “enabled.” FlixBus alone is enabled for one verified route; all
-other sources remain kill-switched until their stable live public markup,
-exact-price meaning, terminal aliases, and explicit route coverage are verified.
+All 14 adapters and status rows belong to the first release. FlixBus is
+enabled for two verified routes. Enabling another source requires a successful
+live fare test with exact pricing, terminal aliases, route coverage, and
+permitted access.
 
 | Source | Mode | Provisional primary strategy | Enablement gate |
 |---|---|---|---|
@@ -715,7 +715,7 @@ exact-price meaning, terminal aliases, and explicit route coverage are verified.
 | Wizz Air | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; challenge or unstable markup stays skipped. |
 | Vueling | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
 | Volotea | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; challenge or unstable markup stays skipped. |
-| FlixBus | Bus | `playwright` public rendered search-card DOM | Enabled only for verified direct Bercy Seine–Sloterdijk cards. Accept the exact one-adult displayed fare; later service fees may be excluded and must be disclosed. An exact-trip booking link is optional. |
+| FlixBus | Bus | `playwright` public rendered search-card DOM | Enabled for direct Bercy Seine–Sloterdijk and Bercy Seine–Brussels Gare du Midi cards. Store the exact one-adult displayed fare with a service-fee disclosure. An exact-trip booking link is optional. |
 | BlaBlaCar Bus | Bus | `playwright` public bus search-page JSON-LD | Same gate; rideshare remains excluded. |
 | Itabus | Bus | `playwright` public search-page JSON-LD | Same gate; otherwise skip. |
 | Alsa | Bus | `playwright` public search-page JSON-LD | Same gate; otherwise skip. |
@@ -868,9 +868,8 @@ Relevant Railway documentation:
 ## 13. Security, compliance, and data hygiene
 
 - Review and record each provider’s current terms, allowed access method, rate limits, and attribution requirements before enabling it.
-- Extract only ordinary public-page HTML or literal data embedded in it. Do not
-  add provider/partner APIs, feeds, GDS integrations, or intercepted private
-  browser calls.
+- Use ordinary public-page HTML or documented official fare-search interfaces
+  with the required permissions. Never use intercepted private browser calls.
 - Use Playwright only for normal public-page rendering; accepting an ordinary
   cookie-consent control is allowed, but do not bypass challenges or access
   controls.
@@ -968,12 +967,12 @@ Build all images, start Compose, migrate, import the city catalog, run crawler i
 
 - [x] Add an isolated public-HTML/embedded-JSON parser, sanitized fixtures,
   configuration, contract coverage, and status entry for every requested source.
-- [x] Enable only verified, bounded, ordinary public-page extraction; currently
-  this is FlixBus Bercy Seine–Sloterdijk only.
+- [x] Enable verified, bounded extraction. FlixBus is enabled for Bercy Seine
+  to Amsterdam Sloterdijk and Brussels Gare du Midi.
 - [x] Show all 14 sources and give every unavailable source a sanitized disabled reason; never silently omit one.
 - [x] Prune searches using configured/discovered route coverage and sale horizons when those facts are available.
 - [ ] Verify live public markup, exact fare semantics, terminal aliases, and
-  route coverage source by source; one bounded FlixBus route is verified and
+  route coverage source by source; two bounded FlixBus routes are verified and
   the remaining 13 sources are disabled.
 - [x] Publish one guarded real activation winner end to end and expose its
   displayed-fare disclosure through SQL, API, map, and city-page contracts.

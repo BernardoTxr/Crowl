@@ -6,10 +6,10 @@ terminals, retains daily price history, and presents destinations on an
 interactive map and city pages.
 
 This repository contains a runnable local v1 backed by the supplied,
-manually curated 150-city catalog. FlixBus is enabled only for the verified
-direct Paris Bercy Seine–Amsterdam Sloterdijk route; the other 13 requested
-provider connectors remain kill-switched. A bounded activation on 2026-11-21
-successfully published the first real observation for the 2026-11-27 weekend.
+manually curated 150-city catalog. FlixBus is enabled for direct routes from
+Paris Bercy Seine to Amsterdam Sloterdijk and Brussels Gare du Midi. The other
+13 requested providers remain kill-switched. A bounded activation on
+2026-11-21 published the first real observation for the 2026-11-27 weekend.
 
 The current overview uses MapLibre with an attributed OpenFreeMap geographic
 basemap, city markers, pan/zoom, clustering, keyboard controls, and an
@@ -74,12 +74,12 @@ to configure in version-controlled JSON and share read-only with friends.
 | `postgres` | PostgreSQL 17 fare history, revisions, batch coverage, journey details, and extractor health. |
 | `migrations` | Alembic schema history; the API container upgrades the database before starting. |
 | `data` | Version-controlled city, terminal, Schengen, and source configuration. |
-| `.railway` | Railway IaC definitions for PostgreSQL, private API, public web, and a daily crawler job; they are present in the working tree but have not been committed, pushed, or applied to an owner project yet. |
+| `.railway` | Railway IaC definitions for PostgreSQL, private API, public web, and a daily crawler job. |
 
 Compose starts `postgres`, `api`, and `web` by default. The one-shot `crawler`
 uses the `tools` profile so it does not become a long-running local service.
 The Railway definition schedules the generic crawler command daily at 02:00
-UTC once provisioned. It will run the one bounded FlixBus route and record the
+UTC once provisioned. It will run the two verified FlixBus routes and record the
 other 13 sources as disabled; see the deployment guide for the remaining
 activation requirements.
 
@@ -134,19 +134,18 @@ before starting the API.
 ## Provider extractor state
 
 There are 14 source-specific public-page parsers. Their sanitized fixtures and
-failure handling are tested. **FlixBus is the sole enabled live extractor, and
-only for direct Bercy Seine–Sloterdijk cards; the other 13 adapters are
-disabled.** It uses ordinary Playwright rendering and parses the resulting DOM.
-Crowl does not call provider, partner, affiliate, GDS, or undocumented browser
-APIs.
+failure handling are tested. **FlixBus is the sole enabled live extractor.**
+It uses ordinary Playwright rendering and parses exact direct-stop cards.
+Crowl can also use documented official fare-search interfaces where the
+provider permits the planned usage.
 
-Before another source or route can be enabled, verify its live public result markup, exact
-fare semantics, terminal aliases, explicit route coverage, conservative rate,
-and booking-link hosts. If that is difficult or unstable, leave the source
-kill-switched and expose its skipped/blocked state on `/status`.
+Before another source or route can be enabled, verify its live results, exact
+fare semantics, terminal aliases, explicit route coverage, access terms,
+rate limits, and booking-link hosts. Sources without verified access or
+pricing remain visible on `/status`.
 
 The `strategy` in `data/sources.yaml` records the intended implementation
-shape (`http_html`, Playwright, or disabled); it does not mean an adapter is
+shape (`http_structured`, `http_html`, Playwright, or disabled); it does not mean an adapter is
 active. A normal cookie-consent control may be accepted. Crowl does not bypass
 login, CAPTCHA, bot defense, rate limiting, or other access controls. A source
 that presents one of those barriers is skipped and remains disabled; missing
@@ -216,9 +215,8 @@ keep `CROWL_SEED_FIXTURES=false` and keep the API/database private behind the
 web proxy. Public-page extractor configuration belongs in sealed Railway
 variables even though it must not contain login credentials or session state.
 
-The current working tree has not been committed or pushed. Railway's GitHub
-source cannot deploy it until the owner reviews the files and creates the
-initial commit in the intended repository.
+Railway deploys committed changes from the configured GitHub branch. See the
+deployment guide for project provisioning and scheduled-run verification.
 
 Alerts and a dedicated best-options page are planned extensions; they are not
 part of the current release.

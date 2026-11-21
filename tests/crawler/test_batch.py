@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import unittest
 from datetime import UTC, date, datetime
+from unittest.mock import patch
 
 from crowl_crawler.adapters.fixture import FixtureAdapter
 from crowl_crawler.adapters.registry import AdapterRegistry, build_default_registry
@@ -164,6 +165,58 @@ class BatchCoordinatorTests(unittest.TestCase):
                 for execution in report.source_reports[0].executions
             )
         )
+        self.assertEqual(report.source_reports[0].attempted_tasks, 0)
+
+    def test_multistep_adapter_gets_its_own_timeout_and_concurrency(self) -> None:
+        class PacedFixtureAdapter(FixtureAdapter):
+            search_timeout_seconds = 95
+            maximum_concurrent_searches = 1
+            pending_searches = 0
+            peak_searches = 0
+
+            async def search(self, request):
+                self.pending_searches += 1
+                self.peak_searches = max(self.peak_searches, self.pending_searches)
+                try:
+                    await asyncio.sleep(0)
+                    return await super().search(request)
+                finally:
+                    self.pending_searches -= 1
+
+        adapter = PacedFixtureAdapter()
+        with patch("crowl_crawler.batch.asyncio.wait_for", wraps=asyncio.wait_for) as wait:
+            report = asyncio.run(
+                BatchCoordinator(AdapterRegistry((adapter,))).run(
+                    self._manifest(canary_per_source=False)
+                )
+            )
+        self.assertEqual(report.status, BatchStatus.SUCCEEDED)
+        self.assertEqual(adapter.peak_searches, 1)
+        self.assertEqual([call.kwargs["timeout"] for call in wait.call_args_list], [95, 95])
+
+    def test_rate_limit_stops_pending_searches_for_the_source(self) -> None:
+        class RateLimitedAdapter(FixtureAdapter):
+            maximum_concurrent_searches = 1
+            calls = 0
+
+            async def search(self, request):
+                self.calls += 1
+                return ConnectorResult.failure(
+                    outcome=SearchOutcome.RATE_LIMITED,
+                    diagnostic_code="PROVIDER_RATE_LIMITED",
+                    parser_version=self.metadata().parser_version,
+                    observed_at=datetime.now(UTC),
+                )
+
+        adapter = RateLimitedAdapter()
+        report = asyncio.run(
+            BatchCoordinator(AdapterRegistry((adapter,))).run(
+                self._manifest(canary_per_source=False)
+            )
+        )
+        self.assertEqual(adapter.calls, 1)
+        self.assertEqual(report.source_reports[0].state, ExtractorRunStatus.BLOCKED)
+        self.assertEqual(report.source_reports[0].diagnostic_code, "SOURCE_RATE_LIMITED")
 
     def test_all_empty_volume_is_quarantined_after_configured_threshold(self) -> None:
         registry = AdapterRegistry((EmptyFixtureAdapter(),))

@@ -8,6 +8,7 @@ class AlsaAdapter(PublicHtmlBusAdapter):
     public_hosts = ("alsa.com",)
     provider_names = ("Alsa", "ALSA")
     parser_version = "alsa-public-html-v1"
+    consent_labels = (*PublicHtmlBusAdapter.consent_labels, "Accepter & Fermer")
 
 
 ADAPTER_CLASS = AlsaAdapter

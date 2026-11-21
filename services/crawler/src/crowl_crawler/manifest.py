@@ -103,12 +103,18 @@ class BatchManifest:
     expected_source_slugs: tuple[str, ...]
     coverage_cells: tuple[CoverageCell, ...]
     tasks: tuple[ManifestTask, ...]
+    coverage_failed_source_slugs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if self.created_at.tzinfo is None or self.created_at.utcoffset() is None:
             raise ValueError("manifest created_at must be timezone-aware")
         if len(set(self.expected_source_slugs)) != len(self.expected_source_slugs):
             raise ValueError("manifest source slugs must be unique")
+        failed_sources = set(self.coverage_failed_source_slugs)
+        if not failed_sources.issubset(self.expected_source_slugs):
+            raise ValueError("coverage failure source is not in the manifest")
+        if any(cell.source_slug in failed_sources for cell in self.coverage_cells):
+            raise ValueError("coverage failure source may not have coverage cells")
         cell_ids = {cell.cell_id for cell in self.coverage_cells}
         if len(cell_ids) != len(self.coverage_cells):
             raise ValueError("coverage cell IDs must be unique")
@@ -158,10 +164,12 @@ class BatchManifest:
         coverage_cells: Iterable[CoverageCell],
         tasks: Iterable[ManifestTask],
         created_at: datetime | None = None,
+        coverage_failed_source_slugs: Iterable[str] = (),
     ) -> "BatchManifest":
         sources_tuple = tuple(expected_source_slugs)
         cells_tuple = tuple(coverage_cells)
         tasks_tuple = tuple(tasks)
+        failed_sources = tuple(sorted(set(coverage_failed_source_slugs)))
         payload = {
             "batch_id": batch_id,
             "scheduled_for": scheduled_for.isoformat(),
@@ -197,6 +205,8 @@ class BatchManifest:
                 for task in tasks_tuple
             ],
         }
+        if failed_sources:
+            payload["coverage_failed_sources"] = failed_sources
         manifest_id = hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()
@@ -210,6 +220,7 @@ class BatchManifest:
             expected_source_slugs=sources_tuple,
             coverage_cells=cells_tuple,
             tasks=tasks_tuple,
+            coverage_failed_source_slugs=failed_sources,
         )
 
 
