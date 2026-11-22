@@ -1074,7 +1074,7 @@ class DatabasePublisherTests(unittest.TestCase):
             config_version="production-test-v1",
         ).build(
             scheduled_for=RUN_DATE,
-            source_slugs=("ryanair",),
+            source_slugs=("easyjet",),
             destinations=(FIXTURE_DESTINATIONS["lisbon-pt"],),
             weekend_fridays=(WEEKEND,),
             created_at=OBSERVED_AT,
@@ -1082,7 +1082,7 @@ class DatabasePublisherTests(unittest.TestCase):
         sink = InMemoryHealthSink()
         report = asyncio.run(
             BatchCoordinator(
-                AdapterRegistry((registry.get("ryanair"),)),
+                AdapterRegistry((registry.get("easyjet"),)),
                 health_sink=sink,
                 clock=lambda: OBSERVED_AT,
             ).run(manifest)
@@ -1092,7 +1092,7 @@ class DatabasePublisherTests(unittest.TestCase):
             manifest,
             report,
             health_events=sink.events,
-            source_metadata=(registry.get("ryanair").metadata(),),
+            source_metadata=(registry.get("easyjet").metadata(),),
         )
 
         self.assertEqual(result.snapshots_created, 0)

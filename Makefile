@@ -4,7 +4,7 @@ PYTHON ?= python3
 NPM ?= npm
 COMPOSE ?= docker compose
 
-.PHONY: help install install-python install-web install-iac validate check \
+.PHONY: help install install-python install-web install-iac validate check discover-flixbus-routes discover-ryanair-routes \
 	test test-backend test-crawler test-web test-iac build build-web \
 	up down logs ps sources fixture-batch fixture-publish
 
@@ -21,6 +21,8 @@ help: ## Show the common repository commands.
 		'  make down             Stop the Compose stack without deleting database data' \
 		'  make logs             Follow logs for the running default stack' \
 		'  make fixture-publish  Publish the DB-backed synthetic six-month fixture batch' \
+		'  make discover-flixbus-routes  Refresh the paced public-HTML route catalog' \
+		'  make discover-ryanair-routes  Refresh the paced public-HTML route catalog' \
 		'  make sources          Print the 14 requested provider slots and their states'
 
 install: install-python install-web install-iac ## Install all development dependencies.
@@ -37,6 +39,12 @@ install-iac: ## Install the locked Railway IaC dependencies.
 
 validate: ## Validate the version-controlled production data contract.
 	$(PYTHON) scripts/validate_data.py --production
+
+discover-flixbus-routes: ## Refresh all 150 FlixBus route classifications from public HTML.
+	$(PYTHON) scripts/discover_flixbus_routes.py --output data/flixbus-routes.json --terminals-output data/terminals.json --cache-dir .cache/flixbus-route-pages
+
+discover-ryanair-routes: ## Refresh all 150 Ryanair route classifications from public HTML.
+	$(PYTHON) scripts/discover_ryanair_routes.py --output data/ryanair-routes.json --terminals-output data/terminals.json
 
 test-backend: ## Run FastAPI, domain, database, and migration tests.
 	PYTHONPATH=packages/crowl-core:services/api $(PYTHON) -m pytest tests/backend

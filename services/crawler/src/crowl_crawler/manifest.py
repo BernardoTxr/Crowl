@@ -24,10 +24,8 @@ class DestinationTarget:
     terminal_ids: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        if not self.city_id or not self.terminal_ids:
-            raise ValueError(
-                "destination target needs a city and at least one terminal"
-            )
+        if not self.city_id:
+            raise ValueError("destination target needs a city")
 
 
 @dataclass(frozen=True, slots=True)
@@ -329,6 +327,11 @@ class DailyManifestBuilder:
                         # the configured terminal sets. Production always passes
                         # validated provider coverage and therefore takes the
                         # route-specific branch below.
+                        if not destination.terminal_ids:
+                            raise ValueError(
+                                "a destination without terminals requires "
+                                "validated provider coverage"
+                            )
                         route_pairs = (None,)
                     else:
                         matching_pairs = tuple(

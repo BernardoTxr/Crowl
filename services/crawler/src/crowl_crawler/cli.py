@@ -217,6 +217,35 @@ def build_parser() -> argparse.ArgumentParser:
     pilot.add_argument(
         "--pretty", action="store_true", help="Pretty-print the publication report."
     )
+
+    first_weekend = subparsers.add_parser(
+        "first-weekend-publish",
+        help=(
+            "Collect one provider across all catalog cities for one weekend and "
+            "atomically publish the bounded operational batch."
+        ),
+    )
+    first_weekend.add_argument(
+        "--source",
+        required=True,
+        choices=("ryanair",),
+        help="The bounded provider to collect.",
+    )
+    first_weekend.add_argument(
+        "--weekend", required=True, type=_iso_date, help="Weekend Friday (YYYY-MM-DD)."
+    )
+    first_weekend.add_argument(
+        "--date", required=True, type=_iso_date, help="Unused operational batch date."
+    )
+    first_weekend.add_argument(
+        "--acknowledge-daily-slot",
+        required=True,
+        action="store_true",
+        help="Acknowledge that this bounded activation consumes the supplied date slot.",
+    )
+    first_weekend.add_argument(
+        "--pretty", action="store_true", help="Pretty-print the publication report."
+    )
     return parser
 
 
@@ -257,6 +286,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 origin_terminal_id=args.origin_terminal,
                 destination_city_id=args.destination_city,
                 destination_terminal_id=args.destination_terminal,
+                weekend_start=args.weekend,
+                scheduled_for=args.date,
+                acknowledge_daily_slot=args.acknowledge_daily_slot,
+                pretty=args.pretty,
+            )
+        )
+    if args.command == "first-weekend-publish":
+        return asyncio.run(
+            _first_weekend_publish(
+                source_slug=args.source,
                 weekend_start=args.weekend,
                 scheduled_for=args.date,
                 acknowledge_daily_slot=args.acknowledge_daily_slot,
@@ -975,12 +1014,157 @@ async def _production_run(
     return 0 if report.status in {BatchStatus.SUCCEEDED, BatchStatus.PARTIAL} else 1
 
 
+async def _first_weekend_publish(
+    *,
+    source_slug: str,
+    weekend_start: date,
+    scheduled_for: date,
+    acknowledge_daily_slot: bool,
+    pretty: bool,
+) -> int:
+    """Publish one real provider/weekend across every editorial city."""
+
+    if not acknowledge_daily_slot:
+        print(
+            "first-weekend-publish refused: --acknowledge-daily-slot is required",
+            file=sys.stderr,
+        )
+        return 2
+    if weekend_start.weekday() != 4:
+        print("first-weekend-publish refused: --weekend must be a Friday", file=sys.stderr)
+        return 2
+    database_url = os.environ.get("DATABASE_URL", "").strip()
+    if not database_url:
+        print("first-weekend-publish requires DATABASE_URL", file=sys.stderr)
+        return 2
+    if weekend_start not in {
+        item.friday for item in generate_travel_windows(scheduled_for, months_ahead=6)
+    }:
+        print(
+            "first-weekend-publish refused: weekend is outside the six-month window",
+            file=sys.stderr,
+        )
+        return 2
+
+    registry = build_default_registry(include_fixture=False)
+    source_metadata = registry.metadata(include_fixture=False)
+    metadata = next(
+        (item for item in source_metadata if item.source_slug == source_slug), None
+    )
+    if metadata is None or not metadata.enabled:
+        print(
+            f"first-weekend-publish refused: {source_slug} is not enabled by source policy",
+            file=sys.stderr,
+        )
+        return 2
+
+    engine = create_database_engine(database_url)
+    sessions = create_session_factory(engine)
+    lease = DailyRunLease(engine, scheduled_for)
+    lifecycle: DatabaseRunLifecycle | None = None
+    manifest: BatchManifest | None = None
+    prepared = False
+    try:
+        if not lease.acquire():
+            raise PublicationError("the selected operational date is currently leased")
+        with sessions() as session:
+            existing = session.scalar(
+                select(CrawlRun).where(
+                    CrawlRun.scheduled_for == scheduled_for,
+                    CrawlRun.is_synthetic.is_(False),
+                )
+            )
+            if existing is not None:
+                raise PublicationError("the selected operational date is already occupied")
+
+        selected_registry = AdapterRegistry((registry.get(source_slug),))
+        coverage = await discover_and_persist_coverage(
+            sessions,
+            selected_registry,
+            scheduled_for=scheduled_for,
+        )
+        manifest = _build_production_manifest(
+            sessions,
+            registry,
+            scheduled_for=scheduled_for,
+            source_coverage=coverage,
+            enabled_source_filter=frozenset({source_slug}),
+            weekend_fridays_override=(weekend_start,),
+        )
+        lifecycle = DatabaseRunLifecycle(sessions)
+        resume_plan = lifecycle.prepare(manifest, source_metadata=source_metadata)
+        if resume_plan.is_resume:
+            raise PublicationError("bounded first-weekend activation may not resume")
+        prepared = True
+        health_sink = InMemoryHealthSink()
+        coordinator = BatchCoordinator(
+            registry,
+            health_sink=health_sink,
+            execution_recorder=lambda execution: lifecycle.record_execution(
+                manifest, execution
+            ),
+        )
+        report = await coordinator.run(manifest, deadline_at=_batch_deadline())
+        publication = DatabasePublisher(sessions).publish(
+            manifest,
+            report,
+            health_events=health_sink.events,
+            source_metadata=source_metadata,
+            require_at_least_one_winner=True,
+        )
+    except (PublicationError, CoverageDiscoveryError) as error:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_failed(manifest, "FIRST_WEEKEND_PUBLICATION_REJECTED")
+        print(f"first-weekend-publish rejected: {error}", file=sys.stderr)
+        return 1
+    except SQLAlchemyError as error:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_failed(manifest, "FIRST_WEEKEND_DATABASE_ERROR")
+        print(
+            f"first-weekend-publish database error: {type(error).__name__}",
+            file=sys.stderr,
+        )
+        return 1
+    except Exception as error:
+        if prepared and lifecycle is not None and manifest is not None:
+            lifecycle.mark_abandoned(manifest, "FIRST_WEEKEND_INTERRUPTED")
+        print(
+            f"first-weekend-publish interrupted: {type(error).__name__}",
+            file=sys.stderr,
+        )
+        return 1
+    finally:
+        lease.release()
+        engine.dispose()
+
+    output = _operational_report(report.as_dict())
+    output["kind"] = "first_weekend_publish"
+    output["scope"] = {
+        "source": source_slug,
+        "weekend": weekend_start.isoformat(),
+        "scheduled_for": scheduled_for.isoformat(),
+        "catalog_cities": 150,
+    }
+    output["publication"] = publication.as_dict()
+    print(
+        json.dumps(
+            output,
+            sort_keys=True,
+            indent=2 if pretty else None,
+            separators=None if pretty else (",", ":"),
+        )
+    )
+    return 0 if report.status in {BatchStatus.SUCCEEDED, BatchStatus.PARTIAL} else 1
+
+
 def _build_production_manifest(
     session_factory: sessionmaker[Session],
     registry: AdapterRegistry,
     *,
     scheduled_for: date,
     source_coverage: Mapping[str, CoverageDiscovery] | None = None,
+    enabled_source_filter: frozenset[str] | None = None,
+    weekend_fridays_override: tuple[date, ...] | None = None,
 ) -> BatchManifest:
     """Resolve the immutable daily manifest from the seeded SQL catalog."""
 
@@ -1024,32 +1208,28 @@ def _build_production_manifest(
     terminals_by_city: dict[str, list[str]] = {city.id: [] for city in cities}
     for city_id, terminal_id in links:
         terminals_by_city[city_id].append(terminal_id)
-    mapped_city_ids = tuple(city.id for city in cities if terminals_by_city[city.id])
-    if not mapped_city_ids:
-        raise PublicationError(
-            "catalog has no active destination city with a Schengen terminal link"
-        )
-
     source_metadata = registry.metadata(include_fixture=False)
     source_slugs = tuple(item.source_slug for item in source_metadata)
     if not source_slugs:
         raise PublicationError("no requested provider adapters are configured")
-    # Editorial cities are useful to the map before their operational terminal
-    # mapping is curated.  Omit those cities from collection instead of
-    # aborting every mapped route; the API represents them as never observed.
+    # Every editorial city receives a logical coverage cell. A city without a
+    # terminal cannot create a network task, but validated source coverage can
+    # still classify it honestly as an unsupported route.
     destinations = tuple(
-        DestinationTarget(city_id, tuple(terminals_by_city[city_id]))
-        for city_id in mapped_city_ids
+        DestinationTarget(city.id, tuple(terminals_by_city[city.id]))
+        for city in cities
     )
-    weekend_fridays = tuple(
-        window.friday
-        for window in generate_travel_windows(scheduled_for, months_ahead=6)
+    weekend_fridays = weekend_fridays_override or tuple(
+        window.friday for window in generate_travel_windows(scheduled_for, months_ahead=6)
     )
     release = os.environ.get("CROWL_CRAWLER_RELEASE", "production-v1").strip()
     if not release:
         raise PublicationError("CROWL_CRAWLER_RELEASE may not be empty")
     enabled_source_slugs = tuple(
-        item.source_slug for item in source_metadata if item.enabled
+        item.source_slug
+        for item in source_metadata
+        if item.enabled
+        and (enabled_source_filter is None or item.source_slug in enabled_source_filter)
     )
     coverage = source_coverage or {}
     if set(coverage) - set(enabled_source_slugs) or (
@@ -1066,7 +1246,12 @@ def _build_production_manifest(
         source_slugs=tuple(slug for slug in enabled_source_slugs if slug in coverage),
         destinations=destinations,
         weekend_fridays=weekend_fridays,
-        include_one_way_tasks=True,
+        # A single provider's round-trip search already returns both exact
+        # directions.  Creating two additional one-way tasks would triple the
+        # public-page load without improving that provider-only batch.  Keep
+        # one-way components when multiple sources are enabled so cross-source
+        # outbound/return composition remains available.
+        include_one_way_tasks=len(enabled_source_slugs) > 1,
         source_coverage=coverage,
     )
     # Disabled adapters remain expected sources so the coordinator and database

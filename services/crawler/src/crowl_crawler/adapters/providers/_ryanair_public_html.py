@@ -90,7 +90,7 @@ def parse_ryanair_results(
     summary_text = _text(bottom_bar)
     if not summary_text.startswith(trip_type + " ") or summary_text.split()[-1] != "1":
         raise FlightPayloadError("Ryanair did not confirm the one-passenger search")
-    outbound = _result(
+    outbound = _results(
         parser.root,
         "outbound",
         context.selected_outbound_date,
@@ -99,43 +99,56 @@ def parse_ryanair_results(
     )
     inbound = None
     if context.selected_return_date is not None:
-        inbound = _result(
+        inbound = _results(
             parser.root,
             "inbound",
             context.selected_return_date,
             context.query_destination,
             context.query_origin,
         )
-    if outbound is None or (not one_way and inbound is None):
+    if not outbound or (not one_way and not inbound):
         return ParsedFlightResponse((), SearchOutcome.NO_SERVICE, _SCHEMA_FINGERPRINT)
 
-    outbound_segment, outbound_price = outbound
-    return_segments = (inbound[0],) if inbound is not None else ()
-    identity = "|".join(
-        f"{segment.service_number}:{segment.departs_at}:{segment.departure_iata}"
-        for segment in (outbound_segment, *return_segments)
+    combinations = (
+        ((outbound_item, inbound_item) for outbound_item in outbound for inbound_item in inbound)
+        if inbound is not None
+        else ((outbound_item, None) for outbound_item in outbound)
     )
-    offer = RawFlightOffer(
-        provider_offer_id="ryanair-" + hashlib.sha256(identity.encode()).hexdigest()[:24],
-        amount_minor=outbound_price + (inbound[1] if inbound is not None else 0),
-        currency="EUR",
-        booking_url=booking_url,
-        fare_name="Basic Fare",
-        outbound_segments=(outbound_segment,),
-        passenger_quantity=1,
-        paid_membership_required=False,
-        return_segments=return_segments,
-    )
-    return ParsedFlightResponse((offer,), schema_fingerprint=_SCHEMA_FINGERPRINT)
+    offers: list[RawFlightOffer] = []
+    for outbound_item, inbound_item in combinations:
+        outbound_segment, outbound_price = outbound_item
+        return_segments = (inbound_item[0],) if inbound_item is not None else ()
+        identity = "|".join(
+            f"{segment.service_number}:{segment.departs_at}:{segment.departure_iata}"
+            for segment in (outbound_segment, *return_segments)
+        )
+        offers.append(
+            RawFlightOffer(
+                provider_offer_id=(
+                    "ryanair-" + hashlib.sha256(identity.encode()).hexdigest()[:24]
+                ),
+                amount_minor=(
+                    outbound_price + (inbound_item[1] if inbound_item is not None else 0)
+                ),
+                currency="EUR",
+                booking_url=booking_url,
+                fare_name="Basic Fare",
+                outbound_segments=(outbound_segment,),
+                passenger_quantity=1,
+                paid_membership_required=False,
+                return_segments=return_segments,
+            )
+        )
+    return ParsedFlightResponse(tuple(offers), schema_fingerprint=_SCHEMA_FINGERPRINT)
 
 
-def _result(
+def _results(
     root: Element,
     direction: str,
     selected_date: date,
     origin: TerminalInfo,
     destination: TerminalInfo,
-) -> tuple[RawFlightSegment, int] | None:
+) -> tuple[tuple[RawFlightSegment, int], ...]:
     journey = _only(root.findall(f"journey-container[@data-ref='{direction}']"), direction)
     active_date = _only(journey.findall(".//button[@data-selected='true']"), "selected date")
     if (
@@ -146,10 +159,19 @@ def _result(
     listing = _only(journey.findall(".//flight-list"), "flight list")
     cards = listing.findall(".//flight-card-new")
     if not cards and _NO_FLIGHTS in _text(listing):
-        return None
-    # A stable public search link uniquely identifies the trip only when the
-    # exact route/date has one selectable direct flight in each direction.
-    card = _only(cards, "uniquely linkable flight card")
+        return ()
+    if not cards:
+        raise FlightPayloadError("Ryanair did not show flights or an explicit empty state")
+    return tuple(_flight_card(card, direction, selected_date, origin, destination) for card in cards)
+
+
+def _flight_card(
+    card: Element,
+    direction: str,
+    selected_date: date,
+    origin: TerminalInfo,
+    destination: TerminalInfo,
+) -> tuple[RawFlightSegment, int]:
     if card.get("data-e2e") != f"flight-card--{direction}":
         raise FlightPayloadError("Ryanair flight card direction changed")
     select = _only(card.findall(".//button[@data-ref='regular-price-select']"), "fare selection")

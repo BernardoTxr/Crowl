@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crowl.local/schemas/flixbus-routes.schema.json",
+  "title": "Crowl FlixBus public route catalog",
+  "type": "object",
+  "required": [
+    "schema_version", "generated_at", "observed_on", "provenance", "summary",
+    "terminal_city_ids", "stop_labels", "coverage", "routes", "city_results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "observed_on": { "type": "string", "format": "date" },
+    "provenance": {
+      "type": "object",
+      "required": ["method", "host", "request_interval_seconds", "maximum_direction_minutes"],
+      "additionalProperties": false,
+      "properties": {
+        "method": { "const": "ordinary_public_html" },
+        "host": { "const": "global.flixbus.com" },
+        "request_interval_seconds": { "type": "number", "minimum": 5 },
+        "maximum_direction_minutes": { "const": 720 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["catalog_cities", "supported_routes", "duration_exceeds_limit", "no_public_route_page", "no_current_trip_summary", "discovery_failures"],
+      "additionalProperties": false,
+      "properties": {
+        "catalog_cities": { "const": 150 },
+        "supported_routes": { "type": "integer", "minimum": 0, "maximum": 150 },
+        "duration_exceeds_limit": { "type": "integer", "minimum": 0, "maximum": 150 },
+        "no_public_route_page": { "type": "integer", "minimum": 0, "maximum": 150 },
+        "no_current_trip_summary": { "type": "integer", "minimum": 0, "maximum": 150 },
+        "discovery_failures": { "type": "integer", "minimum": 0, "maximum": 150 }
+      }
+    },
+    "terminal_city_ids": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/uuid" },
+      "propertyNames": { "$ref": "#/$defs/id" }
+    },
+    "stop_labels": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/id" }
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["supported_terminal_pairs", "sellable_through"],
+      "additionalProperties": false,
+      "properties": {
+        "supported_terminal_pairs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "array",
+            "prefixItems": [{ "$ref": "#/$defs/id" }, { "$ref": "#/$defs/id" }],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "sellable_through": { "type": "string", "format": "date" }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["city_id", "terminal_id", "provider_city_id", "public_stop_id", "public_stop_name", "minimum_duration_minutes", "route_url"],
+        "additionalProperties": false,
+        "properties": {
+          "city_id": { "$ref": "#/$defs/id" },
+          "terminal_id": { "$ref": "#/$defs/id" },
+          "provider_city_id": { "$ref": "#/$defs/uuid" },
+          "public_stop_id": { "$ref": "#/$defs/uuid" },
+          "public_stop_name": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "minimum_duration_minutes": { "type": "integer", "minimum": 1, "maximum": 720 },
+          "route_url": { "type": "string", "format": "uri", "pattern": "^https://global\\.flixbus\\.com/" }
+        }
+      }
+    },
+    "city_results": {
+      "type": "array",
+      "minItems": 150,
+      "maxItems": 150,
+      "items": {
+        "type": "object",
+        "required": ["city_id", "status"],
+        "properties": {
+          "city_id": { "$ref": "#/$defs/id" },
+          "status": {
+            "enum": ["supported", "duration_exceeds_limit", "no_public_route_page", "no_current_trip_summary", "request_failed", "schema_error"]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" }
+  }
+}

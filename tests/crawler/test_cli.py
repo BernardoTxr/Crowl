@@ -27,6 +27,7 @@ from crowl_core.models import (
     Source,
 )
 from crowl_crawler.adapters.base import SourceAdapter
+from crowl_crawler.adapters.disabled import DisabledSourceAdapter
 from crowl_crawler.adapters.registry import AdapterRegistry, build_default_registry
 from crowl_crawler.cli import _production_run, main
 from crowl_crawler.models import (
@@ -190,7 +191,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(len(rows), 14)
         self.assertEqual(
             {row["source_slug"] for row in rows if row["enabled"] is True},
-            {"flixbus"},
+            {"flixbus", "ryanair"},
         )
 
     def test_fixture_batch_command_prints_success_report(self) -> None:
@@ -225,8 +226,20 @@ class CliTests(unittest.TestCase):
             database_url = self._seed_pilot_database(directory, enable_flixbus=False)
             output = io.StringIO()
             errors = io.StringIO()
+            disabled_flixbus = DisabledSourceAdapter(
+                replace(
+                    _PilotFlixBusAdapter(with_offer=False).metadata(),
+                    strategy=ExtractionStrategy.DISABLED,
+                    enabled=False,
+                    disabled_reason="disabled for policy test",
+                )
+            )
             with (
                 patch.dict(os.environ, {"DATABASE_URL": database_url}, clear=True),
+                patch(
+                    "crowl_crawler.cli.build_default_registry",
+                    return_value=_pilot_registry(disabled_flixbus),
+                ),
                 redirect_stdout(output),
                 redirect_stderr(errors),
             ):
@@ -540,7 +553,7 @@ class CliTests(unittest.TestCase):
             engine.dispose()
 
             default_registry = build_default_registry(include_fixture=False)
-            registry = AdapterRegistry((default_registry.get("ryanair"),))
+            registry = AdapterRegistry((default_registry.get("easyjet"),))
             output = io.StringIO()
             with (
                 patch.dict(
@@ -577,7 +590,7 @@ class CliTests(unittest.TestCase):
                     select(ExtractorRun)
                     .join(CrawlRun, ExtractorRun.crawl_run_id == CrawlRun.id)
                     .where(
-                        ExtractorRun.source_id == "ryanair",
+                        ExtractorRun.source_id == "easyjet",
                         CrawlRun.is_synthetic.is_(False),
                     )
                 )
@@ -586,7 +599,7 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(extractor.status.value, "disabled")
                 self.assertEqual(extractor.attempted_searches, 0)
                 self.assertEqual(
-                    session.get(Source, "ryanair").strategy,
+                    session.get(Source, "easyjet").strategy,
                     "playwright",
                 )
                 same_day_runs = session.scalars(
@@ -619,7 +632,38 @@ class CliTests(unittest.TestCase):
             engine.dispose()
 
             default_registry = build_default_registry(include_fixture=False)
-            registry = AdapterRegistry((default_registry.get("ryanair"),))
+            configured = default_registry.get("ryanair")
+            ryanair = Mock(spec=SourceAdapter)
+            ryanair.metadata.return_value = configured.metadata()
+            ryanair.maximum_concurrent_searches = 1
+            ryanair.search_timeout_seconds = 60.0
+            ryanair.discover_coverage = AsyncMock(
+                return_value=CoverageDiscovery(
+                    source_slug="ryanair",
+                    supported_terminal_pairs=(("par-bva", "lis-humberto-delgado"),),
+                    sellable_through=date(2027, 1, 31),
+                    observed_at=datetime.now(UTC),
+                    diagnostic_code="RYANAIR_COVERAGE_OK",
+                )
+            )
+            empty_result = ConnectorResult(
+                outcome=SearchOutcome.SUCCESS_EMPTY,
+                retryable=False,
+                diagnostic_code="RYANAIR_EMPTY_OK",
+                expected_count=1,
+                completed_count=1,
+                offers=(),
+                parser_version=configured.metadata().parser_version,
+                observed_at=datetime(2027, 1, 1, 12, tzinfo=UTC),
+                response_fingerprint="a" * 64,
+                schema_fingerprint="b" * 64,
+            )
+            ryanair.canary = AsyncMock(
+                side_effect=lambda requests: tuple(empty_result for _ in requests)
+            )
+            ryanair.search = AsyncMock(return_value=empty_result)
+            ryanair.close = AsyncMock(return_value=None)
+            registry = AdapterRegistry((ryanair,))
             output = io.StringIO()
             with (
                 patch.dict(
@@ -748,6 +792,18 @@ class CliTests(unittest.TestCase):
 
 def _pilot_registry(adapter: SourceAdapter) -> AdapterRegistry:
     registry = build_default_registry(include_fixture=False)
+    ryanair = registry.get("ryanair")
+    registry.register(
+        DisabledSourceAdapter(
+            replace(
+                ryanair.metadata(),
+                strategy=ExtractionStrategy.DISABLED,
+                enabled=False,
+                disabled_reason="disabled for FlixBus activation-pilot test",
+            )
+        ),
+        replace=True,
+    )
     registry.register(adapter, replace=True)
     return registry
 

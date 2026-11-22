@@ -114,12 +114,6 @@ export default defineRailway((context) => {
       CROWL_CRAWLER_RELEASE: "production-v1",
       CROWL_FLIXBUS_PUBLIC_SEARCH_URL_TEMPLATE:
         "https://shop.global.flixbus.com/search?departureCity={origin}&arrivalCity={destination}&rideDate={date_dot}&adult=1&currency=EUR",
-      CROWL_FLIXBUS_TERMINAL_ALIASES_JSON:
-        '{"par-bercy-seine-bus":"40de8964-8646-11e6-9066-549f350fcb0c","ams-sloterdijk-bus":"40dde3b8-8646-11e6-9066-549f350fcb0c","bru-gare-du-midi-bus":"40de6287-8646-11e6-9066-549f350fcb0c"}',
-      CROWL_FLIXBUS_STOP_ALIASES_JSON:
-        '{"Paris (Bercy Seine)":"par-bercy-seine-bus","Amsterdam Sloterdijk":"ams-sloterdijk-bus","Brussels South (Gare du Midi)":"bru-gare-du-midi-bus"}',
-      CROWL_FLIXBUS_COVERAGE_JSON:
-        '{"supported_terminal_pairs":[["par-bercy-seine-bus","ams-sloterdijk-bus"],["par-bercy-seine-bus","bru-gare-du-midi-bus"]],"sellable_through":"2027-05-24"}',
     },
   });
 

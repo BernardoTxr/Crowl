@@ -109,6 +109,36 @@ class DiscoveryAdapter(SourceAdapter):
 
 
 class CoveragePruningTests(unittest.TestCase):
+    def test_unmapped_city_is_retained_as_unsupported_without_a_network_task(self) -> None:
+        manifest = DailyManifestBuilder(
+            origin_terminal_ids=("par-bercy-seine-bus",),
+            config_version="coverage-test-v1",
+        ).build(
+            scheduled_for=RUN_DATE,
+            source_slugs=("flixbus",),
+            destinations=(DestinationTarget("reykjavik-is", ()),),
+            weekend_fridays=(FIRST_WEEKEND,),
+            source_coverage={
+                "flixbus": CoverageDiscovery(
+                    source_slug="flixbus",
+                    supported_terminal_pairs=(("par-bercy-seine-bus", "ams-sloterdijk-bus"),),
+                    sellable_through=date(2027, 1, 31),
+                    observed_at=OBSERVED_AT,
+                    diagnostic_code="FLIXBUS_COVERAGE_OK",
+                )
+            },
+            created_at=OBSERVED_AT,
+        )
+
+        self.assertEqual(manifest.tasks, ())
+        self.assertEqual(len(manifest.coverage_cells), 1)
+        cell = manifest.coverage_cells[0]
+        self.assertFalse(cell.applicable)
+        self.assertIs(
+            cell.preclassified_outcome,
+            SearchOutcome.SKIPPED_UNSUPPORTED_ROUTE,
+        )
+
     def test_route_and_sale_horizon_prune_without_cross_source_work(self) -> None:
         coverage = {
             "ryanair": CoverageDiscovery(

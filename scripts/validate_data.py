@@ -338,6 +338,110 @@ def validate_sources() -> None:
                 )
 
 
+def validate_flixbus_routes(catalog: dict[str, Any]) -> None:
+    payload = load_json(DATA / "flixbus-routes.json")
+    validate_schema(payload, "flixbus-routes.schema.json")
+    terminals = load_json(DATA / "terminals.json")
+    terminal_ids = {item["id"] for item in terminals["terminals"]}
+    city_ids = {item["id"] for item in catalog["cities"]}
+    result_city_ids = [item["city_id"] for item in payload["city_results"]]
+    unique(result_city_ids, "FlixBus city results")
+    if set(result_city_ids) != city_ids:
+        raise ValidationError("FlixBus discovery must classify every catalog city")
+
+    routes = payload["routes"]
+    route_city_ids = [item["city_id"] for item in routes]
+    unique(route_city_ids, "FlixBus route cities")
+    supported_city_ids = {
+        item["city_id"]
+        for item in payload["city_results"]
+        if item["status"] == "supported"
+    }
+    if set(route_city_ids) != supported_city_ids:
+        raise ValidationError("FlixBus supported results and executable routes disagree")
+    if payload["summary"]["supported_routes"] != len(routes):
+        raise ValidationError("FlixBus supported route count is inconsistent")
+
+    links = {
+        (item["cityId"], item["terminalId"])
+        for item in terminals["cityTerminalLinks"]
+    }
+    configured_pairs = {
+        tuple(pair) for pair in payload["coverage"]["supported_terminal_pairs"]
+    }
+    expected_pairs = {
+        ("par-bercy-seine-bus", item["terminal_id"]) for item in routes
+    }
+    if configured_pairs != expected_pairs:
+        raise ValidationError("FlixBus route coverage pairs are inconsistent")
+    for route in routes:
+        if route["terminal_id"] not in terminal_ids:
+            raise ValidationError(
+                f"unknown FlixBus terminal: {route['terminal_id']}"
+            )
+        if (route["city_id"], route["terminal_id"]) not in links:
+            raise ValidationError(
+                f"FlixBus terminal is not linked to {route['city_id']}"
+            )
+        if (
+            payload["terminal_city_ids"].get(route["terminal_id"])
+            != route["provider_city_id"]
+        ):
+            raise ValidationError(
+                f"FlixBus city alias disagrees for {route['terminal_id']}"
+            )
+        if (
+            payload["stop_labels"].get(route["public_stop_name"])
+            != route["terminal_id"]
+        ):
+            raise ValidationError(
+                f"FlixBus stop alias disagrees for {route['terminal_id']}"
+            )
+
+
+def validate_ryanair_routes(catalog: dict[str, Any]) -> None:
+    payload = load_json(DATA / "ryanair-routes.json")
+    validate_schema(payload, "ryanair-routes.schema.json")
+    terminals = load_json(DATA / "terminals.json")
+    terminal_ids = {item["id"] for item in terminals["terminals"]}
+    city_ids = {item["id"] for item in catalog["cities"]}
+    result_city_ids = [item["city_id"] for item in payload["city_results"]]
+    unique(result_city_ids, "Ryanair city results")
+    if set(result_city_ids) != city_ids:
+        raise ValidationError("Ryanair discovery must classify every catalog city")
+
+    routes = payload["routes"]
+    route_city_ids = [item["city_id"] for item in routes]
+    unique(route_city_ids, "Ryanair route cities")
+    supported_city_ids = {
+        item["city_id"]
+        for item in payload["city_results"]
+        if item["status"] == "supported"
+    }
+    if set(route_city_ids) != supported_city_ids:
+        raise ValidationError("Ryanair supported results and executable routes disagree")
+    if payload["summary"]["supported_cities"] != len(routes):
+        raise ValidationError("Ryanair supported city count is inconsistent")
+
+    links = {
+        (item["cityId"], item["terminalId"])
+        for item in terminals["cityTerminalLinks"]
+    }
+    expected_pairs = {("par-bva", item["terminal_id"]) for item in routes}
+    configured_pairs = {
+        tuple(pair) for pair in payload["coverage"]["supported_terminal_pairs"]
+    }
+    if configured_pairs != expected_pairs:
+        raise ValidationError("Ryanair route coverage pairs are inconsistent")
+    for route in routes:
+        if route["terminal_id"] not in terminal_ids:
+            raise ValidationError(f"unknown Ryanair terminal: {route['terminal_id']}")
+        if (route["city_id"], route["terminal_id"]) not in links:
+            raise ValidationError(
+                f"Ryanair terminal is not linked to {route['city_id']}"
+            )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -350,6 +454,8 @@ def main() -> int:
         catalog = validate_city_catalog(args.production)
         validate_terminals(catalog)
         validate_sources()
+        validate_flixbus_routes(catalog)
+        validate_ryanair_routes(catalog)
     except (ValidationError, jsonschema.ValidationError, KeyError, TypeError) as exc:
         print(f"data validation failed: {exc}", file=sys.stderr)
         return 1

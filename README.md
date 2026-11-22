@@ -6,10 +6,12 @@ terminals, retains daily price history, and presents destinations on an
 interactive map and city pages.
 
 This repository contains a runnable local v1 backed by the supplied,
-manually curated 150-city catalog. FlixBus is enabled for direct routes from
-Paris Bercy Seine to Amsterdam Sloterdijk and Brussels Gare du Midi. The other
-13 requested providers remain kill-switched. A bounded activation on
-2026-11-21 published the first real observation for the 2026-11-27 weekend.
+manually curated 150-city catalog. Paced public-HTML inventories classify every
+city for both active sources: FlixBus enables 58 Paris routes whose advertised
+minimum is within Crowl's 12-hour limit, while Ryanair enables 41 city mappings
+across 29 Paris-Beauvais airport routes. The other 12 requested providers
+remain kill-switched. Bounded activations have published real FlixBus and
+Ryanair observations for the 2026-11-27 weekend.
 
 The current overview uses MapLibre with an attributed OpenFreeMap geographic
 basemap, city markers, pan/zoom, clustering, keyboard controls, and an
@@ -79,9 +81,9 @@ to configure in version-controlled JSON and share read-only with friends.
 Compose starts `postgres`, `api`, and `web` by default. The one-shot `crawler`
 uses the `tools` profile so it does not become a long-running local service.
 The Railway definition schedules the generic crawler command daily at 02:00
-UTC once provisioned. It will run the two verified FlixBus routes and record the
-other 13 sources as disabled; see the deployment guide for the remaining
-activation requirements.
+UTC once provisioned. It will run the version-controlled FlixBus and Ryanair
+route catalogs and record the other 12 sources as disabled; see the deployment
+guide for the remaining activation requirements.
 
 ## Run locally with Compose
 
@@ -134,8 +136,10 @@ before starting the API.
 ## Provider extractor state
 
 There are 14 source-specific public-page parsers. Their sanitized fixtures and
-failure handling are tested. **FlixBus is the sole enabled live extractor.**
-It uses ordinary Playwright rendering and parses exact direct-stop cards.
+failure handling are tested. **FlixBus and Ryanair are the enabled live
+extractors.** Both use ordinary Playwright rendering. FlixBus parses exact
+direct-stop cards; Ryanair parses every rendered flight card and publishes the
+cheapest eligible Basic-fare round trip.
 Crowl can also use documented official fare-search interfaces where the
 provider permits the planned usage.
 

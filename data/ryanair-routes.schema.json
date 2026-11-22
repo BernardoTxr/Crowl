@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crowl.local/schemas/ryanair-routes.schema.json",
+  "title": "Crowl Ryanair public route catalog",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "observed_on", "provenance", "summary", "coverage", "routes", "city_results"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "observed_on": { "type": "string", "format": "date" },
+    "provenance": {
+      "type": "object",
+      "required": ["method", "host", "request_interval_seconds"],
+      "additionalProperties": false,
+      "properties": {
+        "method": { "const": "ordinary_public_html_schema_org" },
+        "host": { "const": "www.ryanair.com" },
+        "request_interval_seconds": { "type": "number", "minimum": 2 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["catalog_cities", "supported_cities", "no_public_route_page", "discovery_failures"],
+      "additionalProperties": false,
+      "properties": {
+        "catalog_cities": { "const": 150 },
+        "supported_cities": { "type": "integer", "minimum": 0, "maximum": 150 },
+        "no_public_route_page": { "type": "integer", "minimum": 0, "maximum": 150 },
+        "discovery_failures": { "type": "integer", "minimum": 0, "maximum": 150 }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["supported_terminal_pairs", "sellable_through"],
+      "additionalProperties": false,
+      "properties": {
+        "supported_terminal_pairs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "array",
+            "prefixItems": [{ "$ref": "#/$defs/id" }, { "$ref": "#/$defs/id" }],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "sellable_through": { "type": "string", "format": "date" }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["city_id", "terminal_id", "arrival_iata", "arrival_airport_name", "public_destination_slug", "relationship", "route_url"],
+        "additionalProperties": false,
+        "properties": {
+          "city_id": { "$ref": "#/$defs/id" },
+          "terminal_id": { "$ref": "#/$defs/id" },
+          "arrival_iata": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "arrival_airport_name": { "type": "string", "minLength": 1 },
+          "public_destination_slug": { "$ref": "#/$defs/id" },
+          "relationship": { "enum": ["primary_airport", "nearby_airport"] },
+          "route_url": { "type": "string", "format": "uri", "pattern": "^https://www\\.ryanair\\.com/gb/en/flights/" }
+        }
+      }
+    },
+    "city_results": {
+      "type": "array",
+      "minItems": 150,
+      "maxItems": 150,
+      "items": {
+        "type": "object",
+        "required": ["city_id", "status"],
+        "properties": {
+          "city_id": { "$ref": "#/$defs/id" },
+          "status": { "enum": ["supported", "no_public_route_page", "request_failed", "schema_error"] }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+  }
+}

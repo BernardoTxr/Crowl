@@ -12,8 +12,10 @@ can use ordinary public-page HTML, JSON embedded in the page, or a documented
 official fare-search interface where the provider permits the planned usage.
 Use a live canary to verify the current response.
 
-FlixBus is enabled for direct trips from Paris Bercy Seine to Amsterdam
-Sloterdijk and Brussels Gare du Midi. The other 13 live slots remain disabled.
+FlixBus is enabled for the 58 routes admitted by its version-controlled
+150-city public-HTML inventory. Ryanair is enabled for 41 city mappings across
+29 airport routes admitted by its own public-HTML inventory. The other 12 live
+slots remain disabled.
 A catalog kill switch applies to the scheduled batch. Ordinary cookie-consent controls may
 be accepted, but the service does not log in or evade rate limits, CAPTCHAs,
 anti-bot defenses, or other access controls. A difficult or challenged source
@@ -52,12 +54,11 @@ crowl-crawler live-canary \
   --origin-terminal par-bva \
   --destination-city barcelona-es \
   --destination-terminal bcn-el-prat \
-  --weekend 2026-12-04 \
-  --override-kill-switch-for-canary \
+  --weekend 2026-11-27 \
   --pretty
 ```
 
-The override exists only in memory for that process. It does not edit
+For a disabled source, the override exists only in memory for that process. It does not edit
 `data/sources.yaml`, enable the Railway batch, discover broad coverage, or
 consult `DATABASE_URL`. Output contains normalized prices, journey segments,
 typed outcomes, and response/schema fingerprints, but no raw HTML or booking
@@ -111,6 +112,21 @@ the unique `FareSnapshot` cells and skips unchanged revisions. Any validation
 or database failure rolls back the run ledger, coverage, health events, fares,
 bookings, and legs together.
 
+`first-weekend-publish` is the bounded provider-wide activation path. It
+classifies every editorial city, searches only the admitted terminal pairs for
+one Friday weekend, and publishes all successful fares atomically into one
+explicit operational date. The command refuses an occupied date and requires
+at least one valid winner:
+
+```sh
+crowl-crawler first-weekend-publish \
+  --source ryanair \
+  --weekend 2026-11-27 \
+  --date 2026-11-20 \
+  --acknowledge-daily-slot \
+  --pretty
+```
+
 The `fixture` source is synthetic and never represents one of the 14 requested
 providers. Its seed contract is `is_requested=false`, `enabled=false`,
 `strategy=fixture`, and connector/parser version `fixture-v1`. The publisher
@@ -121,16 +137,17 @@ active city, its Schengen terminal links, the complete Paris/Massy origin set,
 all fourteen requested source slots, and the rolling six-month weekend horizon
 from the database catalog. It runs enabled adapters and persists disabled slots
 as explicit `disabled` extractor/search outcomes. With the repository's default
-registry, it searches the bounded FlixBus Amsterdam and Brussels coverage and
-never substitutes fixture fares:
+registry, it searches the bounded, version-controlled FlixBus and Ryanair
+route catalogs and never substitutes fixture fares:
 
 ```sh
 export DATABASE_URL=postgresql+psycopg://user:password@host:5432/crowl
 crowl-crawler run
 ```
 
-For every enabled adapter with validated coverage, the production manifest requests both an atomic
-round trip and directional outbound/return offers. An adapter may return a
+The production manifest requests one atomic round trip per route and weekend.
+Directional outbound/return tasks are added when multiple providers are
+enabled so cross-source composition is possible. An adapter may return a
 typed unsupported-route result for search kinds it cannot sell. Publication
 accepts connector-normalized, complete EUR round trips and independently
 bookable one-way offers. Directional offers are composed across enabled
@@ -213,8 +230,10 @@ docker build -f services/crawler/Dockerfile -t crowl-crawler .
 
 ### Public-page configuration
 
-Except for the bounded FlixBus values already present in Compose and Railway,
-these variables are intentionally absent from the default environment.
+FlixBus and Ryanair load their normal route configuration from
+`data/flixbus-routes.json` and `data/ryanair-routes.json`. The following environment variables are
+intentionally absent from the default environment and remain explicit runtime
+overrides.
 Configure only a source whose live page has been reviewed, then update its
 source-catalog state separately:
 
@@ -244,8 +263,9 @@ exact aliases, valid weekend times, and the configured passenger/currency are
 normalized as displayed fares; connected cards remain diagnostic-only.
 
 Configuration alone is not an enablement signal. `data/sources.yaml` enables
-only FlixBus for the two verified routes; the other 13 entries remain disabled
-and kill-switched until their own live-page verification is complete.
+FlixBus for 58 routes and Ryanair for 41 city mappings across 29 airport
+routes; the other 12 entries remain disabled and kill-switched until their own
+live-page verification is complete.
 
 No raw page, credential, cookie, checkout token, or exception message belongs
 in a health event. Only allowlisted diagnostic codes are emitted.

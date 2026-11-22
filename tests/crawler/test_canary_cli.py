@@ -71,8 +71,8 @@ class LiveCanaryTests(unittest.TestCase):
         before = (ROOT / "data" / "sources.yaml").read_bytes()
         with self.assertRaisesRegex(CanaryPolicyError, "single DB-free canary"):
             build_canary_adapter(
-                "ryanair",
-                terminal_pair=("par-cdg", "lis-humberto-delgado"),
+                "easyjet",
+                terminal_pair=("par-ory", "lis-humberto-delgado"),
             )
         self.assertEqual((ROOT / "data" / "sources.yaml").read_bytes(), before)
 
@@ -84,23 +84,23 @@ class LiveCanaryTests(unittest.TestCase):
         with patch.dict(
             os.environ,
             {
-                "CROWL_RYANAIR_PUBLIC_PAGE_URL": (
-                    "https://www.ryanair.com/gb/en/trip/flights/select"
+                "CROWL_EASYJET_PUBLIC_PAGE_URL": (
+                    "https://www.easyjet.com/en/book/index"
                 )
             },
             clear=False,
         ):
             binding = build_canary_adapter(
-                "ryanair",
+                "easyjet",
                 override_kill_switch_for_canary=True,
-                terminal_pair=("par-cdg", "lis-humberto-delgado"),
+                terminal_pair=("par-ory", "lis-humberto-delgado"),
             )
         self.assertTrue(binding.catalog_override_used)
         self.assertTrue(binding.adapter.metadata().enabled)
         asyncio.run(binding.adapter.close())
         self.assertFalse(
             build_default_registry(include_fixture=False)
-            .get("ryanair")
+            .get("easyjet")
             .metadata()
             .enabled
         )
@@ -162,9 +162,9 @@ class LiveCanaryTests(unittest.TestCase):
                 (
                     "live-canary",
                     "--source",
-                    "ryanair",
+                    "easyjet",
                     "--origin-terminal",
-                    "par-cdg",
+                    "par-ory",
                     "--destination-city",
                     "lisbon-pt",
                     "--destination-terminal",
@@ -252,4 +252,3 @@ def _successful_result() -> ConnectorResult:
 
 if __name__ == "__main__":
     unittest.main()
-

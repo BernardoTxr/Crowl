@@ -1,9 +1,11 @@
 # Crowl implementation status
 
-Crowl is runnable locally with the supplied 150-city catalog. FlixBus is
-enabled for direct trips from Paris Bercy Seine to Amsterdam Sloterdijk and
-Brussels Gare du Midi. The other 13 providers are disabled. A fresh database
-starts collecting history with its first successful scheduled run.
+Crowl is runnable locally with the supplied 150-city catalog. Paced public-HTML
+inventories classify all 150 cities for the two enabled sources: FlixBus has 58
+routes whose advertised minimum is at most 12 hours, and Ryanair has 41 city
+mappings across 29 Paris-Beauvais airport routes. The other 12 providers are
+disabled. A fresh database starts collecting history with its first successful
+scheduled run.
 
 ## Working now
 
@@ -45,6 +47,21 @@ starts collecting history with its first successful scheduled run.
   pages per round trip. The Brussels canaries returned displayed fares of
   €27.46 for 2026-11-27 and €25.96 for 2027-05-21. The rendered DOM parser
   checks exact direct stops, weekend timing, and the 12-hour limits.
+- The 2026-11-21 route inventory classified all 150 cities without request or
+  parser failures: 58 executable routes, 62 over the 12-hour limit, 26 without
+  a public route page, and four route pages without a current trip summary.
+  It added public route-page stop/UUID mappings and expanded the terminal
+  catalog from 43 to 99 entries.
+- The Ryanair ordinary-public-HTML inventory classified all 150 cities without
+  private API calls: 41 supported city mappings across 29 airport routes and
+  109 cities without an admitted route. Its airport aliases expanded the
+  shared terminal catalog to 120 entries.
+- The 2026-11-27 Ryanair first-weekend activation completed all 41 executable
+  searches and atomically published 18 real fare snapshots from 64 parsed
+  offers. Outcomes were 18 fare-bearing results, 21 no-service results, one
+  valid empty result, and one isolated Lisbon schema mismatch. The map exposes
+  all 18 prices with exact Beauvais and destination-airport endpoints; Venice
+  was cheapest at €50.62.
 - A live daily-run check against a disposable PostgreSQL database completed
   all six FlixBus tasks for the 2026-11-27 weekend and published two snapshots:
   Amsterdam at €45.96 and Brussels at €27.46. This check used the installed
@@ -66,24 +83,26 @@ starts collecting history with its first successful scheduled run.
 
 ## Pending implementation work
 
+- Complete and inspect the expanded 1,508-task FlixBus batch independently of
+  the bounded Ryanair activation. Full batches retain atomic publication, while
+  provider/weekend activation uses the bounded command added for verification.
 - Add a dedicated Schengen boundary/non-Schengen mask to the already attributed
   MapLibre geographic tile layer, as specified in the target plan.
 - Add arbitrary within-direction cross-source leg chaining. The current
   composition boundary is provider-supplied multi-leg itineraries plus pairing
   complete outbound and return components across sources and modes.
-- Complete operational terminal mappings for the 136 catalog cities that do
+- Complete operational terminal mappings for the 51 catalog cities that do
   not yet have one. Those cities remain fully available to the map, directory,
   and city pages, but cannot receive crawler coverage until linked.
 
 ## Still requires live-page verification or external input
 
-- The Ryanair rendered public fare canary and OUIGO official MCP returned
-  exact live results. Enabling their booking links on Crowl requires provider
-  authorization. The Ryanair MCP documentation describes fare tools, but the
-  live tool list only exposed network and route tools when tested.
-  [OUIGO sales-site terms](https://www.ouigo.com/infos-legales-site-de-ventes) ·
-  [Ryanair terms](https://www.ryanair.com/gb/en/lp/legal/terms-of-use) ·
-  [Ryanair MCP docs](https://services-api.ryanair.com/mcp-server/docs)
+- The isolated Lisbon Ryanair schema mismatch needs a fresh rendered-page
+  fixture before that route can be trusted. It is surfaced as failed coverage
+  and does not block or fabricate fares for the other cities.
+- OUIGO's exact live result still requires an ordinary public-page activation
+  path and the same pricing, alias, and coverage checks used for the two active
+  sources. [OUIGO sales-site terms](https://www.ouigo.com/infos-legales-site-de-ventes)
 - Per-source verification of exact fares, terminal aliases, explicit route
   coverage, usage terms, limits, and booking domains. A documented official
   fare-search interface is an option when the provider permits the planned

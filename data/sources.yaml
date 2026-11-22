@@ -4,19 +4,63 @@ sources:
     name: Ryanair
     modes: [flight]
     strategy: playwright
-    state: disabled_needs_authorization
-    enabled: false
-    kill_switch: true
-    config_version: "2026-11-21"
+    state: enabled
+    enabled: true
+    kill_switch: false
+    config_version: "2026-11-21-public-route-catalog-v1"
     access_basis: ordinary public booking-page HTML
-    access_note: Public results were verified on Beauvais–Barcelona. The official MCP endpoint exposed route and airport tools during testing, with no active fare-search tool. Production booking-link publication requires Ryanair authorization.
-    rate_limit: { requests_per_minute: null, max_concurrency: 0, status: unverified }
-    markets: { origins: [paris_massy], destinations: [schengen], status: unverified }
-    sale_horizon_days: null
-    attribution_required: null
+    access_note: Exact one-adult EUR Basic fares are read from Ryanair's rendered public booking-page HTML. Coverage is limited to routes confirmed by the paced official public route-page inventory; no API or challenge bypass is used.
+    rate_limit: { requests_per_minute: 6, max_concurrency: 1, status: verified }
+    markets:
+      origins: [par-bva]
+      destinations:
+        - barcelona-es
+        - bergamo-it
+        - bologna-it
+        - brasov-ro
+        - bucharest-ro
+        - budapest-hu
+        - coimbra-pt
+        - copenhagen-dk
+        - cordoba-es
+        - eger-hu
+        - florence-it
+        - gdansk-pl
+        - girona-es
+        - kalambaka-gr
+        - krakow-pl
+        - lagos-pt
+        - lisbon-pt
+        - lucca-it
+        - madrid-es
+        - milan-it
+        - naples-it
+        - palermo-it
+        - pecs-hu
+        - piran-si
+        - porto-pt
+        - prague-cz
+        - rome-it
+        - rovaniemi-fi
+        - seville-es
+        - siena-it
+        - sintra-pt
+        - sofia-bg
+        - stockholm-se
+        - thessaloniki-gr
+        - toledo-es
+        - trakai-lt
+        - venice-it
+        - vienna-at
+        - vilnius-lt
+        - zagreb-hr
+        - zakopane-pl
+      status: verified
+    sale_horizon_days: 210
+    attribution_required: true
     booking_link_required: true
     booking_hosts: [ryanair.com]
-    route_discovery: { method: curated_public_page_coverage, status: blocked_access, provenance: No verified public-page route coverage is configured. }
+    route_discovery: { method: curated_public_page_coverage, status: verified, provenance: "A paced 2026-11-21 ordinary-public-HTML inventory classified all 150 cities: 41 supported city mappings across 29 Paris-Beauvais airport routes and 109 without a current public route page." }
   - id: easyjet
     name: easyJet
     modes: [flight]
@@ -109,16 +153,77 @@ sources:
     state: enabled
     enabled: true
     kill_switch: false
-    config_version: "2026-11-21-displayed-fare-v2"
+    config_version: "2026-11-21-public-route-catalog-v3"
     access_basis: ordinary public search-page HTML
-    access_note: Enabled for direct public result cards between Paris Bercy Seine and Amsterdam Sloterdijk or Brussels Gare du Midi. The exact displayed one-adult EUR fare is estimated because a service fee may apply.
+    access_note: Enabled for the 58 Paris routes in the version-controlled public-HTML catalog whose advertised minimum is at most 12 hours. The exact displayed one-adult EUR fare is estimated because a service fee may apply.
     rate_limit: { requests_per_minute: 12, max_concurrency: 1, status: verified }
-    markets: { origins: [par-bercy-seine-bus], destinations: [amsterdam-nl, brussels-be], status: verified }
+    markets:
+      origins: [par-bercy-seine-bus]
+      destinations:
+        - aachen-de
+        - amiens-fr
+        - amsterdam-nl
+        - angers-fr
+        - annecy-fr
+        - antwerp-be
+        - arras-fr
+        - avignon-fr
+        - baden-baden-de
+        - barcelona-es
+        - bern-ch
+        - bilbao-es
+        - bordeaux-fr
+        - bruges-be
+        - brussels-be
+        - chamonix-fr
+        - clermont-ferrand-fr
+        - colmar-fr
+        - cologne-de
+        - dijon-fr
+        - dusseldorf-de
+        - frankfurt-de
+        - freiburg-im-breisgau-de
+        - geneva-ch
+        - ghent-be
+        - la-rochelle-fr
+        - lausanne-ch
+        - leuven-be
+        - lille-fr
+        - luxembourg-city-lu
+        - lyon-fr
+        - maastricht-nl
+        - marseille-fr
+        - metz-fr
+        - milan-it
+        - montpellier-fr
+        - munich-de
+        - namur-be
+        - nancy-fr
+        - nantes-fr
+        - nice-fr
+        - nuremberg-de
+        - orleans-fr
+        - reims-fr
+        - rennes-fr
+        - rotterdam-nl
+        - rouen-fr
+        - saint-malo-fr
+        - san-sebastian-es
+        - strasbourg-fr
+        - the-hague-nl
+        - toulouse-fr
+        - tours-fr
+        - trier-de
+        - troyes-fr
+        - turin-it
+        - utrecht-nl
+        - zurich-ch
+      status: verified
     sale_horizon_days: 184
     attribution_required: true
     booking_link_required: false
     booking_hosts: [flixbus.com]
-    route_discovery: { method: curated_public_page_coverage, status: verified, provenance: "Live canaries confirmed Amsterdam and Brussels direct round trips for 2026-11-27 and 2027-05-21. The verified return horizon ends 2027-05-24." }
+    route_discovery: { method: curated_public_page_coverage, status: verified, provenance: "A paced 2026-11-21 ordinary-public-HTML inventory classified all 150 cities: 58 routes within 12 hours, 62 over the limit, 26 without a public route page, and 4 route pages without a current trip summary. The configured return horizon ends 2027-05-24." }
   - id: blablacar_bus
     name: BlaBlaCar Bus
     modes: [bus]

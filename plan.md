@@ -22,14 +22,19 @@ current implementation:
   modes and accepts provider-supplied multi-leg itineraries. Arbitrary
   within-direction cross-source leg chaining is pending.
 - All 14 requested provider adapter slots and status rows exist. **FlixBus is
-  enabled for direct Paris Bercy Seine routes to Amsterdam Sloterdijk and
-  Brussels Gare du Midi.** The other 13 providers are disabled. The guarded
-  2026-11-21 activation published one real €45.96 displayed-fare observation
-  for the 2026-11-27 weekend.
+  enabled for the 58 Paris routes in its version-controlled public-HTML
+  catalog, and Ryanair is enabled for 41 city mappings across 29
+  Paris-Beauvais airport routes in its public-HTML catalog.** The other 12
+  providers are disabled. Bounded activations published a real €45.96 FlixBus
+  displayed fare and 18 real Ryanair flight fares for the 2026-11-27 weekend.
 - Railway infrastructure definitions are versioned and type-check. Applying
   them to an owner project and verifying scheduled production runs are pending.
 - `data/crowl-cities-150.json` is the canonical editorial catalog. Operational
-  terminal mappings remain incomplete and are maintained separately.
+  terminal mappings remain incomplete and are maintained separately. The
+  expanded FlixBus manifest contains 1,508 executable tasks across 26 weekends.
+  The bounded Ryanair activation completed 41 executable city searches for one
+  weekend; a normal daily Railway run will expand both active catalogs across
+  the full six-month horizon.
 
 ## 1. Product scope
 
@@ -702,20 +707,22 @@ accounts. Record the typed state and skip the connector.
 
 ### 9.3 Requested-source matrix
 
-All 14 adapters and status rows belong to the first release. FlixBus is
-enabled for two verified routes. Enabling another source requires a successful
-live fare test with exact pricing, terminal aliases, route coverage, and
-permitted access.
+All 14 adapters and status rows belong to the first release. FlixBus has a
+150-city public-HTML inventory and 58 executable routes under the duration
+rule. Ryanair has a separate 150-city ordinary-public-HTML inventory with 41
+supported city mappings across 29 airport routes, plus a live rendered-page
+fare canary. Enabling another source requires a successful live fare test with
+exact pricing, terminal aliases, route coverage, and permitted access.
 
 | Source | Mode | Provisional primary strategy | Enablement gate |
 |---|---|---|---|
-| Ryanair | Flight | `playwright` public booking-page HTML/embedded JSON | Verify stable complete live fare markup, aliases, and coverage; otherwise skip. |
+| Ryanair | Flight | `playwright` public rendered booking-page HTML | Enabled for the 41 city mappings admitted by `data/ryanair-routes.json`; parses exact Basic fares, all rendered flight cards, and the full eligible round trip without private API calls. |
 | easyJet | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
 | Transavia | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
 | Wizz Air | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; challenge or unstable markup stays skipped. |
 | Vueling | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; otherwise skip. |
 | Volotea | Flight | `playwright` public booking-page HTML/embedded JSON | Same gate; challenge or unstable markup stays skipped. |
-| FlixBus | Bus | `playwright` public rendered search-card DOM | Enabled for direct Bercy Seine–Sloterdijk and Bercy Seine–Brussels Gare du Midi cards. Store the exact one-adult displayed fare with a service-fee disclosure. An exact-trip booking link is optional. |
+| FlixBus | Bus | `playwright` public rendered search-card DOM | Enabled for the 58 routes admitted by `data/flixbus-routes.json`; Amsterdam and Brussels have completed live fare canaries. Store the exact one-adult displayed fare with a service-fee disclosure. An exact-trip booking link is optional. |
 | BlaBlaCar Bus | Bus | `playwright` public bus search-page JSON-LD | Same gate; rideshare remains excluded. |
 | Itabus | Bus | `playwright` public search-page JSON-LD | Same gate; otherwise skip. |
 | Alsa | Bus | `playwright` public search-page JSON-LD | Same gate; otherwise skip. |
@@ -967,13 +974,16 @@ Build all images, start Compose, migrate, import the city catalog, run crawler i
 
 - [x] Add an isolated public-HTML/embedded-JSON parser, sanitized fixtures,
   configuration, contract coverage, and status entry for every requested source.
-- [x] Enable verified, bounded extraction. FlixBus is enabled for Bercy Seine
-  to Amsterdam Sloterdijk and Brussels Gare du Midi.
+- [x] Enable bounded extraction. The public-HTML FlixBus inventory classifies
+  all 150 cities and admits 58 routes under the 12-hour rule. The Ryanair
+  public-HTML inventory also classifies all 150 cities and admits 41 city
+  mappings across 29 airport routes.
 - [x] Show all 14 sources and give every unavailable source a sanitized disabled reason; never silently omit one.
 - [x] Prune searches using configured/discovered route coverage and sale horizons when those facts are available.
-- [ ] Verify live public markup, exact fare semantics, terminal aliases, and
-  route coverage source by source; two bounded FlixBus routes are verified and
-  the remaining 13 sources are disabled.
+- [ ] Verify live result-card labels and fare outcomes across the expanded
+  FlixBus and Ryanair route catalogs, then verify markup, exact fare semantics,
+  terminal aliases, and route coverage source by source for the other 12
+  disabled providers.
 - [x] Publish one guarded real activation winner end to end and expose its
   displayed-fare disclosure through SQL, API, map, and city-page contracts.
 

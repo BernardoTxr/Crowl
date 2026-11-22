@@ -2,82 +2,2392 @@
   "schemaVersion": 1,
   "strictSchengenPath": true,
   "originTerminalIds": [
-    "par-cdg", "par-ory", "par-bva", "par-gare-du-nord", "par-gare-de-l-est",
-    "par-gare-de-lyon", "par-montparnasse", "par-austerlitz", "par-saint-lazare",
-    "par-bercy-bourgogne", "par-bercy-seine-bus", "par-porte-maillot-bus",
-    "par-la-defense-bus", "par-pont-de-sevres-bus", "par-saint-denis-universite-bus",
-    "massy-palaiseau-vilmorin-bus", "par-champigny-bus", "par-pont-de-levallois-bus",
+    "par-cdg",
+    "par-ory",
+    "par-bva",
+    "par-gare-du-nord",
+    "par-gare-de-l-est",
+    "par-gare-de-lyon",
+    "par-montparnasse",
+    "par-austerlitz",
+    "par-saint-lazare",
+    "par-bercy-bourgogne",
+    "par-bercy-seine-bus",
+    "par-porte-maillot-bus",
+    "par-la-defense-bus",
+    "par-pont-de-sevres-bus",
+    "par-saint-denis-universite-bus",
+    "massy-palaiseau-vilmorin-bus",
+    "par-champigny-bus",
+    "par-pont-de-levallois-bus",
     "massy-tgv"
   ],
   "terminals": [
-    { "id": "par-cdg", "name": "Paris Charles de Gaulle Airport", "kind": "airport", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 49.0097, "lon": 2.5479 }, "codes": { "iata": "CDG" } },
-    { "id": "par-ory", "name": "Paris Orly Airport", "kind": "airport", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.7262, "lon": 2.3652 }, "codes": { "iata": "ORY" } },
-    { "id": "par-bva", "name": "Paris Beauvais Airport", "kind": "airport", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 49.4544, "lon": 2.1128 }, "codes": { "iata": "BVA" } },
-    { "id": "par-gare-du-nord", "name": "Paris Gare du Nord", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8809, "lon": 2.3553 }, "codes": {} },
-    { "id": "par-gare-de-l-est", "name": "Paris Gare de l’Est", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8763, "lon": 2.3593 }, "codes": {} },
-    { "id": "par-gare-de-lyon", "name": "Paris Gare de Lyon", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8443, "lon": 2.3739 }, "codes": {} },
-    { "id": "par-montparnasse", "name": "Paris Montparnasse", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8406, "lon": 2.3201 }, "codes": {} },
-    { "id": "par-austerlitz", "name": "Paris Austerlitz", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8423, "lon": 2.3658 }, "codes": {} },
-    { "id": "par-saint-lazare", "name": "Paris Saint-Lazare", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8760, "lon": 2.3254 }, "codes": {} },
-    { "id": "par-bercy-bourgogne", "name": "Paris Bercy Bourgogne–Pays d’Auvergne", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.8392, "lon": 2.3828 }, "codes": {} },
-    { "id": "par-bercy-seine-bus", "name": "Paris Bercy Seine Bus Station", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.835318, "lon": 2.380519 }, "codes": {} },
-    { "id": "par-porte-maillot-bus", "name": "Paris Porte Maillot (Gare Routière Pershing)", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.880207, "lon": 2.282533 }, "codes": {} },
-    { "id": "par-la-defense-bus", "name": "Paris La Défense (Terminal Jules Verne)", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.891475, "lon": 2.242474 }, "codes": {} },
-    { "id": "par-pont-de-sevres-bus", "name": "Paris Pont de Sèvres Bus Stop", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.82972, "lon": 2.229658 }, "codes": {} },
-    { "id": "par-saint-denis-universite-bus", "name": "Paris Saint-Denis Université Bus Station", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.946297, "lon": 2.364172 }, "codes": {} },
-    { "id": "massy-palaiseau-vilmorin-bus", "name": "Massy-Palaiseau Gare Routière Vilmorin", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.725719, "lon": 2.256842 }, "codes": {} },
-    { "id": "par-champigny-bus", "name": "Paris Champigny-sur-Marne Bus Stop", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.812727, "lon": 2.532394 }, "codes": {} },
-    { "id": "par-pont-de-levallois-bus", "name": "Paris Pont de Levallois Bus Stop", "kind": "bus", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.897742, "lon": 2.281255 }, "codes": {} },
-    { "id": "massy-tgv", "name": "Massy TGV", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 48.7258, "lon": 2.2615 }, "codes": {} },
-    { "id": "ams-schiphol", "name": "Amsterdam Schiphol Airport", "kind": "airport", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.3105, "lon": 4.7683 }, "codes": { "iata": "AMS" } },
-    { "id": "ams-centraal", "name": "Amsterdam Centraal", "kind": "rail", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.3791, "lon": 4.9003 }, "codes": {} },
-    { "id": "ams-sloterdijk-bus", "name": "Amsterdam Sloterdijk (Piarcoplein)", "kind": "bus", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.389758, "lon": 4.838497 }, "codes": {} },
-    { "id": "ams-schiphol-coach", "name": "Amsterdam Schiphol Airport Coach Terminal", "kind": "bus", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.306817, "lon": 4.760319 }, "codes": {} },
-    { "id": "ams-centraal-ijzijde-bus", "name": "Amsterdam Centraal Bus Station IJzijde (Stop H)", "kind": "bus", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.379338, "lon": 4.901522 }, "codes": {} },
-    { "id": "ams-bijlmer-arena-bus", "name": "Amsterdam Bijlmer ArenA (Hoogoorddreef/Atlas)", "kind": "bus", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.310497, "lon": 4.946442 }, "codes": {} },
-    { "id": "ams-centraal-de-ruijterkade-bus", "name": "Amsterdam Centraal (De Ruijterkade 153)", "kind": "bus", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.378214, "lon": 4.907143 }, "codes": {} },
-    { "id": "ams-holendrecht-bus", "name": "Amsterdam Holendrecht", "kind": "bus", "timezone": "Europe/Amsterdam", "countryCode": "NL", "coordinates": { "lat": 52.297682, "lon": 4.958799 }, "codes": {} },
-    { "id": "bru-gare-du-midi-bus", "name": "Brussels South (Gare du Midi)", "kind": "bus", "timezone": "Europe/Brussels", "countryCode": "BE", "coordinates": { "lat": 50.834939, "lon": 4.333030 }, "codes": {} },
-    { "id": "brussels-midi", "name": "Bruxelles-Midi / Brussel-Zuid", "kind": "rail", "timezone": "Europe/Brussels", "countryCode": "BE", "coordinates": { "lat": 50.8356, "lon": 4.3361 }, "codes": {} },
-    { "id": "lyon-part-dieu", "name": "Lyon Part-Dieu", "kind": "rail", "timezone": "Europe/Paris", "countryCode": "FR", "coordinates": { "lat": 45.7606, "lon": 4.8595 }, "codes": {} },
-    { "id": "bcn-el-prat", "name": "Barcelona El Prat Airport", "kind": "airport", "timezone": "Europe/Madrid", "countryCode": "ES", "coordinates": { "lat": 41.2974, "lon": 2.0833 }, "codes": { "iata": "BCN" } },
-    { "id": "cph-kastrup", "name": "Copenhagen Airport", "kind": "airport", "timezone": "Europe/Copenhagen", "countryCode": "DK", "coordinates": { "lat": 55.6180, "lon": 12.6508 }, "codes": { "iata": "CPH" } },
-    { "id": "lis-humberto-delgado", "name": "Lisbon Humberto Delgado Airport", "kind": "airport", "timezone": "Europe/Lisbon", "countryCode": "PT", "coordinates": { "lat": 38.7742, "lon": -9.1342 }, "codes": { "iata": "LIS" } },
-    { "id": "prg-vaclav-havel", "name": "Prague Václav Havel Airport", "kind": "airport", "timezone": "Europe/Prague", "countryCode": "CZ", "coordinates": { "lat": 50.1008, "lon": 14.2600 }, "codes": { "iata": "PRG" } },
-    { "id": "kef-keflavik", "name": "Keflavík International Airport", "kind": "airport", "timezone": "Atlantic/Reykjavik", "countryCode": "IS", "coordinates": { "lat": 63.9850, "lon": -22.6056 }, "codes": { "iata": "KEF" } },
-    { "id": "vie-schwechat", "name": "Vienna International Airport", "kind": "airport", "timezone": "Europe/Vienna", "countryCode": "AT", "coordinates": { "lat": 48.1103, "lon": 16.5697 }, "codes": { "iata": "VIE" } },
-    { "id": "zrh-kloten", "name": "Zürich Airport", "kind": "airport", "timezone": "Europe/Zurich", "countryCode": "CH", "coordinates": { "lat": 47.4581, "lon": 8.5555 }, "codes": { "iata": "ZRH" } },
-    { "id": "zrh-hb", "name": "Zürich Hauptbahnhof", "kind": "rail", "timezone": "Europe/Zurich", "countryCode": "CH", "coordinates": { "lat": 47.3782, "lon": 8.5402 }, "codes": {} },
-    { "id": "ber-brandenburg", "name": "Berlin Brandenburg Airport", "kind": "airport", "timezone": "Europe/Berlin", "countryCode": "DE", "coordinates": { "lat": 52.3667, "lon": 13.5033 }, "codes": { "iata": "BER" } },
-    { "id": "ber-hbf", "name": "Berlin Hauptbahnhof", "kind": "rail", "timezone": "Europe/Berlin", "countryCode": "DE", "coordinates": { "lat": 52.5251, "lon": 13.3694 }, "codes": {} },
-    { "id": "krk-balice", "name": "Kraków John Paul II Airport", "kind": "airport", "timezone": "Europe/Warsaw", "countryCode": "PL", "coordinates": { "lat": 50.0777, "lon": 19.7848 }, "codes": { "iata": "KRK" } },
-    { "id": "fco-fiumicino", "name": "Rome Fiumicino Airport", "kind": "airport", "timezone": "Europe/Rome", "countryCode": "IT", "coordinates": { "lat": 41.8003, "lon": 12.2389 }, "codes": { "iata": "FCO" } },
-    { "id": "arn-arlanda", "name": "Stockholm Arlanda Airport", "kind": "airport", "timezone": "Europe/Stockholm", "countryCode": "SE", "coordinates": { "lat": 59.6519, "lon": 17.9186 }, "codes": { "iata": "ARN" } }
+    {
+      "id": "ams-bijlmer-arena-bus",
+      "name": "Amsterdam Bijlmer ArenA (Hoogoorddreef/Atlas)",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.310497,
+        "lon": 4.946442
+      },
+      "codes": {}
+    },
+    {
+      "id": "ams-centraal",
+      "name": "Amsterdam Centraal",
+      "kind": "rail",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.3791,
+        "lon": 4.9003
+      },
+      "codes": {}
+    },
+    {
+      "id": "ams-centraal-de-ruijterkade-bus",
+      "name": "Amsterdam Centraal (De Ruijterkade 153)",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.378214,
+        "lon": 4.907143
+      },
+      "codes": {}
+    },
+    {
+      "id": "ams-centraal-ijzijde-bus",
+      "name": "Amsterdam Centraal Bus Station IJzijde (Stop H)",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.379338,
+        "lon": 4.901522
+      },
+      "codes": {}
+    },
+    {
+      "id": "ams-holendrecht-bus",
+      "name": "Amsterdam Holendrecht",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.297682,
+        "lon": 4.958799
+      },
+      "codes": {}
+    },
+    {
+      "id": "ams-schiphol",
+      "name": "Amsterdam Schiphol Airport",
+      "kind": "airport",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.3105,
+        "lon": 4.7683
+      },
+      "codes": {
+        "iata": "AMS"
+      }
+    },
+    {
+      "id": "ams-schiphol-coach",
+      "name": "Amsterdam Schiphol Airport Coach Terminal",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.306817,
+        "lon": 4.760319
+      },
+      "codes": {}
+    },
+    {
+      "id": "ams-sloterdijk-bus",
+      "name": "Amsterdam Sloterdijk (Piarcoplein)",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.389758,
+        "lon": 4.838497
+      },
+      "codes": {}
+    },
+    {
+      "id": "arn-arlanda",
+      "name": "Stockholm Arlanda Airport",
+      "kind": "airport",
+      "timezone": "Europe/Stockholm",
+      "countryCode": "SE",
+      "coordinates": {
+        "lat": 59.6519,
+        "lon": 17.9186
+      },
+      "codes": {
+        "iata": "ARN"
+      }
+    },
+    {
+      "id": "bcn-el-prat",
+      "name": "Barcelona El Prat Airport",
+      "kind": "airport",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 41.2974,
+        "lon": 2.0833
+      },
+      "codes": {
+        "iata": "BCN"
+      }
+    },
+    {
+      "id": "ber-brandenburg",
+      "name": "Berlin Brandenburg Airport",
+      "kind": "airport",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 52.3667,
+        "lon": 13.5033
+      },
+      "codes": {
+        "iata": "BER"
+      }
+    },
+    {
+      "id": "ber-hbf",
+      "name": "Berlin Hauptbahnhof",
+      "kind": "rail",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 52.5251,
+        "lon": 13.3694
+      },
+      "codes": {}
+    },
+    {
+      "id": "bru-gare-du-midi-bus",
+      "name": "Brussels South (Gare du Midi)",
+      "kind": "bus",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 50.834939,
+        "lon": 4.33303
+      },
+      "codes": {}
+    },
+    {
+      "id": "brussels-midi",
+      "name": "Bruxelles-Midi / Brussel-Zuid",
+      "kind": "rail",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 50.8356,
+        "lon": 4.3361
+      },
+      "codes": {}
+    },
+    {
+      "id": "cph-kastrup",
+      "name": "Copenhagen Airport",
+      "kind": "airport",
+      "timezone": "Europe/Copenhagen",
+      "countryCode": "DK",
+      "coordinates": {
+        "lat": 55.618,
+        "lon": 12.6508
+      },
+      "codes": {
+        "iata": "CPH"
+      }
+    },
+    {
+      "id": "fco-fiumicino",
+      "name": "Rome Fiumicino Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 41.8003,
+        "lon": 12.2389
+      },
+      "codes": {
+        "iata": "FCO"
+      }
+    },
+    {
+      "id": "flix-04db6ed7-70dc-42cf-bcc9-76a3127d25b4",
+      "name": "Rouen (Avenue Champlain)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 49.434194,
+        "lon": 1.092699
+      },
+      "codes": {
+        "flixbus_stop_id": "04db6ed7-70dc-42cf-bcc9-76a3127d25b4"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-1a09c915-9448-4313-bdb8-ab48eb6704fa",
+      "name": "Troyes (Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.297767,
+        "lon": 4.06427
+      },
+      "codes": {
+        "flixbus_stop_id": "1a09c915-9448-4313-bdb8-ab48eb6704fa"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-1b0eb969-7c8e-4242-b5c8-75124d37763a",
+      "name": "Saint-Malo (Office de Tourisme)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.650082,
+        "lon": -2.021857
+      },
+      "codes": {
+        "flixbus_stop_id": "1b0eb969-7c8e-4242-b5c8-75124d37763a"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-3314645f-7903-4bc9-b9ef-74ff161feca2",
+      "name": "Bilbao (Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 43.261055,
+        "lon": -2.948689
+      },
+      "codes": {
+        "flixbus_stop_id": "3314645f-7903-4bc9-b9ef-74ff161feca2"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-357e465b-8a94-4c9a-9bae-cd0b5369f33b",
+      "name": "Aachen station west (Henricistraße)",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 50.783515,
+        "lon": 6.072513
+      },
+      "codes": {
+        "flixbus_stop_id": "357e465b-8a94-4c9a-9bae-cd0b5369f33b"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-6c33811e-9f58-457f-a112-44620ebba523",
+      "name": "Nantes (Central Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 47.216512,
+        "lon": -1.540747
+      },
+      "codes": {
+        "flixbus_stop_id": "6c33811e-9f58-457f-a112-44620ebba523"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515",
+      "name": "Avignon (Le Pontet)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 43.960626,
+        "lon": 4.855938
+      },
+      "codes": {
+        "flixbus_stop_id": "7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-87e7ff8e-5026-4fb1-8241-7e3e2debbeda",
+      "name": "Chamonix",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 45.917132,
+        "lon": 6.867276
+      },
+      "codes": {
+        "flixbus_stop_id": "87e7ff8e-5026-4fb1-8241-7e3e2debbeda"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-97ad0b6d-991a-46d5-bc57-276173e0cc39",
+      "name": "Antwerp Rooseveltplaats (B5)",
+      "kind": "bus",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 51.219293,
+        "lon": 4.416975
+      },
+      "codes": {
+        "flixbus_stop_id": "97ad0b6d-991a-46d5-bc57-276173e0cc39"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-9fe81919-2d89-48f4-81a3-322dc4b5614d",
+      "name": "Lyon (Gerland Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 45.726184,
+        "lon": 4.828142
+      },
+      "codes": {
+        "flixbus_stop_id": "9fe81919-2d89-48f4-81a3-322dc4b5614d"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-bb6bb160-b0fc-4a77-a08c-191e65256406",
+      "name": "Tours (Vaucanson)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 47.423527,
+        "lon": 0.711295
+      },
+      "codes": {
+        "flixbus_stop_id": "bb6bb160-b0fc-4a77-a08c-191e65256406"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7",
+      "name": "Nice Airport (Bus Station - Terminal 1)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 43.664817,
+        "lon": 7.209588
+      },
+      "codes": {
+        "flixbus_stop_id": "c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-d27227ed-f1b0-4ea4-a8f6-10de02faf63b",
+      "name": "Amiens (Les Hortillonnages)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 49.897096,
+        "lon": 2.311491
+      },
+      "codes": {
+        "flixbus_stop_id": "d27227ed-f1b0-4ea4-a8f6-10de02faf63b"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbab299-9603-11e6-9066-549f350fcb0c",
+      "name": "Zurich Bus Station",
+      "kind": "bus",
+      "timezone": "Europe/Zurich",
+      "countryCode": "CH",
+      "coordinates": {
+        "lat": 47.380855,
+        "lon": 8.537436
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbab299-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbab968-9603-11e6-9066-549f350fcb0c",
+      "name": "Freiburg(im Breisgau) central station",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 47.995688,
+        "lon": 7.840469
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbab968-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbabbfa-9603-11e6-9066-549f350fcb0c",
+      "name": "Munich central bus station",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 48.14248,
+        "lon": 11.55001
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbabbfa-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbabe0c-9603-11e6-9066-549f350fcb0c",
+      "name": "Frankfurt central train station",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 50.104394,
+        "lon": 8.662577
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbabe0c-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbac661-9603-11e6-9066-549f350fcb0c",
+      "name": "Nuremberg central bus station (Willy-Brandt-Platz)",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 49.447715,
+        "lon": 11.0855
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbac661-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbac843-9603-11e6-9066-549f350fcb0c",
+      "name": "Strasbourg (Bus stop on \"Place de l'Étoile\")",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.574179,
+        "lon": 7.754266
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbac843-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbaca96-9603-11e6-9066-549f350fcb0c",
+      "name": "Düsseldorf central bus station",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 51.222865,
+        "lon": 6.79542
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbaca96-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbc484a-9603-11e6-9066-549f350fcb0c",
+      "name": "Milan (Lampugnano bus station)",
+      "kind": "bus",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 45.489719,
+        "lon": 9.127528
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbc484a-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbc53ef-9603-11e6-9066-549f350fcb0c",
+      "name": "Utrecht central station",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.088181,
+        "lon": 5.109352
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbc53ef-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbcd8bb-9603-11e6-9066-549f350fcb0c",
+      "name": "The Hague Central (Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 52.0798,
+        "lon": 4.3255
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbcd8bb-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbd7a02-9603-11e6-9066-549f350fcb0c",
+      "name": "Maastricht station",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 50.852543,
+        "lon": 5.705562
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbd7a02-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbd8097-9603-11e6-9066-549f350fcb0c",
+      "name": "Metz (central bus station near the SNCF Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 49.110164,
+        "lon": 6.183766
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbd8097-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbf7bd9-9603-11e6-9066-549f350fcb0c",
+      "name": "Trier central train station (Kürenzer St.)",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 49.758208,
+        "lon": 6.653136
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbf7bd9-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbf8aeb-9603-11e6-9066-549f350fcb0c",
+      "name": "Lille (Parking near Train Station \"Lille Europe\")",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 50.639197,
+        "lon": 3.076202
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbf8aeb-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbfe5ff-9603-11e6-9066-549f350fcb0c",
+      "name": "Rotterdam central station",
+      "kind": "bus",
+      "timezone": "Europe/Amsterdam",
+      "countryCode": "NL",
+      "coordinates": {
+        "lat": 51.923686,
+        "lon": 4.46679
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbfe5ff-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbfe731-9603-11e6-9066-549f350fcb0c",
+      "name": "Turin (Vittorio Emanuele)",
+      "kind": "bus",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 45.07016,
+        "lon": 7.657706
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbfe731-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbfeac0-9603-11e6-9066-549f350fcb0c",
+      "name": "Reims Champagne Ardenne TGV ( Bus Stop next to the train station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 49.215393,
+        "lon": 3.994701
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbfeac0-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcbffdd5-9603-11e6-9066-549f350fcb0c",
+      "name": "Ghent (Dampoort)",
+      "kind": "bus",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 51.053533,
+        "lon": 3.740521
+      },
+      "codes": {
+        "flixbus_stop_id": "dcbffdd5-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc055c8-9603-11e6-9066-549f350fcb0c",
+      "name": "Clermont-Ferrand (Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 45.770757,
+        "lon": 3.082247
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc055c8-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc05da5-9603-11e6-9066-549f350fcb0c",
+      "name": "Lausanne P+R (Vélodrome)",
+      "kind": "bus",
+      "timezone": "Europe/Zurich",
+      "countryCode": "CH",
+      "coordinates": {
+        "lat": 46.536324,
+        "lon": 6.623189
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc05da5-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0604a-9603-11e6-9066-549f350fcb0c",
+      "name": "Bern (Neufeld car terminal)",
+      "kind": "bus",
+      "timezone": "Europe/Zurich",
+      "countryCode": "CH",
+      "coordinates": {
+        "lat": 46.963711,
+        "lon": 7.433698
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0604a-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0627e-9603-11e6-9066-549f350fcb0c",
+      "name": "Geneva (central bus station)",
+      "kind": "bus",
+      "timezone": "Europe/Zurich",
+      "countryCode": "CH",
+      "coordinates": {
+        "lat": 46.208522,
+        "lon": 6.146928
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0627e-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc06cc2-9603-11e6-9066-549f350fcb0c",
+      "name": "Bordeaux (Saint-Jean - Paludate)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 44.82975,
+        "lon": -0.553934
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc06cc2-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc07028-9603-11e6-9066-549f350fcb0c",
+      "name": "Bruges (Station Brugge)",
+      "kind": "bus",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 51.195501,
+        "lon": 3.216274
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc07028-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc079e9-9603-11e6-9066-549f350fcb0c",
+      "name": "Colmar (Bus stop on the corner of \"Place de la Gare/Rue Georges Lasch\")",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.073754,
+        "lon": 7.347802
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc079e9-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc09441-9603-11e6-9066-549f350fcb0c",
+      "name": "Dijon (bus station near the SNCF Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 47.323534,
+        "lon": 5.0279
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc09441-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0a8be-9603-11e6-9066-549f350fcb0c",
+      "name": "La Rochelle (bus station )",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 46.152918,
+        "lon": -1.14093
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0a8be-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0a9fe-9603-11e6-9066-549f350fcb0c",
+      "name": "Leuven Station (Perron 14)",
+      "kind": "bus",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 50.884089,
+        "lon": 4.714237
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0a9fe-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0b9bc-9603-11e6-9066-549f350fcb0c",
+      "name": "Montpellier (Sabines)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 43.583932,
+        "lon": 3.860233
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0b9bc-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0bb38-9603-11e6-9066-549f350fcb0c",
+      "name": "Namur",
+      "kind": "bus",
+      "timezone": "Europe/Brussels",
+      "countryCode": "BE",
+      "coordinates": {
+        "lat": 50.466489,
+        "lon": 4.871021
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0bb38-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0cced-9603-11e6-9066-549f350fcb0c",
+      "name": "Rennes (Central bus station near the SNCF Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.103896,
+        "lon": -1.670617
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0cced-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc0e74b-9603-11e6-9066-549f350fcb0c",
+      "name": "Toulouse (central station \"Pierre Sémard\")",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 43.612522,
+        "lon": 1.452612
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc0e74b-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc1007f-9603-11e6-9066-549f350fcb0c",
+      "name": "Angers (bus station near the SNCF Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 47.464897,
+        "lon": -0.557648
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc1007f-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc11362-9603-11e6-9066-549f350fcb0c",
+      "name": "Annecy (Bus station near the SNCF Station)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 45.901664,
+        "lon": 6.120322
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc11362-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc127c1-9603-11e6-9066-549f350fcb0c",
+      "name": "Arras (Bus stop on \"rue du Docteur Brassart\")",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 50.286279,
+        "lon": 2.779515
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc127c1-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc17134-9603-11e6-9066-549f350fcb0c",
+      "name": "San Sebastian / Donostia (Bus Station)",
+      "kind": "bus",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 43.317169,
+        "lon": -1.977218
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc17134-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc212d9-9603-11e6-9066-549f350fcb0c",
+      "name": "Nancy (bus parking on \"Sainte-Catherine\")",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.69483,
+        "lon": 6.190473
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc212d9-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc2e206-9603-11e6-9066-549f350fcb0c",
+      "name": "Marseille (Bus Station Saint Charles)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 43.304081,
+        "lon": 5.37999
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc2e206-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc34bb9-9603-11e6-9066-549f350fcb0c",
+      "name": "Barcelona (Bus Terminal in \"Barcelona Nord\")",
+      "kind": "bus",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 41.394181,
+        "lon": 2.182959
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc34bb9-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc39e8f-9603-11e6-9066-549f350fcb0c",
+      "name": "Orléans (Libération)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 47.919533,
+        "lon": 1.903494
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc39e8f-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc54142-9603-11e6-9066-549f350fcb0c",
+      "name": "Cologne Airport CGN (Terminal 2)",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 50.881001,
+        "lon": 7.117833
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc54142-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc5d357-9603-11e6-9066-549f350fcb0c",
+      "name": "Luxembourg, P+R Bouillon",
+      "kind": "bus",
+      "timezone": "Europe/Luxembourg",
+      "countryCode": "LU",
+      "coordinates": {
+        "lat": 49.599985,
+        "lon": 6.105047
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc5d357-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "flix-dcc5fe86-9603-11e6-9066-549f350fcb0c",
+      "name": "Baden-Baden (bus station)",
+      "kind": "bus",
+      "timezone": "Europe/Berlin",
+      "countryCode": "DE",
+      "coordinates": {
+        "lat": 48.789499,
+        "lon": 8.191384
+      },
+      "codes": {
+        "flixbus_stop_id": "dcc5fe86-9603-11e6-9066-549f350fcb0c"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "kef-keflavik",
+      "name": "Keflavík International Airport",
+      "kind": "airport",
+      "timezone": "Atlantic/Reykjavik",
+      "countryCode": "IS",
+      "coordinates": {
+        "lat": 63.985,
+        "lon": -22.6056
+      },
+      "codes": {
+        "iata": "KEF"
+      }
+    },
+    {
+      "id": "krk-balice",
+      "name": "Kraków John Paul II Airport",
+      "kind": "airport",
+      "timezone": "Europe/Warsaw",
+      "countryCode": "PL",
+      "coordinates": {
+        "lat": 50.0777,
+        "lon": 19.7848
+      },
+      "codes": {
+        "iata": "KRK"
+      }
+    },
+    {
+      "id": "lis-humberto-delgado",
+      "name": "Lisbon Humberto Delgado Airport",
+      "kind": "airport",
+      "timezone": "Europe/Lisbon",
+      "countryCode": "PT",
+      "coordinates": {
+        "lat": 38.7742,
+        "lon": -9.1342
+      },
+      "codes": {
+        "iata": "LIS"
+      }
+    },
+    {
+      "id": "lyon-part-dieu",
+      "name": "Lyon Part-Dieu",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 45.7606,
+        "lon": 4.8595
+      },
+      "codes": {}
+    },
+    {
+      "id": "massy-palaiseau-vilmorin-bus",
+      "name": "Massy-Palaiseau Gare Routière Vilmorin",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.725719,
+        "lon": 2.256842
+      },
+      "codes": {}
+    },
+    {
+      "id": "massy-tgv",
+      "name": "Massy TGV",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.7258,
+        "lon": 2.2615
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-austerlitz",
+      "name": "Paris Austerlitz",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.8423,
+        "lon": 2.3658
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-bercy-bourgogne",
+      "name": "Paris Bercy Bourgogne–Pays d’Auvergne",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.8392,
+        "lon": 2.3828
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-bercy-seine-bus",
+      "name": "Paris Bercy Seine Bus Station",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.835318,
+        "lon": 2.380519
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-bva",
+      "name": "Paris Beauvais Airport",
+      "kind": "airport",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 49.4544,
+        "lon": 2.1128
+      },
+      "codes": {
+        "iata": "BVA"
+      }
+    },
+    {
+      "id": "par-cdg",
+      "name": "Paris Charles de Gaulle Airport",
+      "kind": "airport",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 49.0097,
+        "lon": 2.5479
+      },
+      "codes": {
+        "iata": "CDG"
+      }
+    },
+    {
+      "id": "par-champigny-bus",
+      "name": "Paris Champigny-sur-Marne Bus Stop",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.812727,
+        "lon": 2.532394
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-gare-de-l-est",
+      "name": "Paris Gare de l’Est",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.8763,
+        "lon": 2.3593
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-gare-de-lyon",
+      "name": "Paris Gare de Lyon",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.8443,
+        "lon": 2.3739
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-gare-du-nord",
+      "name": "Paris Gare du Nord",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.8809,
+        "lon": 2.3553
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-la-defense-bus",
+      "name": "Paris La Défense (Terminal Jules Verne)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.891475,
+        "lon": 2.242474
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-montparnasse",
+      "name": "Paris Montparnasse",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.8406,
+        "lon": 2.3201
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-ory",
+      "name": "Paris Orly Airport",
+      "kind": "airport",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.7262,
+        "lon": 2.3652
+      },
+      "codes": {
+        "iata": "ORY"
+      }
+    },
+    {
+      "id": "par-pont-de-levallois-bus",
+      "name": "Paris Pont de Levallois Bus Stop",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.897742,
+        "lon": 2.281255
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-pont-de-sevres-bus",
+      "name": "Paris Pont de Sèvres Bus Stop",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.82972,
+        "lon": 2.229658
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-porte-maillot-bus",
+      "name": "Paris Porte Maillot (Gare Routière Pershing)",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.880207,
+        "lon": 2.282533
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-saint-denis-universite-bus",
+      "name": "Paris Saint-Denis Université Bus Station",
+      "kind": "bus",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.946297,
+        "lon": 2.364172
+      },
+      "codes": {}
+    },
+    {
+      "id": "par-saint-lazare",
+      "name": "Paris Saint-Lazare",
+      "kind": "rail",
+      "timezone": "Europe/Paris",
+      "countryCode": "FR",
+      "coordinates": {
+        "lat": 48.876,
+        "lon": 2.3254
+      },
+      "codes": {}
+    },
+    {
+      "id": "prg-vaclav-havel",
+      "name": "Prague Václav Havel Airport",
+      "kind": "airport",
+      "timezone": "Europe/Prague",
+      "countryCode": "CZ",
+      "coordinates": {
+        "lat": 50.1008,
+        "lon": 14.26
+      },
+      "codes": {
+        "iata": "PRG"
+      }
+    },
+    {
+      "id": "ryr-bgy",
+      "name": "Bergamo Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 45.696,
+        "lon": 9.6672
+      },
+      "codes": {
+        "iata": "BGY",
+        "ryanair_iata": "BGY"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-blq",
+      "name": "Bologna Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 44.4938,
+        "lon": 11.3387
+      },
+      "codes": {
+        "iata": "BLQ",
+        "ryanair_iata": "BLQ"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-bud",
+      "name": "Budapest Airport",
+      "kind": "airport",
+      "timezone": "Europe/Budapest",
+      "countryCode": "HU",
+      "coordinates": {
+        "lat": 47.4984,
+        "lon": 19.0404
+      },
+      "codes": {
+        "iata": "BUD",
+        "ryanair_iata": "BUD"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-fao",
+      "name": "Faro Airport",
+      "kind": "airport",
+      "timezone": "Europe/Lisbon",
+      "countryCode": "PT",
+      "coordinates": {
+        "lat": 37.102,
+        "lon": -8.6742
+      },
+      "codes": {
+        "iata": "FAO",
+        "ryanair_iata": "FAO"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-gdn",
+      "name": "Gdansk Airport",
+      "kind": "airport",
+      "timezone": "Europe/Warsaw",
+      "countryCode": "PL",
+      "coordinates": {
+        "lat": 54.3523,
+        "lon": 18.6491
+      },
+      "codes": {
+        "iata": "GDN",
+        "ryanair_iata": "GDN"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-gro",
+      "name": "Girona Airport",
+      "kind": "airport",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 41.9831,
+        "lon": 2.8249
+      },
+      "codes": {
+        "iata": "GRO",
+        "ryanair_iata": "GRO"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-mad",
+      "name": "Madrid Airport",
+      "kind": "airport",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 40.4165,
+        "lon": -3.7026
+      },
+      "codes": {
+        "iata": "MAD",
+        "ryanair_iata": "MAD"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-mxp",
+      "name": "Milan Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 45.4643,
+        "lon": 9.1895
+      },
+      "codes": {
+        "iata": "MXP",
+        "ryanair_iata": "MXP"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-nap",
+      "name": "Naples Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 40.8522,
+        "lon": 14.2681
+      },
+      "codes": {
+        "iata": "NAP",
+        "ryanair_iata": "NAP"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-opo",
+      "name": "Porto Airport",
+      "kind": "airport",
+      "timezone": "Europe/Lisbon",
+      "countryCode": "PT",
+      "coordinates": {
+        "lat": 41.1485,
+        "lon": -8.611
+      },
+      "codes": {
+        "iata": "OPO",
+        "ryanair_iata": "OPO"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-otp",
+      "name": "Bucharest Airport",
+      "kind": "airport",
+      "timezone": "Europe/Bucharest",
+      "countryCode": "RO",
+      "coordinates": {
+        "lat": 44.4323,
+        "lon": 26.1063
+      },
+      "codes": {
+        "iata": "OTP",
+        "ryanair_iata": "OTP"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-pmo",
+      "name": "Palermo Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 38.1166,
+        "lon": 13.3636
+      },
+      "codes": {
+        "iata": "PMO",
+        "ryanair_iata": "PMO"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-psa",
+      "name": "Pisa Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 43.7792,
+        "lon": 11.2463
+      },
+      "codes": {
+        "iata": "PSA",
+        "ryanair_iata": "PSA"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-rvn",
+      "name": "Rovaniemi Airport",
+      "kind": "airport",
+      "timezone": "Europe/Helsinki",
+      "countryCode": "FI",
+      "coordinates": {
+        "lat": 66.499,
+        "lon": 25.6887
+      },
+      "codes": {
+        "iata": "RVN",
+        "ryanair_iata": "RVN"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-skg",
+      "name": "Thessaloniki Airport",
+      "kind": "airport",
+      "timezone": "Europe/Athens",
+      "countryCode": "GR",
+      "coordinates": {
+        "lat": 40.6407,
+        "lon": 22.9349
+      },
+      "codes": {
+        "iata": "SKG",
+        "ryanair_iata": "SKG"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-sof",
+      "name": "Sofia Airport",
+      "kind": "airport",
+      "timezone": "Europe/Sofia",
+      "countryCode": "BG",
+      "coordinates": {
+        "lat": 42.6975,
+        "lon": 23.3241
+      },
+      "codes": {
+        "iata": "SOF",
+        "ryanair_iata": "SOF"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-svq",
+      "name": "Seville Airport",
+      "kind": "airport",
+      "timezone": "Europe/Madrid",
+      "countryCode": "ES",
+      "coordinates": {
+        "lat": 37.3828,
+        "lon": -5.9732
+      },
+      "codes": {
+        "iata": "SVQ",
+        "ryanair_iata": "SVQ"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-trs",
+      "name": "Trieste Airport",
+      "kind": "airport",
+      "timezone": "Europe/Ljubljana",
+      "countryCode": "SI",
+      "coordinates": {
+        "lat": 45.5278,
+        "lon": 13.5706
+      },
+      "codes": {
+        "iata": "TRS",
+        "ryanair_iata": "TRS"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-tsf",
+      "name": "Venice Treviso Airport",
+      "kind": "airport",
+      "timezone": "Europe/Rome",
+      "countryCode": "IT",
+      "coordinates": {
+        "lat": 45.4371,
+        "lon": 12.3326
+      },
+      "codes": {
+        "iata": "TSF",
+        "ryanair_iata": "TSF"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-vno",
+      "name": "Vilnius Airport",
+      "kind": "airport",
+      "timezone": "Europe/Vilnius",
+      "countryCode": "LT",
+      "coordinates": {
+        "lat": 54.6892,
+        "lon": 25.2798
+      },
+      "codes": {
+        "iata": "VNO",
+        "ryanair_iata": "VNO"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "ryr-zag",
+      "name": "Zagreb Airport",
+      "kind": "airport",
+      "timezone": "Europe/Zagreb",
+      "countryCode": "HR",
+      "coordinates": {
+        "lat": 45.8144,
+        "lon": 15.978
+      },
+      "codes": {
+        "iata": "ZAG",
+        "ryanair_iata": "ZAG"
+      },
+      "active": true,
+      "schengenEligible": true
+    },
+    {
+      "id": "vie-schwechat",
+      "name": "Vienna International Airport",
+      "kind": "airport",
+      "timezone": "Europe/Vienna",
+      "countryCode": "AT",
+      "coordinates": {
+        "lat": 48.1103,
+        "lon": 16.5697
+      },
+      "codes": {
+        "iata": "VIE"
+      }
+    },
+    {
+      "id": "zrh-hb",
+      "name": "Zürich Hauptbahnhof",
+      "kind": "rail",
+      "timezone": "Europe/Zurich",
+      "countryCode": "CH",
+      "coordinates": {
+        "lat": 47.3782,
+        "lon": 8.5402
+      },
+      "codes": {}
+    },
+    {
+      "id": "zrh-kloten",
+      "name": "Zürich Airport",
+      "kind": "airport",
+      "timezone": "Europe/Zurich",
+      "countryCode": "CH",
+      "coordinates": {
+        "lat": 47.4581,
+        "lon": 8.5555
+      },
+      "codes": {
+        "iata": "ZRH"
+      }
+    }
   ],
   "cityTerminalLinks": [
-    { "cityId": "amsterdam-nl", "terminalId": "ams-schiphol", "relationship": "primary_airport" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-centraal", "relationship": "primary_station" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-sloterdijk-bus", "relationship": "primary_bus" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-schiphol-coach", "relationship": "nearby_bus" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-centraal-ijzijde-bus", "relationship": "primary_bus" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-bijlmer-arena-bus", "relationship": "primary_bus" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-centraal-de-ruijterkade-bus", "relationship": "primary_bus" },
-    { "cityId": "amsterdam-nl", "terminalId": "ams-holendrecht-bus", "relationship": "primary_bus" },
-    { "cityId": "brussels-be", "terminalId": "bru-gare-du-midi-bus", "relationship": "primary_bus" },
-    { "cityId": "brussels-be", "terminalId": "brussels-midi", "relationship": "primary_station" },
-    { "cityId": "lyon-fr", "terminalId": "lyon-part-dieu", "relationship": "primary_station" },
-    { "cityId": "barcelona-es", "terminalId": "bcn-el-prat", "relationship": "primary_airport" },
-    { "cityId": "copenhagen-dk", "terminalId": "cph-kastrup", "relationship": "primary_airport" },
-    { "cityId": "lisbon-pt", "terminalId": "lis-humberto-delgado", "relationship": "primary_airport" },
-    { "cityId": "prague-cz", "terminalId": "prg-vaclav-havel", "relationship": "primary_airport" },
-    { "cityId": "reykjavik-is", "terminalId": "kef-keflavik", "relationship": "nearby_airport" },
-    { "cityId": "vienna-at", "terminalId": "vie-schwechat", "relationship": "primary_airport" },
-    { "cityId": "zurich-ch", "terminalId": "zrh-kloten", "relationship": "primary_airport" },
-    { "cityId": "zurich-ch", "terminalId": "zrh-hb", "relationship": "primary_station" },
-    { "cityId": "berlin-de", "terminalId": "ber-brandenburg", "relationship": "primary_airport" },
-    { "cityId": "berlin-de", "terminalId": "ber-hbf", "relationship": "primary_station" },
-    { "cityId": "krakow-pl", "terminalId": "krk-balice", "relationship": "primary_airport" },
-    { "cityId": "rome-it", "terminalId": "fco-fiumicino", "relationship": "primary_airport" },
-    { "cityId": "stockholm-se", "terminalId": "arn-arlanda", "relationship": "primary_airport" }
+    {
+      "cityId": "aachen-de",
+      "terminalId": "flix-357e465b-8a94-4c9a-9bae-cd0b5369f33b",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "amiens-fr",
+      "terminalId": "flix-d27227ed-f1b0-4ea4-a8f6-10de02faf63b",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-bijlmer-arena-bus",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-centraal",
+      "relationship": "primary_station"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-centraal-de-ruijterkade-bus",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-centraal-ijzijde-bus",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-holendrecht-bus",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-schiphol",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-schiphol-coach",
+      "relationship": "nearby_bus"
+    },
+    {
+      "cityId": "amsterdam-nl",
+      "terminalId": "ams-sloterdijk-bus",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "angers-fr",
+      "terminalId": "flix-dcc1007f-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "annecy-fr",
+      "terminalId": "flix-dcc11362-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "antwerp-be",
+      "terminalId": "flix-97ad0b6d-991a-46d5-bc57-276173e0cc39",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "arras-fr",
+      "terminalId": "flix-dcc127c1-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "avignon-fr",
+      "terminalId": "flix-7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "baden-baden-de",
+      "terminalId": "flix-dcc5fe86-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "barcelona-es",
+      "terminalId": "bcn-el-prat",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "barcelona-es",
+      "terminalId": "flix-dcc34bb9-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "bergamo-it",
+      "terminalId": "ryr-bgy",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "berlin-de",
+      "terminalId": "ber-brandenburg",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "berlin-de",
+      "terminalId": "ber-hbf",
+      "relationship": "primary_station"
+    },
+    {
+      "cityId": "bern-ch",
+      "terminalId": "flix-dcc0604a-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "bilbao-es",
+      "terminalId": "flix-3314645f-7903-4bc9-b9ef-74ff161feca2",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "bologna-it",
+      "terminalId": "ryr-blq",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "bordeaux-fr",
+      "terminalId": "flix-dcc06cc2-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "brasov-ro",
+      "terminalId": "ryr-otp",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "bruges-be",
+      "terminalId": "flix-dcc07028-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "brussels-be",
+      "terminalId": "bru-gare-du-midi-bus",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "brussels-be",
+      "terminalId": "brussels-midi",
+      "relationship": "primary_station"
+    },
+    {
+      "cityId": "bucharest-ro",
+      "terminalId": "ryr-otp",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "budapest-hu",
+      "terminalId": "ryr-bud",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "chamonix-fr",
+      "terminalId": "flix-87e7ff8e-5026-4fb1-8241-7e3e2debbeda",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "clermont-ferrand-fr",
+      "terminalId": "flix-dcc055c8-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "coimbra-pt",
+      "terminalId": "ryr-opo",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "colmar-fr",
+      "terminalId": "flix-dcc079e9-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "cologne-de",
+      "terminalId": "flix-dcc54142-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "copenhagen-dk",
+      "terminalId": "cph-kastrup",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "cordoba-es",
+      "terminalId": "ryr-svq",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "dijon-fr",
+      "terminalId": "flix-dcc09441-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "dusseldorf-de",
+      "terminalId": "flix-dcbaca96-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "eger-hu",
+      "terminalId": "ryr-bud",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "florence-it",
+      "terminalId": "ryr-psa",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "frankfurt-de",
+      "terminalId": "flix-dcbabe0c-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "freiburg-im-breisgau-de",
+      "terminalId": "flix-dcbab968-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "gdansk-pl",
+      "terminalId": "ryr-gdn",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "geneva-ch",
+      "terminalId": "flix-dcc0627e-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "ghent-be",
+      "terminalId": "flix-dcbffdd5-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "girona-es",
+      "terminalId": "ryr-gro",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "kalambaka-gr",
+      "terminalId": "ryr-skg",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "krakow-pl",
+      "terminalId": "krk-balice",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "la-rochelle-fr",
+      "terminalId": "flix-dcc0a8be-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "lagos-pt",
+      "terminalId": "ryr-fao",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "lausanne-ch",
+      "terminalId": "flix-dcc05da5-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "leuven-be",
+      "terminalId": "flix-dcc0a9fe-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "lille-fr",
+      "terminalId": "flix-dcbf8aeb-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "lisbon-pt",
+      "terminalId": "lis-humberto-delgado",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "lucca-it",
+      "terminalId": "ryr-psa",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "luxembourg-city-lu",
+      "terminalId": "flix-dcc5d357-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "lyon-fr",
+      "terminalId": "flix-9fe81919-2d89-48f4-81a3-322dc4b5614d",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "lyon-fr",
+      "terminalId": "lyon-part-dieu",
+      "relationship": "primary_station"
+    },
+    {
+      "cityId": "maastricht-nl",
+      "terminalId": "flix-dcbd7a02-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "madrid-es",
+      "terminalId": "ryr-mad",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "marseille-fr",
+      "terminalId": "flix-dcc2e206-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "metz-fr",
+      "terminalId": "flix-dcbd8097-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "milan-it",
+      "terminalId": "flix-dcbc484a-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "milan-it",
+      "terminalId": "ryr-mxp",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "montpellier-fr",
+      "terminalId": "flix-dcc0b9bc-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "munich-de",
+      "terminalId": "flix-dcbabbfa-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "namur-be",
+      "terminalId": "flix-dcc0bb38-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "nancy-fr",
+      "terminalId": "flix-dcc212d9-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "nantes-fr",
+      "terminalId": "flix-6c33811e-9f58-457f-a112-44620ebba523",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "naples-it",
+      "terminalId": "ryr-nap",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "nice-fr",
+      "terminalId": "flix-c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "nuremberg-de",
+      "terminalId": "flix-dcbac661-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "orleans-fr",
+      "terminalId": "flix-dcc39e8f-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "palermo-it",
+      "terminalId": "ryr-pmo",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "pecs-hu",
+      "terminalId": "ryr-bud",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "piran-si",
+      "terminalId": "ryr-trs",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "porto-pt",
+      "terminalId": "ryr-opo",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "prague-cz",
+      "terminalId": "prg-vaclav-havel",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "reims-fr",
+      "terminalId": "flix-dcbfeac0-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "rennes-fr",
+      "terminalId": "flix-dcc0cced-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "reykjavik-is",
+      "terminalId": "kef-keflavik",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "rome-it",
+      "terminalId": "fco-fiumicino",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "rotterdam-nl",
+      "terminalId": "flix-dcbfe5ff-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "rouen-fr",
+      "terminalId": "flix-04db6ed7-70dc-42cf-bcc9-76a3127d25b4",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "rovaniemi-fi",
+      "terminalId": "ryr-rvn",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "saint-malo-fr",
+      "terminalId": "flix-1b0eb969-7c8e-4242-b5c8-75124d37763a",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "san-sebastian-es",
+      "terminalId": "flix-dcc17134-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "seville-es",
+      "terminalId": "ryr-svq",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "siena-it",
+      "terminalId": "ryr-psa",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "sintra-pt",
+      "terminalId": "lis-humberto-delgado",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "sofia-bg",
+      "terminalId": "ryr-sof",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "stockholm-se",
+      "terminalId": "arn-arlanda",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "strasbourg-fr",
+      "terminalId": "flix-dcbac843-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "the-hague-nl",
+      "terminalId": "flix-dcbcd8bb-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "thessaloniki-gr",
+      "terminalId": "ryr-skg",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "toledo-es",
+      "terminalId": "ryr-mad",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "toulouse-fr",
+      "terminalId": "flix-dcc0e74b-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "tours-fr",
+      "terminalId": "flix-bb6bb160-b0fc-4a77-a08c-191e65256406",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "trakai-lt",
+      "terminalId": "ryr-vno",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "trier-de",
+      "terminalId": "flix-dcbf7bd9-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "troyes-fr",
+      "terminalId": "flix-1a09c915-9448-4313-bdb8-ab48eb6704fa",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "turin-it",
+      "terminalId": "flix-dcbfe731-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "utrecht-nl",
+      "terminalId": "flix-dcbc53ef-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "venice-it",
+      "terminalId": "ryr-tsf",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "vienna-at",
+      "terminalId": "vie-schwechat",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "vilnius-lt",
+      "terminalId": "ryr-vno",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "zagreb-hr",
+      "terminalId": "ryr-zag",
+      "relationship": "primary_airport"
+    },
+    {
+      "cityId": "zakopane-pl",
+      "terminalId": "krk-balice",
+      "relationship": "nearby_airport"
+    },
+    {
+      "cityId": "zurich-ch",
+      "terminalId": "flix-dcbab299-9603-11e6-9066-549f350fcb0c",
+      "relationship": "primary_bus"
+    },
+    {
+      "cityId": "zurich-ch",
+      "terminalId": "zrh-hb",
+      "relationship": "primary_station"
+    },
+    {
+      "cityId": "zurich-ch",
+      "terminalId": "zrh-kloten",
+      "relationship": "primary_airport"
+    }
   ]
 }

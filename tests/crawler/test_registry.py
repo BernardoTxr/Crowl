@@ -64,7 +64,7 @@ class RegistryTests(unittest.TestCase):
             tuple(item["id"] for item in catalog),
         )
         for item, source in zip(metadata, catalog, strict=True):
-            if item.source_slug == "flixbus":
+            if item.source_slug in {"flixbus", "ryanair"}:
                 self.assertTrue(item.enabled)
                 self.assertEqual(item.strategy, ExtractionStrategy.PLAYWRIGHT)
                 self.assertIsNone(item.disabled_reason)
@@ -83,7 +83,7 @@ class RegistryTests(unittest.TestCase):
             module = importlib.import_module(type(adapter).__module__)
             self.assertIs(type(adapter), module.ADAPTER_CLASS)
 
-    def test_all_disabled_adapters_return_typed_results_without_network(self) -> None:
+    def test_kill_switched_adapters_return_typed_results_without_network(self) -> None:
         registry = build_default_registry(include_fixture=False)
         builder = DailyManifestBuilder(origin_terminal_ids=("par-cdg",))
         manifest = builder.build(
@@ -101,7 +101,7 @@ class RegistryTests(unittest.TestCase):
             # Patch after asyncio has created its private socketpair; any new
             # socket inside an adapter is therefore an outbound-network bug.
             with patch("socket.socket", side_effect=AssertionError("network attempted")):
-                for slug in EXPECTED_SOURCE_SLUGS - {"flixbus"}:
+                for slug in EXPECTED_SOURCE_SLUGS - {"flixbus", "ryanair"}:
                     adapter = registry.get(slug)
                     coverage = await adapter.discover_coverage()
                     canary = await adapter.canary((requests[slug],))
@@ -115,6 +115,7 @@ class RegistryTests(unittest.TestCase):
                     await adapter.close()
 
                 self.assertTrue(registry.get("flixbus").metadata().enabled)
+                self.assertTrue(registry.get("ryanair").metadata().enabled)
 
         asyncio.run(exercise())
 

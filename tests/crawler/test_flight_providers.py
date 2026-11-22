@@ -375,13 +375,13 @@ class FlightProviderTests(unittest.TestCase):
             {"2027-01-09", "2027-01-10", "2027-01-11"},
         )
 
-    def test_default_catalog_remains_network_inert_with_live_settings(self) -> None:
+    def test_default_catalog_enables_verified_ryanair_extractor(self) -> None:
         client = StaticPageClient((FIXTURES / "ryanair.html").read_bytes())
-        disabled_spec = next(
+        enabled_spec = next(
             item for item in load_source_specs() if item.slug == "ryanair"
         )
         adapter = RyanairAdapter(
-            disabled_spec,
+            enabled_spec,
             http_client=client,
             clock=lambda: OBSERVED_AT,
             terminal_catalog_path=ROOT / "data" / "terminals.json",
@@ -390,10 +390,10 @@ class FlightProviderTests(unittest.TestCase):
 
         result = asyncio.run(adapter.search(_request("ryanair", "par-bva")))
 
-        self.assertFalse(adapter.metadata().enabled)
-        self.assertEqual(adapter.metadata().strategy, ExtractionStrategy.DISABLED)
-        self.assertEqual(result.outcome, SearchOutcome.SKIPPED_DISABLED)
-        self.assertEqual(client.requests, [])
+        self.assertTrue(adapter.metadata().enabled)
+        self.assertEqual(adapter.metadata().strategy, ExtractionStrategy.PLAYWRIGHT)
+        self.assertEqual(result.outcome, SearchOutcome.SUCCESS_RESULTS)
+        self.assertEqual(len(client.requests), 8)
 
     def test_failures_are_typed_not_collapsed_into_empty_fares(self) -> None:
         cases = (

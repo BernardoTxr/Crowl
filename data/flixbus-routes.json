@@ -1,0 +1,3187 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-21T20:45:56+00:00",
+  "observed_on": "2026-11-21",
+  "provenance": {
+    "method": "ordinary_public_html",
+    "host": "global.flixbus.com",
+    "request_interval_seconds": 5.0,
+    "maximum_direction_minutes": 720
+  },
+  "summary": {
+    "catalog_cities": 150,
+    "supported_routes": 58,
+    "duration_exceeds_limit": 62,
+    "no_public_route_page": 26,
+    "no_current_trip_summary": 4,
+    "discovery_failures": 0
+  },
+  "terminal_city_ids": {
+    "ams-sloterdijk-bus": "40dde3b8-8646-11e6-9066-549f350fcb0c",
+    "bru-gare-du-midi-bus": "40de6287-8646-11e6-9066-549f350fcb0c",
+    "flix-04db6ed7-70dc-42cf-bcc9-76a3127d25b4": "40e03dbe-8646-11e6-9066-549f350fcb0c",
+    "flix-1a09c915-9448-4313-bdb8-ab48eb6704fa": "40e07482-8646-11e6-9066-549f350fcb0c",
+    "flix-1b0eb969-7c8e-4242-b5c8-75124d37763a": "40e03e75-8646-11e6-9066-549f350fcb0c",
+    "flix-3314645f-7903-4bc9-b9ef-74ff161feca2": "40e087a9-8646-11e6-9066-549f350fcb0c",
+    "flix-357e465b-8a94-4c9a-9bae-cd0b5369f33b": "40da8ddc-8646-11e6-9066-549f350fcb0c",
+    "flix-6c33811e-9f58-457f-a112-44620ebba523": "40dfa08d-8646-11e6-9066-549f350fcb0c",
+    "flix-7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515": "40dff20a-8646-11e6-9066-549f350fcb0c",
+    "flix-87e7ff8e-5026-4fb1-8241-7e3e2debbeda": "5e3178b2-bd1f-41a6-b5a0-a24c53e9e718",
+    "flix-97ad0b6d-991a-46d5-bc57-276173e0cc39": "40dee1a4-8646-11e6-9066-549f350fcb0c",
+    "flix-9fe81919-2d89-48f4-81a3-322dc4b5614d": "40df89c1-8646-11e6-9066-549f350fcb0c",
+    "flix-bb6bb160-b0fc-4a77-a08c-191e65256406": "40e07389-8646-11e6-9066-549f350fcb0c",
+    "flix-c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7": "40e13a46-8646-11e6-9066-549f350fcb0c",
+    "flix-d27227ed-f1b0-4ea4-a8f6-10de02faf63b": "40dfe705-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbab299-9603-11e6-9066-549f350fcb0c": "40d8fa3c-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbab968-9603-11e6-9066-549f350fcb0c": "40d8ff3b-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbabbfa-9603-11e6-9066-549f350fcb0c": "40d901a5-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbabe0c-9603-11e6-9066-549f350fcb0c": "40d90407-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbac661-9603-11e6-9066-549f350fcb0c": "40d90d0f-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbac843-9603-11e6-9066-549f350fcb0c": "40d90f52-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbaca96-9603-11e6-9066-549f350fcb0c": "40d911c7-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbc484a-9603-11e6-9066-549f350fcb0c": "40ddcc6e-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbc53ef-9603-11e6-9066-549f350fcb0c": "40dde129-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbcd8bb-9603-11e6-9066-549f350fcb0c": "40de6b53-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbd7a02-9603-11e6-9066-549f350fcb0c": "40de8268-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbd8097-9603-11e6-9066-549f350fcb0c": "40de8463-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbf7bd9-9603-11e6-9066-549f350fcb0c": "40da743c-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbf8aeb-9603-11e6-9066-549f350fcb0c": "40deaa9f-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbfe5ff-9603-11e6-9066-549f350fcb0c": "40dee83e-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbfe731-9603-11e6-9066-549f350fcb0c": "40deee02-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbfeac0-9603-11e6-9066-549f350fcb0c": "40deed19-8646-11e6-9066-549f350fcb0c",
+    "flix-dcbffdd5-9603-11e6-9066-549f350fcb0c": "40df0110-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc055c8-9603-11e6-9066-549f350fcb0c": "40df47f8-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc05da5-9603-11e6-9066-549f350fcb0c": "40df48fd-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0604a-9603-11e6-9066-549f350fcb0c": "40df4ec8-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0627e-9603-11e6-9066-549f350fcb0c": "40df585b-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc06cc2-9603-11e6-9066-549f350fcb0c": "40df577e-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc07028-9603-11e6-9066-549f350fcb0c": "40df5e22-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc079e9-9603-11e6-9066-549f350fcb0c": "40df6681-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc09441-9603-11e6-9066-549f350fcb0c": "40df6b63-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0a8be-9603-11e6-9066-549f350fcb0c": "40df7e89-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0a9fe-9603-11e6-9066-549f350fcb0c": "40df87d9-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0b9bc-9603-11e6-9066-549f350fcb0c": "40df980f-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0bb38-9603-11e6-9066-549f350fcb0c": "40df9ab2-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0cced-9603-11e6-9066-549f350fcb0c": "40dfa833-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc0e74b-9603-11e6-9066-549f350fcb0c": "40dfd612-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc1007f-9603-11e6-9066-549f350fcb0c": "40dfe7c7-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc11362-9603-11e6-9066-549f350fcb0c": "40dfe930-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc127c1-9603-11e6-9066-549f350fcb0c": "40dfeb8e-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc17134-9603-11e6-9066-549f350fcb0c": "40e08d7a-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc212d9-9603-11e6-9066-549f350fcb0c": "40e02b29-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc2e206-9603-11e6-9066-549f350fcb0c": "40df8e99-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc34bb9-9603-11e6-9066-549f350fcb0c": "40e086ed-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc39e8f-9603-11e6-9066-549f350fcb0c": "40e02f29-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc54142-9603-11e6-9066-549f350fcb0c": "40d91025-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc5d357-9603-11e6-9066-549f350fcb0c": "40da71d6-8646-11e6-9066-549f350fcb0c",
+    "flix-dcc5fe86-9603-11e6-9066-549f350fcb0c": "40dac68d-8646-11e6-9066-549f350fcb0c",
+    "par-bercy-seine-bus": "40de8964-8646-11e6-9066-549f350fcb0c"
+  },
+  "stop_labels": {
+    "Aachen station west (Henricistraße)": "flix-357e465b-8a94-4c9a-9bae-cd0b5369f33b",
+    "Amiens (Les Hortillonnages)": "flix-d27227ed-f1b0-4ea4-a8f6-10de02faf63b",
+    "Amsterdam Sloterdijk": "ams-sloterdijk-bus",
+    "Angers (bus station near the SNCF Station)": "flix-dcc1007f-9603-11e6-9066-549f350fcb0c",
+    "Annecy (Bus station near the SNCF Station)": "flix-dcc11362-9603-11e6-9066-549f350fcb0c",
+    "Antwerp Rooseveltplaats (B5)": "flix-97ad0b6d-991a-46d5-bc57-276173e0cc39",
+    "Arras (Bus stop on \"rue du Docteur Brassart\")": "flix-dcc127c1-9603-11e6-9066-549f350fcb0c",
+    "Avignon (Le Pontet)": "flix-7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515",
+    "Baden-Baden (bus station)": "flix-dcc5fe86-9603-11e6-9066-549f350fcb0c",
+    "Barcelona (Bus Terminal in \"Barcelona Nord\")": "flix-dcc34bb9-9603-11e6-9066-549f350fcb0c",
+    "Bern (Neufeld car terminal)": "flix-dcc0604a-9603-11e6-9066-549f350fcb0c",
+    "Bilbao (Bus Station)": "flix-3314645f-7903-4bc9-b9ef-74ff161feca2",
+    "Bordeaux (Saint-Jean - Paludate)": "flix-dcc06cc2-9603-11e6-9066-549f350fcb0c",
+    "Bruges (Station Brugge)": "flix-dcc07028-9603-11e6-9066-549f350fcb0c",
+    "Brussels Gare du Midi": "bru-gare-du-midi-bus",
+    "Brussels South (Gare du Midi)": "bru-gare-du-midi-bus",
+    "Chamonix": "flix-87e7ff8e-5026-4fb1-8241-7e3e2debbeda",
+    "Clermont-Ferrand (Bus Station)": "flix-dcc055c8-9603-11e6-9066-549f350fcb0c",
+    "Colmar (Bus stop on the corner of \"Place de la Gare/Rue Georges Lasch\")": "flix-dcc079e9-9603-11e6-9066-549f350fcb0c",
+    "Cologne Airport CGN (Terminal 2)": "flix-dcc54142-9603-11e6-9066-549f350fcb0c",
+    "Dijon (bus station near the SNCF Station)": "flix-dcc09441-9603-11e6-9066-549f350fcb0c",
+    "Düsseldorf central bus station": "flix-dcbaca96-9603-11e6-9066-549f350fcb0c",
+    "Frankfurt central train station": "flix-dcbabe0c-9603-11e6-9066-549f350fcb0c",
+    "Freiburg(im Breisgau) central station": "flix-dcbab968-9603-11e6-9066-549f350fcb0c",
+    "Geneva (central bus station)": "flix-dcc0627e-9603-11e6-9066-549f350fcb0c",
+    "Ghent (Dampoort)": "flix-dcbffdd5-9603-11e6-9066-549f350fcb0c",
+    "La Rochelle (bus station )": "flix-dcc0a8be-9603-11e6-9066-549f350fcb0c",
+    "Lausanne P+R (Vélodrome)": "flix-dcc05da5-9603-11e6-9066-549f350fcb0c",
+    "Leuven Station (Perron 14)": "flix-dcc0a9fe-9603-11e6-9066-549f350fcb0c",
+    "Lille (Parking near Train Station \"Lille Europe\")": "flix-dcbf8aeb-9603-11e6-9066-549f350fcb0c",
+    "Luxembourg, P+R Bouillon": "flix-dcc5d357-9603-11e6-9066-549f350fcb0c",
+    "Lyon (Gerland Bus Station)": "flix-9fe81919-2d89-48f4-81a3-322dc4b5614d",
+    "Maastricht station": "flix-dcbd7a02-9603-11e6-9066-549f350fcb0c",
+    "Marseille (Bus Station Saint Charles)": "flix-dcc2e206-9603-11e6-9066-549f350fcb0c",
+    "Metz (central bus station near the SNCF Station)": "flix-dcbd8097-9603-11e6-9066-549f350fcb0c",
+    "Milan (Lampugnano bus station)": "flix-dcbc484a-9603-11e6-9066-549f350fcb0c",
+    "Montpellier (Sabines)": "flix-dcc0b9bc-9603-11e6-9066-549f350fcb0c",
+    "Munich central bus station": "flix-dcbabbfa-9603-11e6-9066-549f350fcb0c",
+    "Namur": "flix-dcc0bb38-9603-11e6-9066-549f350fcb0c",
+    "Nancy (bus parking on \"Sainte-Catherine\")": "flix-dcc212d9-9603-11e6-9066-549f350fcb0c",
+    "Nantes (Central Bus Station)": "flix-6c33811e-9f58-457f-a112-44620ebba523",
+    "Nice Airport (Bus Station - Terminal 1)": "flix-c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7",
+    "Nuremberg central bus station (Willy-Brandt-Platz)": "flix-dcbac661-9603-11e6-9066-549f350fcb0c",
+    "Orléans (Libération)": "flix-dcc39e8f-9603-11e6-9066-549f350fcb0c",
+    "Paris (Bercy Seine)": "par-bercy-seine-bus",
+    "Reims Champagne Ardenne TGV ( Bus Stop next to the train station)": "flix-dcbfeac0-9603-11e6-9066-549f350fcb0c",
+    "Rennes (Central bus station near the SNCF Station)": "flix-dcc0cced-9603-11e6-9066-549f350fcb0c",
+    "Rotterdam central station": "flix-dcbfe5ff-9603-11e6-9066-549f350fcb0c",
+    "Rouen (Avenue Champlain)": "flix-04db6ed7-70dc-42cf-bcc9-76a3127d25b4",
+    "Saint-Malo (Office de Tourisme)": "flix-1b0eb969-7c8e-4242-b5c8-75124d37763a",
+    "San Sebastian / Donostia (Bus Station)": "flix-dcc17134-9603-11e6-9066-549f350fcb0c",
+    "Strasbourg (Bus stop on \"Place de l'Étoile\")": "flix-dcbac843-9603-11e6-9066-549f350fcb0c",
+    "The Hague Central (Bus Station)": "flix-dcbcd8bb-9603-11e6-9066-549f350fcb0c",
+    "Toulouse (central station \"Pierre Sémard\")": "flix-dcc0e74b-9603-11e6-9066-549f350fcb0c",
+    "Tours (Vaucanson)": "flix-bb6bb160-b0fc-4a77-a08c-191e65256406",
+    "Trier central train station (Kürenzer St.)": "flix-dcbf7bd9-9603-11e6-9066-549f350fcb0c",
+    "Troyes (Bus Station)": "flix-1a09c915-9448-4313-bdb8-ab48eb6704fa",
+    "Turin (Vittorio Emanuele)": "flix-dcbfe731-9603-11e6-9066-549f350fcb0c",
+    "Utrecht central station": "flix-dcbc53ef-9603-11e6-9066-549f350fcb0c",
+    "Zurich Bus Station": "flix-dcbab299-9603-11e6-9066-549f350fcb0c"
+  },
+  "coverage": {
+    "supported_terminal_pairs": [
+      [
+        "par-bercy-seine-bus",
+        "ams-sloterdijk-bus"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "bru-gare-du-midi-bus"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-04db6ed7-70dc-42cf-bcc9-76a3127d25b4"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-1a09c915-9448-4313-bdb8-ab48eb6704fa"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-1b0eb969-7c8e-4242-b5c8-75124d37763a"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-3314645f-7903-4bc9-b9ef-74ff161feca2"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-357e465b-8a94-4c9a-9bae-cd0b5369f33b"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-6c33811e-9f58-457f-a112-44620ebba523"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-87e7ff8e-5026-4fb1-8241-7e3e2debbeda"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-97ad0b6d-991a-46d5-bc57-276173e0cc39"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-9fe81919-2d89-48f4-81a3-322dc4b5614d"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-bb6bb160-b0fc-4a77-a08c-191e65256406"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-d27227ed-f1b0-4ea4-a8f6-10de02faf63b"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbab299-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbab968-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbabbfa-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbabe0c-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbac661-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbac843-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbaca96-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbc484a-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbc53ef-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbcd8bb-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbd7a02-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbd8097-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbf7bd9-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbf8aeb-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbfe5ff-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbfe731-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbfeac0-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcbffdd5-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc055c8-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc05da5-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0604a-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0627e-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc06cc2-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc07028-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc079e9-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc09441-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0a8be-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0a9fe-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0b9bc-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0bb38-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0cced-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc0e74b-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc1007f-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc11362-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc127c1-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc17134-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc212d9-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc2e206-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc34bb9-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc39e8f-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc54142-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc5d357-9603-11e6-9066-549f350fcb0c"
+      ],
+      [
+        "par-bercy-seine-bus",
+        "flix-dcc5fe86-9603-11e6-9066-549f350fcb0c"
+      ]
+    ],
+    "sellable_through": "2027-05-24"
+  },
+  "routes": [
+    {
+      "city_id": "aachen-de",
+      "terminal_id": "flix-357e465b-8a94-4c9a-9bae-cd0b5369f33b",
+      "provider_city_id": "40da8ddc-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "357e465b-8a94-4c9a-9bae-cd0b5369f33b",
+      "public_stop_name": "Aachen station west (Henricistraße)",
+      "minimum_duration_minutes": 385,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-aachen"
+    },
+    {
+      "city_id": "amiens-fr",
+      "terminal_id": "flix-d27227ed-f1b0-4ea4-a8f6-10de02faf63b",
+      "provider_city_id": "40dfe705-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "d27227ed-f1b0-4ea4-a8f6-10de02faf63b",
+      "public_stop_name": "Amiens (Les Hortillonnages)",
+      "minimum_duration_minutes": 185,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-amiens"
+    },
+    {
+      "city_id": "amsterdam-nl",
+      "terminal_id": "ams-sloterdijk-bus",
+      "provider_city_id": "40dde3b8-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbdd1b1-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Amsterdam Sloterdijk",
+      "minimum_duration_minutes": 165,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-amsterdam"
+    },
+    {
+      "city_id": "angers-fr",
+      "terminal_id": "flix-dcc1007f-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dfe7c7-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc1007f-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Angers (bus station near the SNCF Station)",
+      "minimum_duration_minutes": 215,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-angers"
+    },
+    {
+      "city_id": "annecy-fr",
+      "terminal_id": "flix-dcc11362-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dfe930-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc11362-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Annecy (Bus station near the SNCF Station)",
+      "minimum_duration_minutes": 450,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-annecy"
+    },
+    {
+      "city_id": "antwerp-be",
+      "terminal_id": "flix-97ad0b6d-991a-46d5-bc57-276173e0cc39",
+      "provider_city_id": "40dee1a4-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "97ad0b6d-991a-46d5-bc57-276173e0cc39",
+      "public_stop_name": "Antwerp Rooseveltplaats (B5)",
+      "minimum_duration_minutes": 260,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-antwerp"
+    },
+    {
+      "city_id": "arras-fr",
+      "terminal_id": "flix-dcc127c1-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dfeb8e-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc127c1-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Arras (Bus stop on \"rue du Docteur Brassart\")",
+      "minimum_duration_minutes": 155,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-arras"
+    },
+    {
+      "city_id": "avignon-fr",
+      "terminal_id": "flix-7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515",
+      "provider_city_id": "40dff20a-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515",
+      "public_stop_name": "Avignon (Le Pontet)",
+      "minimum_duration_minutes": 510,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-avignon"
+    },
+    {
+      "city_id": "baden-baden-de",
+      "terminal_id": "flix-dcc5fe86-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dac68d-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc5fe86-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Baden-Baden (bus station)",
+      "minimum_duration_minutes": 610,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-baden-baden"
+    },
+    {
+      "city_id": "barcelona-es",
+      "terminal_id": "flix-dcc34bb9-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40e086ed-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc34bb9-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Barcelona (Bus Terminal in \"Barcelona Nord\")",
+      "minimum_duration_minutes": 305,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-barcelona"
+    },
+    {
+      "city_id": "bern-ch",
+      "terminal_id": "flix-dcc0604a-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df4ec8-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0604a-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Bern (Neufeld car terminal)",
+      "minimum_duration_minutes": 575,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bern"
+    },
+    {
+      "city_id": "bilbao-es",
+      "terminal_id": "flix-3314645f-7903-4bc9-b9ef-74ff161feca2",
+      "provider_city_id": "40e087a9-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "3314645f-7903-4bc9-b9ef-74ff161feca2",
+      "public_stop_name": "Bilbao (Bus Station)",
+      "minimum_duration_minutes": 645,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bilbao"
+    },
+    {
+      "city_id": "bordeaux-fr",
+      "terminal_id": "flix-dcc06cc2-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df577e-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc06cc2-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Bordeaux (Saint-Jean - Paludate)",
+      "minimum_duration_minutes": 395,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bordeaux"
+    },
+    {
+      "city_id": "bruges-be",
+      "terminal_id": "flix-dcc07028-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df5e22-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc07028-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Bruges (Station Brugge)",
+      "minimum_duration_minutes": 240,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bruges"
+    },
+    {
+      "city_id": "brussels-be",
+      "terminal_id": "bru-gare-du-midi-bus",
+      "provider_city_id": "40de6287-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbfd126-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Brussels Gare du Midi",
+      "minimum_duration_minutes": 215,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-brussels"
+    },
+    {
+      "city_id": "chamonix-fr",
+      "terminal_id": "flix-87e7ff8e-5026-4fb1-8241-7e3e2debbeda",
+      "provider_city_id": "5e3178b2-bd1f-41a6-b5a0-a24c53e9e718",
+      "public_stop_id": "87e7ff8e-5026-4fb1-8241-7e3e2debbeda",
+      "public_stop_name": "Chamonix",
+      "minimum_duration_minutes": 480,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-chamonix"
+    },
+    {
+      "city_id": "clermont-ferrand-fr",
+      "terminal_id": "flix-dcc055c8-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df47f8-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc055c8-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Clermont-Ferrand (Bus Station)",
+      "minimum_duration_minutes": 350,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-clermont-ferrand"
+    },
+    {
+      "city_id": "colmar-fr",
+      "terminal_id": "flix-dcc079e9-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df6681-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc079e9-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Colmar (Bus stop on the corner of \"Place de la Gare/Rue Georges Lasch\")",
+      "minimum_duration_minutes": 495,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-colmar"
+    },
+    {
+      "city_id": "cologne-de",
+      "terminal_id": "flix-dcc54142-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d91025-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc54142-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Cologne Airport CGN (Terminal 2)",
+      "minimum_duration_minutes": 355,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-cologne"
+    },
+    {
+      "city_id": "dijon-fr",
+      "terminal_id": "flix-dcc09441-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df6b63-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc09441-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Dijon (bus station near the SNCF Station)",
+      "minimum_duration_minutes": 230,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-dijon"
+    },
+    {
+      "city_id": "dusseldorf-de",
+      "terminal_id": "flix-dcbaca96-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d911c7-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbaca96-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Düsseldorf central bus station",
+      "minimum_duration_minutes": 415,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-dusseldorf"
+    },
+    {
+      "city_id": "frankfurt-de",
+      "terminal_id": "flix-dcbabe0c-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d90407-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbabe0c-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Frankfurt central train station",
+      "minimum_duration_minutes": 505,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-frankfurt"
+    },
+    {
+      "city_id": "freiburg-im-breisgau-de",
+      "terminal_id": "flix-dcbab968-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d8ff3b-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbab968-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Freiburg(im Breisgau) central station",
+      "minimum_duration_minutes": 445,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-freiburg"
+    },
+    {
+      "city_id": "geneva-ch",
+      "terminal_id": "flix-dcc0627e-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df585b-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0627e-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Geneva (central bus station)",
+      "minimum_duration_minutes": 420,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-geneva"
+    },
+    {
+      "city_id": "ghent-be",
+      "terminal_id": "flix-dcbffdd5-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df0110-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbffdd5-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Ghent (Dampoort)",
+      "minimum_duration_minutes": 225,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-ghent"
+    },
+    {
+      "city_id": "la-rochelle-fr",
+      "terminal_id": "flix-dcc0a8be-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df7e89-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0a8be-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "La Rochelle (bus station )",
+      "minimum_duration_minutes": 135,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-la-rochelle"
+    },
+    {
+      "city_id": "lausanne-ch",
+      "terminal_id": "flix-dcc05da5-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df48fd-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc05da5-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Lausanne P+R (Vélodrome)",
+      "minimum_duration_minutes": 410,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lausanne"
+    },
+    {
+      "city_id": "leuven-be",
+      "terminal_id": "flix-dcc0a9fe-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df87d9-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0a9fe-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Leuven Station (Perron 14)",
+      "minimum_duration_minutes": 360,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-leuven"
+    },
+    {
+      "city_id": "lille-fr",
+      "terminal_id": "flix-dcbf8aeb-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40deaa9f-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbf8aeb-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Lille (Parking near Train Station \"Lille Europe\")",
+      "minimum_duration_minutes": 160,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lille"
+    },
+    {
+      "city_id": "luxembourg-city-lu",
+      "terminal_id": "flix-dcc5d357-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40da71d6-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc5d357-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Luxembourg, P+R Bouillon",
+      "minimum_duration_minutes": 310,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-luxembourg"
+    },
+    {
+      "city_id": "lyon-fr",
+      "terminal_id": "flix-9fe81919-2d89-48f4-81a3-322dc4b5614d",
+      "provider_city_id": "40df89c1-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "9fe81919-2d89-48f4-81a3-322dc4b5614d",
+      "public_stop_name": "Lyon (Gerland Bus Station)",
+      "minimum_duration_minutes": 330,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lyon"
+    },
+    {
+      "city_id": "maastricht-nl",
+      "terminal_id": "flix-dcbd7a02-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40de8268-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbd7a02-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Maastricht station",
+      "minimum_duration_minutes": 355,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-maastricht"
+    },
+    {
+      "city_id": "marseille-fr",
+      "terminal_id": "flix-dcc2e206-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df8e99-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc2e206-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Marseille (Bus Station Saint Charles)",
+      "minimum_duration_minutes": 605,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-marseille"
+    },
+    {
+      "city_id": "metz-fr",
+      "terminal_id": "flix-dcbd8097-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40de8463-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbd8097-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Metz (central bus station near the SNCF Station)",
+      "minimum_duration_minutes": 225,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-metz"
+    },
+    {
+      "city_id": "milan-it",
+      "terminal_id": "flix-dcbc484a-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40ddcc6e-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbc484a-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Milan (Lampugnano bus station)",
+      "minimum_duration_minutes": 700,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-milan"
+    },
+    {
+      "city_id": "montpellier-fr",
+      "terminal_id": "flix-dcc0b9bc-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df980f-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0b9bc-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Montpellier (Sabines)",
+      "minimum_duration_minutes": 620,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-montpellier"
+    },
+    {
+      "city_id": "munich-de",
+      "terminal_id": "flix-dcbabbfa-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d901a5-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbabbfa-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Munich central bus station",
+      "minimum_duration_minutes": 670,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-munich"
+    },
+    {
+      "city_id": "namur-be",
+      "terminal_id": "flix-dcc0bb38-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40df9ab2-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0bb38-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Namur",
+      "minimum_duration_minutes": 335,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-namur"
+    },
+    {
+      "city_id": "nancy-fr",
+      "terminal_id": "flix-dcc212d9-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40e02b29-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc212d9-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Nancy (bus parking on \"Sainte-Catherine\")",
+      "minimum_duration_minutes": 285,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nancy"
+    },
+    {
+      "city_id": "nantes-fr",
+      "terminal_id": "flix-6c33811e-9f58-457f-a112-44620ebba523",
+      "provider_city_id": "40dfa08d-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "6c33811e-9f58-457f-a112-44620ebba523",
+      "public_stop_name": "Nantes (Central Bus Station)",
+      "minimum_duration_minutes": 285,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nantes"
+    },
+    {
+      "city_id": "nice-fr",
+      "terminal_id": "flix-c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7",
+      "provider_city_id": "40e13a46-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7",
+      "public_stop_name": "Nice Airport (Bus Station - Terminal 1)",
+      "minimum_duration_minutes": 590,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nice"
+    },
+    {
+      "city_id": "nuremberg-de",
+      "terminal_id": "flix-dcbac661-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d90d0f-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbac661-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Nuremberg central bus station (Willy-Brandt-Platz)",
+      "minimum_duration_minutes": 530,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nuremberg"
+    },
+    {
+      "city_id": "orleans-fr",
+      "terminal_id": "flix-dcc39e8f-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40e02f29-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc39e8f-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Orléans (Libération)",
+      "minimum_duration_minutes": 100,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-orleans"
+    },
+    {
+      "city_id": "reims-fr",
+      "terminal_id": "flix-dcbfeac0-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40deed19-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbfeac0-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Reims Champagne Ardenne TGV ( Bus Stop next to the train station)",
+      "minimum_duration_minutes": 100,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-reims"
+    },
+    {
+      "city_id": "rennes-fr",
+      "terminal_id": "flix-dcc0cced-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dfa833-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0cced-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Rennes (Central bus station near the SNCF Station)",
+      "minimum_duration_minutes": 240,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rennes"
+    },
+    {
+      "city_id": "rotterdam-nl",
+      "terminal_id": "flix-dcbfe5ff-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dee83e-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbfe5ff-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Rotterdam central station",
+      "minimum_duration_minutes": 415,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rotterdam"
+    },
+    {
+      "city_id": "rouen-fr",
+      "terminal_id": "flix-04db6ed7-70dc-42cf-bcc9-76a3127d25b4",
+      "provider_city_id": "40e03dbe-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "04db6ed7-70dc-42cf-bcc9-76a3127d25b4",
+      "public_stop_name": "Rouen (Avenue Champlain)",
+      "minimum_duration_minutes": 95,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rouen"
+    },
+    {
+      "city_id": "saint-malo-fr",
+      "terminal_id": "flix-1b0eb969-7c8e-4242-b5c8-75124d37763a",
+      "provider_city_id": "40e03e75-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "1b0eb969-7c8e-4242-b5c8-75124d37763a",
+      "public_stop_name": "Saint-Malo (Office de Tourisme)",
+      "minimum_duration_minutes": 325,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-saint-malo"
+    },
+    {
+      "city_id": "san-sebastian-es",
+      "terminal_id": "flix-dcc17134-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40e08d7a-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc17134-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "San Sebastian / Donostia (Bus Station)",
+      "minimum_duration_minutes": 610,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-san-sebastian"
+    },
+    {
+      "city_id": "strasbourg-fr",
+      "terminal_id": "flix-dcbac843-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d90f52-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbac843-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Strasbourg (Bus stop on \"Place de l'Étoile\")",
+      "minimum_duration_minutes": 340,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-strasbourg"
+    },
+    {
+      "city_id": "the-hague-nl",
+      "terminal_id": "flix-dcbcd8bb-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40de6b53-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbcd8bb-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "The Hague Central (Bus Station)",
+      "minimum_duration_minutes": 445,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-the-hague"
+    },
+    {
+      "city_id": "toulouse-fr",
+      "terminal_id": "flix-dcc0e74b-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dfd612-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcc0e74b-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Toulouse (central station \"Pierre Sémard\")",
+      "minimum_duration_minutes": 100,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-toulouse"
+    },
+    {
+      "city_id": "tours-fr",
+      "terminal_id": "flix-bb6bb160-b0fc-4a77-a08c-191e65256406",
+      "provider_city_id": "40e07389-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "bb6bb160-b0fc-4a77-a08c-191e65256406",
+      "public_stop_name": "Tours (Vaucanson)",
+      "minimum_duration_minutes": 170,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-tours"
+    },
+    {
+      "city_id": "trier-de",
+      "terminal_id": "flix-dcbf7bd9-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40da743c-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbf7bd9-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Trier central train station (Kürenzer St.)",
+      "minimum_duration_minutes": 375,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-trier"
+    },
+    {
+      "city_id": "troyes-fr",
+      "terminal_id": "flix-1a09c915-9448-4313-bdb8-ab48eb6704fa",
+      "provider_city_id": "40e07482-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "1a09c915-9448-4313-bdb8-ab48eb6704fa",
+      "public_stop_name": "Troyes (Bus Station)",
+      "minimum_duration_minutes": 145,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-troyes"
+    },
+    {
+      "city_id": "turin-it",
+      "terminal_id": "flix-dcbfe731-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40deee02-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbfe731-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Turin (Vittorio Emanuele)",
+      "minimum_duration_minutes": 605,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-turin"
+    },
+    {
+      "city_id": "utrecht-nl",
+      "terminal_id": "flix-dcbc53ef-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40dde129-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbc53ef-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Utrecht central station",
+      "minimum_duration_minutes": 375,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-utrecht"
+    },
+    {
+      "city_id": "zurich-ch",
+      "terminal_id": "flix-dcbab299-9603-11e6-9066-549f350fcb0c",
+      "provider_city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c",
+      "public_stop_id": "dcbab299-9603-11e6-9066-549f350fcb0c",
+      "public_stop_name": "Zurich Bus Station",
+      "minimum_duration_minutes": 560,
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-zurich"
+    }
+  ],
+  "city_results": [
+    {
+      "city_id": "aachen-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-aachen",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40da8ddc-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 385,
+      "primary_stop": {
+        "stop_id": "357e465b-8a94-4c9a-9bae-cd0b5369f33b",
+        "name": "Aachen station west (Henricistraße)",
+        "coordinates": {
+          "lat": 50.783515,
+          "lon": 6.072513
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "aarhus-dk",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-aarhus",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e0927c-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1250,
+      "primary_stop": {
+        "stop_id": "dcc18bf2-9603-11e6-9066-549f350fcb0c",
+        "name": "Aarhus C FlixBus stop",
+        "coordinates": {
+          "lat": 56.152223,
+          "lon": 10.208635
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "akureyri-is",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-akureyri",
+        "https://global.flixbus.com/bus-routes/bus-akureyri-paris"
+      ]
+    },
+    {
+      "city_id": "amiens-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-amiens",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfe705-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 185,
+      "primary_stop": {
+        "stop_id": "d27227ed-f1b0-4ea4-a8f6-10de02faf63b",
+        "name": "Amiens (Les Hortillonnages)",
+        "coordinates": {
+          "lat": 49.897096,
+          "lon": 2.311491
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "amsterdam-nl",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-amsterdam",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dde3b8-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 165,
+      "primary_stop": {
+        "stop_id": "dcbdd1b1-9603-11e6-9066-549f350fcb0c",
+        "name": "Amsterdam Sloterdijk",
+        "coordinates": {
+          "lat": 52.389758,
+          "lon": 4.838497
+        }
+      },
+      "stop_count": 6
+    },
+    {
+      "city_id": "angers-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-angers",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfe7c7-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 215,
+      "primary_stop": {
+        "stop_id": "dcc1007f-9603-11e6-9066-549f350fcb0c",
+        "name": "Angers (bus station near the SNCF Station)",
+        "coordinates": {
+          "lat": 47.464897,
+          "lon": -0.557648
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "annecy-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-annecy",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfe930-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 450,
+      "primary_stop": {
+        "stop_id": "dcc11362-9603-11e6-9066-549f350fcb0c",
+        "name": "Annecy (Bus station near the SNCF Station)",
+        "coordinates": {
+          "lat": 45.901664,
+          "lon": 6.120322
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "antwerp-be",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-antwerp",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dee1a4-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 260,
+      "primary_stop": {
+        "stop_id": "97ad0b6d-991a-46d5-bc57-276173e0cc39",
+        "name": "Antwerp Rooseveltplaats (B5)",
+        "coordinates": {
+          "lat": 51.219293,
+          "lon": 4.416975
+        }
+      },
+      "stop_count": 5
+    },
+    {
+      "city_id": "arles-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-arles",
+        "https://global.flixbus.com/bus-routes/bus-arles-paris"
+      ]
+    },
+    {
+      "city_id": "arras-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-arras",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfeb8e-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 155,
+      "primary_stop": {
+        "stop_id": "dcc127c1-9603-11e6-9066-549f350fcb0c",
+        "name": "Arras (Bus stop on \"rue du Docteur Brassart\")",
+        "coordinates": {
+          "lat": 50.286279,
+          "lon": 2.779515
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "athens-gr",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-athens",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "d672b263-63d4-4741-a4a3-475437d31e9c",
+      "minimum_duration_minutes": 3320,
+      "primary_stop": {
+        "stop_id": "459ef922-3200-494a-9b47-9db15783eaea",
+        "name": "Athens Karaiskaki",
+        "coordinates": {
+          "lat": 37.986091,
+          "lon": 23.721811
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "avignon-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-avignon",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dff20a-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 510,
+      "primary_stop": {
+        "stop_id": "7c9b9a0b-7ab5-4a64-ab85-5bb90bb23515",
+        "name": "Avignon (Le Pontet)",
+        "coordinates": {
+          "lat": 43.960626,
+          "lon": 4.855938
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "bad-ischl-at",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-bad-ischl",
+        "https://global.flixbus.com/bus-routes/bus-bad-ischl-paris"
+      ]
+    },
+    {
+      "city_id": "baden-baden-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-baden-baden",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dac68d-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 610,
+      "primary_stop": {
+        "stop_id": "dcc5fe86-9603-11e6-9066-549f350fcb0c",
+        "name": "Baden-Baden (bus station)",
+        "coordinates": {
+          "lat": 48.789499,
+          "lon": 8.191384
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "barcelona-es",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-barcelona",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e086ed-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 305,
+      "primary_stop": {
+        "stop_id": "dcc34bb9-9603-11e6-9066-549f350fcb0c",
+        "name": "Barcelona (Bus Terminal in \"Barcelona Nord\")",
+        "coordinates": {
+          "lat": 41.394181,
+          "lon": 2.182959
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "basel-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-basel",
+        "https://global.flixbus.com/bus-routes/bus-basel-paris"
+      ]
+    },
+    {
+      "city_id": "bergamo-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bergamo",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e098df-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 845,
+      "primary_stop": {
+        "stop_id": "dcc19cb9-9603-11e6-9066-549f350fcb0c",
+        "name": "Bergamo central bus station",
+        "coordinates": {
+          "lat": 45.692019,
+          "lon": 9.675369
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "bergen-no",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-bergen",
+        "https://global.flixbus.com/bus-routes/bus-bergen-paris"
+      ]
+    },
+    {
+      "city_id": "berlin-de",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-berlin",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d8f682-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 725,
+      "primary_stop": {
+        "stop_id": "dcbaaee6-9603-11e6-9066-549f350fcb0c",
+        "name": "Berlin central bus station",
+        "coordinates": {
+          "lat": 52.507171,
+          "lon": 13.279399
+        }
+      },
+      "stop_count": 8
+    },
+    {
+      "city_id": "bern-ch",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bern",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df4ec8-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 575,
+      "primary_stop": {
+        "stop_id": "dcc0604a-9603-11e6-9066-549f350fcb0c",
+        "name": "Bern (Neufeld car terminal)",
+        "coordinates": {
+          "lat": 46.963711,
+          "lon": 7.433698
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "bilbao-es",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bilbao",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e087a9-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 645,
+      "primary_stop": {
+        "stop_id": "3314645f-7903-4bc9-b9ef-74ff161feca2",
+        "name": "Bilbao (Bus Station)",
+        "coordinates": {
+          "lat": 43.261055,
+          "lon": -2.948689
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "bled-si",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-bled",
+        "https://global.flixbus.com/bus-routes/bus-bled-paris"
+      ]
+    },
+    {
+      "city_id": "bologna-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bologna",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df3653-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 920,
+      "primary_stop": {
+        "stop_id": "dcc03216-9603-11e6-9066-549f350fcb0c",
+        "name": "Bologna central bus station",
+        "coordinates": {
+          "lat": 44.50399,
+          "lon": 11.346852
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "bolzano-it",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-bolzano",
+        "https://global.flixbus.com/bus-routes/bus-bolzano-paris"
+      ]
+    },
+    {
+      "city_id": "bordeaux-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bordeaux",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df577e-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 395,
+      "primary_stop": {
+        "stop_id": "dcc06cc2-9603-11e6-9066-549f350fcb0c",
+        "name": "Bordeaux (Saint-Jean - Paludate)",
+        "coordinates": {
+          "lat": 44.82975,
+          "lon": -0.553934
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "brasov-ro",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-brasov",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e10f3a-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 2080,
+      "primary_stop": {
+        "stop_id": "dcc2a3d7-9603-11e6-9066-549f350fcb0c",
+        "name": "Brașov (Autogara Internationala Bartolomeu)",
+        "coordinates": {
+          "lat": 45.659787,
+          "lon": 25.570016
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "bratislava-sk",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bratislava",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de54de-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1190,
+      "primary_stop": {
+        "stop_id": "dcc2cb4f-9603-11e6-9066-549f350fcb0c",
+        "name": "Bratislava (bus station Mlynské Nivy)",
+        "coordinates": {
+          "lat": 48.14679,
+          "lon": 17.128865
+        }
+      },
+      "stop_count": 5
+    },
+    {
+      "city_id": "brno-cz",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-brno",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e2c245-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 975,
+      "primary_stop": {
+        "stop_id": "dcc5b203-9603-11e6-9066-549f350fcb0c",
+        "name": "Brno (bus station Hotel Grand)",
+        "coordinates": {
+          "lat": 49.19341,
+          "lon": 16.614258
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "bruges-be",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bruges",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df5e22-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 240,
+      "primary_stop": {
+        "stop_id": "dcc07028-9603-11e6-9066-549f350fcb0c",
+        "name": "Bruges (Station Brugge)",
+        "coordinates": {
+          "lat": 51.195501,
+          "lon": 3.216274
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "brussels-be",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-brussels",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de6287-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 215,
+      "primary_stop": {
+        "stop_id": "dcbfd126-9603-11e6-9066-549f350fcb0c",
+        "name": "Brussels Gare du Midi",
+        "coordinates": {
+          "lat": 50.834939,
+          "lon": 4.33303
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "bucharest-ro",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-bucharest",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e110b4-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 2285,
+      "primary_stop": {
+        "stop_id": "54c7a569-1af8-4252-aa35-eba0ff50b89b",
+        "name": "Bucharest (bus station Militari)",
+        "coordinates": {
+          "lat": 44.43294,
+          "lon": 26.006273
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "budapest-hu",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-budapest",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de6527-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1250,
+      "primary_stop": {
+        "stop_id": "dcbcd0d8-9603-11e6-9066-549f350fcb0c",
+        "name": "Budapest",
+        "coordinates": {
+          "lat": 47.474306,
+          "lon": 19.0985
+        }
+      },
+      "stop_count": 6
+    },
+    {
+      "city_id": "cesky-krumlov-cz",
+      "status": "no_current_trip_summary",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-cesky-krumlov",
+        "https://global.flixbus.com/bus-routes/bus-cesky-krumlov-paris"
+      ]
+    },
+    {
+      "city_id": "chamonix-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-chamonix",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "5e3178b2-bd1f-41a6-b5a0-a24c53e9e718",
+      "minimum_duration_minutes": 480,
+      "primary_stop": {
+        "stop_id": "87e7ff8e-5026-4fb1-8241-7e3e2debbeda",
+        "name": "Chamonix",
+        "coordinates": {
+          "lat": 45.917132,
+          "lon": 6.867276
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "chania-gr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-chania",
+        "https://global.flixbus.com/bus-routes/bus-chania-paris"
+      ]
+    },
+    {
+      "city_id": "chartres-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-chartres",
+        "https://global.flixbus.com/bus-routes/bus-chartres-paris"
+      ]
+    },
+    {
+      "city_id": "clermont-ferrand-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-clermont-ferrand",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df47f8-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 350,
+      "primary_stop": {
+        "stop_id": "dcc055c8-9603-11e6-9066-549f350fcb0c",
+        "name": "Clermont-Ferrand (Bus Station)",
+        "coordinates": {
+          "lat": 45.770757,
+          "lon": 3.082247
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "coimbra-pt",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-coimbra",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "216860c2-aae8-4723-9a8f-299c22c6ba75",
+      "minimum_duration_minutes": 1215,
+      "primary_stop": {
+        "stop_id": "c9e8bf88-9d2e-46a6-a8e5-17129eb020cc",
+        "name": "Coimbra",
+        "coordinates": {
+          "lat": 40.220168,
+          "lon": -8.439008
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "colmar-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-colmar",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df6681-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 495,
+      "primary_stop": {
+        "stop_id": "dcc079e9-9603-11e6-9066-549f350fcb0c",
+        "name": "Colmar (Bus stop on the corner of \"Place de la Gare/Rue Georges Lasch\")",
+        "coordinates": {
+          "lat": 48.073754,
+          "lon": 7.347802
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "cologne-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-cologne",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d91025-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 355,
+      "primary_stop": {
+        "stop_id": "dcc54142-9603-11e6-9066-549f350fcb0c",
+        "name": "Cologne Airport CGN (Terminal 2)",
+        "coordinates": {
+          "lat": 50.881001,
+          "lon": 7.117833
+        }
+      },
+      "stop_count": 29
+    },
+    {
+      "city_id": "copenhagen-dk",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-copenhagen",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de7db1-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1135,
+      "primary_stop": {
+        "stop_id": "dcbd0b4b-9603-11e6-9066-549f350fcb0c",
+        "name": "Copenhagen bus terminal",
+        "coordinates": {
+          "lat": 55.66449,
+          "lon": 12.56091
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "cordoba-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-cordoba",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "143d953d-0cef-4c69-86c9-ac7251b2ac98",
+      "minimum_duration_minutes": 4910,
+      "primary_stop": {
+        "stop_id": "1979f5ae-9e90-4ca5-bc29-58e6d0020e73",
+        "name": "Cordoba (Bus Station)",
+        "coordinates": {
+          "lat": 37.888981,
+          "lon": -4.789924
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "dijon-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-dijon",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df6b63-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 230,
+      "primary_stop": {
+        "stop_id": "dcc09441-9603-11e6-9066-549f350fcb0c",
+        "name": "Dijon (bus station near the SNCF Station)",
+        "coordinates": {
+          "lat": 47.323534,
+          "lon": 5.0279
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "dinant-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-dinant",
+        "https://global.flixbus.com/bus-routes/bus-dinant-paris"
+      ]
+    },
+    {
+      "city_id": "dresden-de",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-dresden",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40db219f-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 900,
+      "primary_stop": {
+        "stop_id": "dcbb7a42-9603-11e6-9066-549f350fcb0c",
+        "name": "Dresden central station",
+        "coordinates": {
+          "lat": 51.039615,
+          "lon": 13.731438
+        }
+      },
+      "stop_count": 18
+    },
+    {
+      "city_id": "dusseldorf-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-dusseldorf",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d911c7-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 415,
+      "primary_stop": {
+        "stop_id": "dcbaca96-9603-11e6-9066-549f350fcb0c",
+        "name": "Düsseldorf central bus station",
+        "coordinates": {
+          "lat": 51.222865,
+          "lon": 6.79542
+        }
+      },
+      "stop_count": 22
+    },
+    {
+      "city_id": "eger-hu",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-eger",
+        "https://global.flixbus.com/bus-routes/bus-eger-paris"
+      ]
+    },
+    {
+      "city_id": "florence-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-florence",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de71c6-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1015,
+      "primary_stop": {
+        "stop_id": "dcbcdfc1-9603-11e6-9066-549f350fcb0c",
+        "name": "Florence (Villa Costanza)",
+        "coordinates": {
+          "lat": 43.755014,
+          "lon": 11.172638
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "frankfurt-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-frankfurt",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d90407-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 505,
+      "primary_stop": {
+        "stop_id": "dcbabe0c-9603-11e6-9066-549f350fcb0c",
+        "name": "Frankfurt central train station",
+        "coordinates": {
+          "lat": 50.104394,
+          "lon": 8.662577
+        }
+      },
+      "stop_count": 23
+    },
+    {
+      "city_id": "freiburg-im-breisgau-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-freiburg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d8ff3b-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 445,
+      "primary_stop": {
+        "stop_id": "dcbab968-9603-11e6-9066-549f350fcb0c",
+        "name": "Freiburg(im Breisgau) central station",
+        "coordinates": {
+          "lat": 47.995688,
+          "lon": 7.840469
+        }
+      },
+      "stop_count": 9
+    },
+    {
+      "city_id": "gdansk-pl",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-gdansk",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de6982-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1410,
+      "primary_stop": {
+        "stop_id": "dcbcd754-9603-11e6-9066-549f350fcb0c",
+        "name": "Gdańsk, Bus Station",
+        "coordinates": {
+          "lat": 54.356152,
+          "lon": 18.642736
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "geneva-ch",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-geneva",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df585b-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 420,
+      "primary_stop": {
+        "stop_id": "dcc0627e-9603-11e6-9066-549f350fcb0c",
+        "name": "Geneva (central bus station)",
+        "coordinates": {
+          "lat": 46.208522,
+          "lon": 6.146928
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "genoa-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-genoa",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df4521-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 800,
+      "primary_stop": {
+        "stop_id": "dcc02ea8-9603-11e6-9066-549f350fcb0c",
+        "name": "Genoa (Fanti d'Italia/Principe bus station)",
+        "coordinates": {
+          "lat": 44.41599,
+          "lon": 8.919045
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "ghent-be",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-ghent",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df0110-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 225,
+      "primary_stop": {
+        "stop_id": "dcbffdd5-9603-11e6-9066-549f350fcb0c",
+        "name": "Ghent (Dampoort)",
+        "coordinates": {
+          "lat": 51.053533,
+          "lon": 3.740521
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "girona-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-girona",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e08a85-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 750,
+      "primary_stop": {
+        "stop_id": "10984cff-8e18-4964-a5a4-bc2c2d67b28a",
+        "name": "Girona (Bus Station)",
+        "coordinates": {
+          "lat": 41.979179,
+          "lon": 2.816124
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "gothenburg-se",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-gothenburg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e13cde-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1430,
+      "primary_stop": {
+        "stop_id": "dcc300fc-9603-11e6-9066-549f350fcb0c",
+        "name": "Gothenburg (Nils Ericson Terminal)",
+        "coordinates": {
+          "lat": 57.710421,
+          "lon": 11.971896
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "granada-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-granada",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "246101b8-2880-4b2f-a71a-171c927c442d",
+      "minimum_duration_minutes": 1450,
+      "primary_stop": {
+        "stop_id": "cdf5aee6-9a78-468c-84c7-8d395c6ac70f",
+        "name": "Granada (Bus Station)",
+        "coordinates": {
+          "lat": 37.200138,
+          "lon": -3.613957
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "graz-at",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-graz",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de3c97-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1105,
+      "primary_stop": {
+        "stop_id": "dcbca74d-9603-11e6-9066-549f350fcb0c",
+        "name": "Graz (Girardigasse)",
+        "coordinates": {
+          "lat": 47.068477,
+          "lon": 15.44409
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "hamburg-de",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-hamburg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d91e53-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 735,
+      "primary_stop": {
+        "stop_id": "dcbada9a-9603-11e6-9066-549f350fcb0c",
+        "name": "Hamburg central bus station",
+        "coordinates": {
+          "lat": 53.551767,
+          "lon": 10.011657
+        }
+      },
+      "stop_count": 40
+    },
+    {
+      "city_id": "heidelberg-de",
+      "status": "no_current_trip_summary",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-heidelberg",
+        "https://global.flixbus.com/bus-routes/bus-heidelberg-paris"
+      ]
+    },
+    {
+      "city_id": "helsinki-fi",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-helsinki",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "f074ccfa-b588-45d2-a838-cf2a30cf3597",
+      "minimum_duration_minutes": 2470,
+      "primary_stop": {
+        "stop_id": "9b6b38dd-3ecb-11ea-8017-02437075395e",
+        "name": "Helsinki, Bus Station (Kamppi)",
+        "coordinates": {
+          "lat": 60.169405,
+          "lon": 24.933535
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "innsbruck-at",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-innsbruck",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dd9a2a-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 880,
+      "primary_stop": {
+        "stop_id": "dcbcb402-9603-11e6-9066-549f350fcb0c",
+        "name": "Innsbruck (Südbahnstraße)",
+        "coordinates": {
+          "lat": 47.258351,
+          "lon": 11.39982
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "interlaken-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-interlaken",
+        "https://global.flixbus.com/bus-routes/bus-interlaken-paris"
+      ]
+    },
+    {
+      "city_id": "kalambaka-gr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-kalambaka",
+        "https://global.flixbus.com/bus-routes/bus-kalambaka-paris"
+      ]
+    },
+    {
+      "city_id": "karlovy-vary-cz",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-karlovy-vary",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e093e7-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 990,
+      "primary_stop": {
+        "stop_id": "dcc224e0-9603-11e6-9066-549f350fcb0c",
+        "name": "Karlovy Vary (Terminal)",
+        "coordinates": {
+          "lat": 50.229908,
+          "lon": 12.863974
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "krakow-pl",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-krakow",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de7eb5-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1315,
+      "primary_stop": {
+        "stop_id": "dcbd0e26-9603-11e6-9066-549f350fcb0c",
+        "name": "Krakow, MDA Bus Station",
+        "coordinates": {
+          "lat": 50.067614,
+          "lon": 19.94951
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "la-rochelle-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-la-rochelle",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df7e89-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 135,
+      "primary_stop": {
+        "stop_id": "dcc0a8be-9603-11e6-9066-549f350fcb0c",
+        "name": "La Rochelle (bus station )",
+        "coordinates": {
+          "lat": 46.152918,
+          "lon": -1.14093
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "lagos-pt",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lagos",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "8f54b18f-0152-4225-96b4-f2629988c5cf",
+      "minimum_duration_minutes": 1715,
+      "primary_stop": {
+        "stop_id": "ebc6e937-2043-4b61-a051-1c035b615c19",
+        "name": "Lagos",
+        "coordinates": {
+          "lat": 37.107726,
+          "lon": -8.676117
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "lausanne-ch",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lausanne",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df48fd-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 410,
+      "primary_stop": {
+        "stop_id": "dcc05da5-9603-11e6-9066-549f350fcb0c",
+        "name": "Lausanne P+R (Vélodrome)",
+        "coordinates": {
+          "lat": 46.536324,
+          "lon": 6.623189
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "leiden-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-leiden",
+        "https://global.flixbus.com/bus-routes/bus-leiden-paris"
+      ]
+    },
+    {
+      "city_id": "leuven-be",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-leuven",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df87d9-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 360,
+      "primary_stop": {
+        "stop_id": "dcc0a9fe-9603-11e6-9066-549f350fcb0c",
+        "name": "Leuven Station (Perron 14)",
+        "coordinates": {
+          "lat": 50.884089,
+          "lon": 4.714237
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "lille-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lille",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40deaa9f-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 160,
+      "primary_stop": {
+        "stop_id": "dcbf8aeb-9603-11e6-9066-549f350fcb0c",
+        "name": "Lille (Parking near Train Station \"Lille Europe\")",
+        "coordinates": {
+          "lat": 50.639197,
+          "lon": 3.076202
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "lisbon-pt",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lisbon",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "14eefc82-b630-4aea-88dc-eb91e0b9d482",
+      "minimum_duration_minutes": 1285,
+      "primary_stop": {
+        "stop_id": "9a30aab4-4caa-4ee6-9e33-739752be7cd0",
+        "name": "Lisbon (Oriente)",
+        "coordinates": {
+          "lat": 38.767881,
+          "lon": -9.100762
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "ljubljana-si",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-ljubljana",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de8044-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1066,
+      "primary_stop": {
+        "stop_id": "dcbd21fc-9603-11e6-9066-549f350fcb0c",
+        "name": "Ljubljana bus station",
+        "coordinates": {
+          "lat": 46.058101,
+          "lon": 14.514525
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "lucca-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lucca",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e1b850-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1055,
+      "primary_stop": {
+        "stop_id": "dcc2fc18-9603-11e6-9066-549f350fcb0c",
+        "name": "Lucca (Stazione FS)",
+        "coordinates": {
+          "lat": 43.838451,
+          "lon": 10.504016
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "lucerne-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-lucerne",
+        "https://global.flixbus.com/bus-routes/bus-lucerne-paris"
+      ]
+    },
+    {
+      "city_id": "luxembourg-city-lu",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-luxembourg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40da71d6-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 310,
+      "primary_stop": {
+        "stop_id": "dcc5d357-9603-11e6-9066-549f350fcb0c",
+        "name": "Luxembourg, P+R Bouillon",
+        "coordinates": {
+          "lat": 49.599985,
+          "lon": 6.105047
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "lyon-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-lyon",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df89c1-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 330,
+      "primary_stop": {
+        "stop_id": "9fe81919-2d89-48f4-81a3-322dc4b5614d",
+        "name": "Lyon (Gerland Bus Station)",
+        "coordinates": {
+          "lat": 45.726184,
+          "lon": 4.828142
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "maastricht-nl",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-maastricht",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de8268-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 355,
+      "primary_stop": {
+        "stop_id": "dcbd7a02-9603-11e6-9066-549f350fcb0c",
+        "name": "Maastricht station",
+        "coordinates": {
+          "lat": 50.852543,
+          "lon": 5.705562
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "madrid-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-madrid",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "9a07bb38-3596-48eb-a857-18fd01199c62",
+      "minimum_duration_minutes": 970,
+      "primary_stop": {
+        "stop_id": "765c44fe-f070-4e9c-8238-71c078e8734f",
+        "name": "Madrid (South Bus Station)",
+        "coordinates": {
+          "lat": 40.395255,
+          "lon": -3.677876
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "marseille-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-marseille",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df8e99-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 605,
+      "primary_stop": {
+        "stop_id": "dcc2e206-9603-11e6-9066-549f350fcb0c",
+        "name": "Marseille (Bus Station Saint Charles)",
+        "coordinates": {
+          "lat": 43.304081,
+          "lon": 5.37999
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "metz-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-metz",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de8463-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 225,
+      "primary_stop": {
+        "stop_id": "dcbd8097-9603-11e6-9066-549f350fcb0c",
+        "name": "Metz (central bus station near the SNCF Station)",
+        "coordinates": {
+          "lat": 49.110164,
+          "lon": 6.183766
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "milan-it",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-milan",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40ddcc6e-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 700,
+      "primary_stop": {
+        "stop_id": "dcbc484a-9603-11e6-9066-549f350fcb0c",
+        "name": "Milan (Lampugnano bus station)",
+        "coordinates": {
+          "lat": 45.489719,
+          "lon": 9.127528
+        }
+      },
+      "stop_count": 14
+    },
+    {
+      "city_id": "montpellier-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-montpellier",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df980f-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 620,
+      "primary_stop": {
+        "stop_id": "dcc0b9bc-9603-11e6-9066-549f350fcb0c",
+        "name": "Montpellier (Sabines)",
+        "coordinates": {
+          "lat": 43.583932,
+          "lon": 3.860233
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "munich-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-munich",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d901a5-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 670,
+      "primary_stop": {
+        "stop_id": "dcbabbfa-9603-11e6-9066-549f350fcb0c",
+        "name": "Munich central bus station",
+        "coordinates": {
+          "lat": 48.14248,
+          "lon": 11.55001
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "namur-be",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-namur",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40df9ab2-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 335,
+      "primary_stop": {
+        "stop_id": "dcc0bb38-9603-11e6-9066-549f350fcb0c",
+        "name": "Namur",
+        "coordinates": {
+          "lat": 50.466489,
+          "lon": 4.871021
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "nancy-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nancy",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e02b29-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 285,
+      "primary_stop": {
+        "stop_id": "dcc212d9-9603-11e6-9066-549f350fcb0c",
+        "name": "Nancy (bus parking on \"Sainte-Catherine\")",
+        "coordinates": {
+          "lat": 48.69483,
+          "lon": 6.190473
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "nantes-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nantes",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfa08d-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 285,
+      "primary_stop": {
+        "stop_id": "6c33811e-9f58-457f-a112-44620ebba523",
+        "name": "Nantes (Central Bus Station)",
+        "coordinates": {
+          "lat": 47.216512,
+          "lon": -1.540747
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "naples-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-naples",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e096c1-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1400,
+      "primary_stop": {
+        "stop_id": "dcc19a38-9603-11e6-9066-549f350fcb0c",
+        "name": "Naples Centrale (Terminal Bus FS Park)",
+        "coordinates": {
+          "lat": 40.850931,
+          "lon": 14.273617
+        }
+      },
+      "stop_count": 5
+    },
+    {
+      "city_id": "nice-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nice",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e13a46-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 590,
+      "primary_stop": {
+        "stop_id": "c3996d55-4fc0-40ae-8fe2-62b3d07fd0d7",
+        "name": "Nice Airport (Bus Station - Terminal 1)",
+        "coordinates": {
+          "lat": 43.664817,
+          "lon": 7.209588
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "nuremberg-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-nuremberg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d90d0f-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 530,
+      "primary_stop": {
+        "stop_id": "dcbac661-9603-11e6-9066-549f350fcb0c",
+        "name": "Nuremberg central bus station (Willy-Brandt-Platz)",
+        "coordinates": {
+          "lat": 49.447715,
+          "lon": 11.0855
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "orleans-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-orleans",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e02f29-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 100,
+      "primary_stop": {
+        "stop_id": "dcc39e8f-9603-11e6-9066-549f350fcb0c",
+        "name": "Orléans (Libération)",
+        "coordinates": {
+          "lat": 47.919533,
+          "lon": 1.903494
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "oslo-no",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-oslo",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e18128-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1865,
+      "primary_stop": {
+        "stop_id": "dcc38945-9603-11e6-9066-549f350fcb0c",
+        "name": "Oslo (Busterminalen Galleriet)",
+        "coordinates": {
+          "lat": 59.911605,
+          "lon": 10.759301
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "palermo-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-palermo",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e2af46-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 2220,
+      "primary_stop": {
+        "stop_id": "4be19091-966b-41e8-9c0d-ee8945cfa8d6",
+        "name": "Palermo (Via Fazello)",
+        "coordinates": {
+          "lat": 38.108565,
+          "lon": 13.366722
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "pecs-hu",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-pecs",
+        "https://global.flixbus.com/bus-routes/bus-pecs-paris"
+      ]
+    },
+    {
+      "city_id": "piran-si",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-piran",
+        "https://global.flixbus.com/bus-routes/bus-piran-paris"
+      ]
+    },
+    {
+      "city_id": "plovdiv-bg",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-plovdiv",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "d6b30b96-7d0c-419b-9cdc-95d2963fa603",
+      "minimum_duration_minutes": 2275,
+      "primary_stop": {
+        "stop_id": "e74c94ee-a6d3-4620-b158-dc430a2a273a",
+        "name": "Plovdiv Bus Station South",
+        "coordinates": {
+          "lat": 42.135654,
+          "lon": 24.744214
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "poprad-sk",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-poprad",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e0f91c-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1630,
+      "primary_stop": {
+        "stop_id": "747c651a-3484-42ff-9d01-652fe032dee7",
+        "name": "Poprad (bus station)",
+        "coordinates": {
+          "lat": 49.059098,
+          "lon": 20.29316
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "porto-pt",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-porto",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "74923e7b-3ace-43d2-8278-41ee00193a85",
+      "minimum_duration_minutes": 1045,
+      "primary_stop": {
+        "stop_id": "cd022a5c-a591-46fe-86a1-f7ca0ebbaf37",
+        "name": "Porto (TIC - Campanhã)",
+        "coordinates": {
+          "lat": 41.152889,
+          "lon": -8.583159
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "prague-cz",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-prague",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de1ad1-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 760,
+      "primary_stop": {
+        "stop_id": "dcbc6452-9603-11e6-9066-549f350fcb0c",
+        "name": "Prague (Central Bus Station Florenc)",
+        "coordinates": {
+          "lat": 50.089346,
+          "lon": 14.44005
+        }
+      },
+      "stop_count": 11
+    },
+    {
+      "city_id": "reims-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-reims",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40deed19-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 100,
+      "primary_stop": {
+        "stop_id": "dcbfeac0-9603-11e6-9066-549f350fcb0c",
+        "name": "Reims Champagne Ardenne TGV ( Bus Stop next to the train station)",
+        "coordinates": {
+          "lat": 49.215393,
+          "lon": 3.994701
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "rennes-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rennes",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfa833-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 240,
+      "primary_stop": {
+        "stop_id": "dcc0cced-9603-11e6-9066-549f350fcb0c",
+        "name": "Rennes (Central bus station near the SNCF Station)",
+        "coordinates": {
+          "lat": 48.103896,
+          "lon": -1.670617
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "reykjavik-is",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-reykjavik",
+        "https://global.flixbus.com/bus-routes/bus-reykjavik-paris"
+      ]
+    },
+    {
+      "city_id": "ribe-dk",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-ribe",
+        "https://global.flixbus.com/bus-routes/bus-ribe-paris"
+      ]
+    },
+    {
+      "city_id": "riga-lv",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-riga",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "20f5fe96-be0b-4d72-bd03-2affa653ca58",
+      "minimum_duration_minutes": 1955,
+      "primary_stop": {
+        "stop_id": "9b6b069d-3ecb-11ea-8017-02437075395e",
+        "name": "Riga, Bus Station",
+        "coordinates": {
+          "lat": 56.943746,
+          "lon": 24.111686
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "rome-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rome",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de90ff-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1225,
+      "primary_stop": {
+        "stop_id": "dcbd9538-9603-11e6-9066-549f350fcb0c",
+        "name": "Rome Tiburtina bus station",
+        "coordinates": {
+          "lat": 41.909362,
+          "lon": 12.528317
+        }
+      },
+      "stop_count": 8
+    },
+    {
+      "city_id": "rothenburg-ob-der-tauber-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-rothenburg-ob-der-tauber",
+        "https://global.flixbus.com/bus-routes/bus-rothenburg-ob-der-tauber-paris"
+      ]
+    },
+    {
+      "city_id": "rotterdam-nl",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rotterdam",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dee83e-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 415,
+      "primary_stop": {
+        "stop_id": "dcbfe5ff-9603-11e6-9066-549f350fcb0c",
+        "name": "Rotterdam central station",
+        "coordinates": {
+          "lat": 51.923686,
+          "lon": 4.46679
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "rouen-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rouen",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e03dbe-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 95,
+      "primary_stop": {
+        "stop_id": "04db6ed7-70dc-42cf-bcc9-76a3127d25b4",
+        "name": "Rouen (Avenue Champlain)",
+        "coordinates": {
+          "lat": 49.434194,
+          "lon": 1.092699
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "rovaniemi-fi",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rovaniemi",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "2e170532-5397-4d45-819b-8b3df5ca10ce",
+      "minimum_duration_minutes": 3640,
+      "primary_stop": {
+        "stop_id": "8354e20a-cf8f-4740-833d-517d675dba29",
+        "name": "Rovaniemi, Bus Station",
+        "coordinates": {
+          "lat": 66.4989,
+          "lon": 25.715259
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "rovinj-hr",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-rovinj",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e28dde-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1400,
+      "primary_stop": {
+        "stop_id": "dcc40fd4-9603-11e6-9066-549f350fcb0c",
+        "name": "Rovinj bus station",
+        "coordinates": {
+          "lat": 45.080724,
+          "lon": 13.638708
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "saint-malo-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-saint-malo",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e03e75-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 325,
+      "primary_stop": {
+        "stop_id": "1b0eb969-7c8e-4242-b5c8-75124d37763a",
+        "name": "Saint-Malo (Office de Tourisme)",
+        "coordinates": {
+          "lat": 48.650082,
+          "lon": -2.021857
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "salamanca-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-salamanca",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "fe1b9252-3adc-436c-bf8a-c4396bec60e6",
+      "minimum_duration_minutes": 960,
+      "primary_stop": {
+        "stop_id": "432e742d-77dc-496d-a84a-22da6809cddd",
+        "name": "Salamanca (Bus Station)",
+        "coordinates": {
+          "lat": 40.97042,
+          "lon": -5.674751
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "salzburg-at",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-salzburg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de3471-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 810,
+      "primary_stop": {
+        "stop_id": "f024d8e2-1c0e-47b4-bf0c-25e3921dc136",
+        "name": "Salzburg South (Hellbrunner Landesstraße)",
+        "coordinates": {
+          "lat": 47.76996,
+          "lon": 13.070769
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "san-sebastian-es",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-san-sebastian",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e08d7a-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 610,
+      "primary_stop": {
+        "stop_id": "dcc17134-9603-11e6-9066-549f350fcb0c",
+        "name": "San Sebastian / Donostia (Bus Station)",
+        "coordinates": {
+          "lat": 43.317169,
+          "lon": -1.977218
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "santiago-de-compostela-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-santiago-de-compostela",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "99215c48-4197-4562-a51c-143cad4fa0be",
+      "minimum_duration_minutes": 1225,
+      "primary_stop": {
+        "stop_id": "1b753e9f-d9e5-4af7-b75f-183b191c4884",
+        "name": "Santiago de Compostela (Bus Station)",
+        "coordinates": {
+          "lat": 42.87058,
+          "lon": -8.543415
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "seville-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-seville",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "033b1bde-970c-45af-9504-91c4006fd466",
+      "minimum_duration_minutes": 1860,
+      "primary_stop": {
+        "stop_id": "4763b0c9-cd32-4764-acfb-b68f6a2bee21",
+        "name": "Seville (Bus Station Plaza de Armas)",
+        "coordinates": {
+          "lat": 37.392,
+          "lon": -6.004
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "sibiu-ro",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-sibiu",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e1232b-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1915,
+      "primary_stop": {
+        "stop_id": "dcc2b64a-9603-11e6-9066-549f350fcb0c",
+        "name": "Sibiu (Autogara Turnisor)",
+        "coordinates": {
+          "lat": 45.794391,
+          "lon": 24.130337
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "siena-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-siena",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e10ab9-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1150,
+      "primary_stop": {
+        "stop_id": "dcc2789b-9603-11e6-9066-549f350fcb0c",
+        "name": "Siena train station",
+        "coordinates": {
+          "lat": 43.331378,
+          "lon": 11.323178
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "sigulda-lv",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-sigulda",
+        "https://global.flixbus.com/bus-routes/bus-sigulda-paris"
+      ]
+    },
+    {
+      "city_id": "sintra-pt",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-sintra",
+        "https://global.flixbus.com/bus-routes/bus-sintra-paris"
+      ]
+    },
+    {
+      "city_id": "sofia-bg",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-sofia",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e09335-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 2110,
+      "primary_stop": {
+        "stop_id": "dcc1910a-9603-11e6-9066-549f350fcb0c",
+        "name": "Sofia (Serdika bus station)",
+        "coordinates": {
+          "lat": 42.711027,
+          "lon": 23.321916
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "split-hr",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-split",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e128e9-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1605,
+      "primary_stop": {
+        "stop_id": "dcc29b84-9603-11e6-9066-549f350fcb0c",
+        "name": "Split bus station",
+        "coordinates": {
+          "lat": 43.504111,
+          "lon": 16.44279
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "stockholm-se",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-stockholm",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfdbe7-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1840,
+      "primary_stop": {
+        "stop_id": "dcc03476-9603-11e6-9066-549f350fcb0c",
+        "name": "Stockholm (Cityterminalen)",
+        "coordinates": {
+          "lat": 59.331127,
+          "lon": 18.056648
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "strasbourg-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-strasbourg",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d90f52-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 340,
+      "primary_stop": {
+        "stop_id": "dcbac843-9603-11e6-9066-549f350fcb0c",
+        "name": "Strasbourg (Bus stop on \"Place de l'Étoile\")",
+        "coordinates": {
+          "lat": 48.574179,
+          "lon": 7.754266
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "tallinn-ee",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-tallinn",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "99c4fec7-3ecb-11ea-8017-02437075395e",
+      "minimum_duration_minutes": 2240,
+      "primary_stop": {
+        "stop_id": "9b6b06b9-3ecb-11ea-8017-02437075395e",
+        "name": "Tallinn, Bus Station",
+        "coordinates": {
+          "lat": 59.42712,
+          "lon": 24.77374
+        }
+      },
+      "stop_count": 9
+    },
+    {
+      "city_id": "tartu-ee",
+      "status": "no_current_trip_summary",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-tartu",
+        "https://global.flixbus.com/bus-routes/bus-tartu-paris"
+      ]
+    },
+    {
+      "city_id": "the-hague-nl",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-the-hague",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de6b53-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 445,
+      "primary_stop": {
+        "stop_id": "dcbcd8bb-9603-11e6-9066-549f350fcb0c",
+        "name": "The Hague Central (Bus Station)",
+        "coordinates": {
+          "lat": 52.0798,
+          "lon": 4.3255
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "thessaloniki-gr",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-thessaloniki",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "ab6b59e0-0ea1-4783-833f-070f79f1a2ca",
+      "minimum_duration_minutes": 2805,
+      "primary_stop": {
+        "stop_id": "9b68df74-3ecb-11ea-8017-02437075395e",
+        "name": "Thessaloniki train station",
+        "coordinates": {
+          "lat": 40.644121,
+          "lon": 22.929807
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "toledo-es",
+      "status": "no_current_trip_summary",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-toledo",
+        "https://global.flixbus.com/bus-routes/bus-toledo-paris"
+      ]
+    },
+    {
+      "city_id": "toulouse-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-toulouse",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dfd612-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 100,
+      "primary_stop": {
+        "stop_id": "dcc0e74b-9603-11e6-9066-549f350fcb0c",
+        "name": "Toulouse (central station \"Pierre Sémard\")",
+        "coordinates": {
+          "lat": 43.612522,
+          "lon": 1.452612
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "tours-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-tours",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e07389-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 170,
+      "primary_stop": {
+        "stop_id": "bb6bb160-b0fc-4a77-a08c-191e65256406",
+        "name": "Tours (Vaucanson)",
+        "coordinates": {
+          "lat": 47.423527,
+          "lon": 0.711295
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "trakai-lt",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-trakai",
+        "https://global.flixbus.com/bus-routes/bus-trakai-paris"
+      ]
+    },
+    {
+      "city_id": "trier-de",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-trier",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40da743c-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 375,
+      "primary_stop": {
+        "stop_id": "dcbf7bd9-9603-11e6-9066-549f350fcb0c",
+        "name": "Trier central train station (Kürenzer St.)",
+        "coordinates": {
+          "lat": 49.758208,
+          "lon": 6.653136
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "tromso-no",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-tromso",
+        "https://global.flixbus.com/bus-routes/bus-tromso-paris",
+        "https://global.flixbus.com/bus-routes/bus-paris-troms",
+        "https://global.flixbus.com/bus-routes/bus-troms-paris"
+      ]
+    },
+    {
+      "city_id": "troyes-fr",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-troyes",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e07482-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 145,
+      "primary_stop": {
+        "stop_id": "1a09c915-9448-4313-bdb8-ab48eb6704fa",
+        "name": "Troyes (Bus Station)",
+        "coordinates": {
+          "lat": 48.297767,
+          "lon": 4.06427
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "turin-it",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-turin",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40deee02-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 605,
+      "primary_stop": {
+        "stop_id": "dcbfe731-9603-11e6-9066-549f350fcb0c",
+        "name": "Turin (Vittorio Emanuele)",
+        "coordinates": {
+          "lat": 45.07016,
+          "lon": 7.657706
+        }
+      },
+      "stop_count": 5
+    },
+    {
+      "city_id": "utrecht-nl",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-utrecht",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dde129-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 375,
+      "primary_stop": {
+        "stop_id": "dcbc53ef-9603-11e6-9066-549f350fcb0c",
+        "name": "Utrecht central station",
+        "coordinates": {
+          "lat": 52.088181,
+          "lon": 5.109352
+        }
+      },
+      "stop_count": 3
+    },
+    {
+      "city_id": "vaduz-li",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-vaduz",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "b7511146-3109-49f3-81ef-43d50748368c",
+      "minimum_duration_minutes": 1045,
+      "primary_stop": {
+        "stop_id": "f04ca8c8-3e93-43a6-930b-67423f985ef0",
+        "name": "Vaduz (Rheinparkstadion)",
+        "coordinates": {
+          "lat": 47.139365,
+          "lon": 9.511041
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "valencia-es",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-valencia",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "fe6bf6e1-6198-4eec-8843-ab6001133840",
+      "minimum_duration_minutes": 1180,
+      "primary_stop": {
+        "stop_id": "65bc658e-3c84-4f8a-8879-fc56c2e567c5",
+        "name": "Valencia (Bus Station)",
+        "coordinates": {
+          "lat": 39.48013,
+          "lon": -0.387697
+        }
+      },
+      "stop_count": 2
+    },
+    {
+      "city_id": "valletta-mt",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-valletta",
+        "https://global.flixbus.com/bus-routes/bus-valletta-paris"
+      ]
+    },
+    {
+      "city_id": "venice-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-venice",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dea03b-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 985,
+      "primary_stop": {
+        "stop_id": "dcc0139d-9603-11e6-9066-549f350fcb0c",
+        "name": "Venice Mestre train station",
+        "coordinates": {
+          "lat": 45.481504,
+          "lon": 12.238329
+        }
+      },
+      "stop_count": 18
+    },
+    {
+      "city_id": "verona-it",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-verona",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dea1ff-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 890,
+      "primary_stop": {
+        "stop_id": "dcbdb0fa-9603-11e6-9066-549f350fcb0c",
+        "name": "Verona (Porta Nuova)",
+        "coordinates": {
+          "lat": 45.430848,
+          "lon": 10.978415
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "vienna-at",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-vienna",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40de1f31-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1065,
+      "primary_stop": {
+        "stop_id": "dcbdc34e-9603-11e6-9066-549f350fcb0c",
+        "name": "Vienna Erdberg (Busterminal VIB)",
+        "coordinates": {
+          "lat": 48.190869,
+          "lon": 16.414007
+        }
+      },
+      "stop_count": 6
+    },
+    {
+      "city_id": "vilnius-lt",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-vilnius",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "4f05a96a-0043-4215-bcac-8c35c081056e",
+      "minimum_duration_minutes": 1950,
+      "primary_stop": {
+        "stop_id": "9b6b0388-3ecb-11ea-8017-02437075395e",
+        "name": "Vilnius, Bus Station",
+        "coordinates": {
+          "lat": 54.670718,
+          "lon": 25.281849
+        }
+      },
+      "stop_count": 4
+    },
+    {
+      "city_id": "visby-se",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://global.flixbus.com/bus-routes/bus-paris-visby",
+        "https://global.flixbus.com/bus-routes/bus-visby-paris"
+      ]
+    },
+    {
+      "city_id": "warsaw-pl",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-warsaw",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e19c59-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1330,
+      "primary_stop": {
+        "stop_id": "dcc454ac-9603-11e6-9066-549f350fcb0c",
+        "name": "Warsaw, West Station",
+        "coordinates": {
+          "lat": 52.218092,
+          "lon": 20.963779
+        }
+      },
+      "stop_count": 19
+    },
+    {
+      "city_id": "zagreb-hr",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-zagreb",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40dea87d-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1195,
+      "primary_stop": {
+        "stop_id": "dcbdbe76-9603-11e6-9066-549f350fcb0c",
+        "name": "Zagreb bus station",
+        "coordinates": {
+          "lat": 45.803417,
+          "lon": 15.992278
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "zakopane-pl",
+      "status": "duration_exceeds_limit",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-zakopane",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40e27ae3-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 1529,
+      "primary_stop": {
+        "stop_id": "dcc3e987-9603-11e6-9066-549f350fcb0c",
+        "name": "Zakopane, Bus station",
+        "coordinates": {
+          "lat": 49.301225,
+          "lon": 19.962728
+        }
+      },
+      "stop_count": 1
+    },
+    {
+      "city_id": "zurich-ch",
+      "status": "supported",
+      "route_url": "https://global.flixbus.com/bus-routes/bus-paris-zurich",
+      "public_page_direction": "paris_to_city",
+      "provider_city_id": "40d8fa3c-8646-11e6-9066-549f350fcb0c",
+      "minimum_duration_minutes": 560,
+      "primary_stop": {
+        "stop_id": "dcbab299-9603-11e6-9066-549f350fcb0c",
+        "name": "Zurich Bus Station",
+        "coordinates": {
+          "lat": 47.380855,
+          "lon": 8.537436
+        }
+      },
+      "stop_count": 1
+    }
+  ]
+}

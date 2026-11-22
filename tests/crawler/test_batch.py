@@ -109,7 +109,7 @@ class BatchCoordinatorTests(unittest.TestCase):
     def test_disabled_source_is_visible_but_does_not_degrade_execution(self) -> None:
         report = asyncio.run(
             BatchCoordinator(build_default_registry(include_fixture=False)).run(
-                self._manifest(source="ryanair")
+                self._manifest(source="easyjet")
             )
         )
         self.assertEqual(report.status, BatchStatus.SUCCEEDED)

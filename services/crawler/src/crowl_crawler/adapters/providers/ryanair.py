@@ -6,7 +6,10 @@ The adapter reads exact Basic fares from the rendered flight-selection page.
 from __future__ import annotations
 
 import hashlib
+import json
+from pathlib import Path
 
+from ..catalog import source_catalog_path
 from ...models import ExtractionStrategy, SearchKind, SearchOutcome
 from ._ryanair_public_html import parse_ryanair_results
 from .flight_http import (
@@ -36,6 +39,17 @@ class RyanairAdapter(ConfiguredFlightAdapter):
     parser_version = "ryanair-public-fares-v2"
     runtime_strategy = ExtractionStrategy.PLAYWRIGHT
     public_page_hosts = ("ryanair.com",)
+
+    def __init__(self, spec, **kwargs):  # type: ignore[no-untyped-def]
+        if kwargs.get("public_page_url") is None:
+            kwargs["public_page_url"] = (
+                "https://www.ryanair.com/gb/en/trip/flights/select"
+            )
+        if kwargs.get("supported_terminal_pairs") is None:
+            kwargs["supported_terminal_pairs"] = _catalog_pairs(
+                source_catalog_path().with_name("ryanair-routes.json")
+            )
+        super().__init__(spec, **kwargs)
 
     def build_request(
         self, public_page_url: str, context: FlightSearchContext
@@ -141,3 +155,20 @@ def _empty_outcome(state) -> SearchOutcome:  # type: ignore[no-untyped-def]
 
 
 ADAPTER_CLASS = RyanairAdapter
+
+
+def _catalog_pairs(path: Path) -> tuple[tuple[str, str], ...]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        pairs = payload["coverage"]["supported_terminal_pairs"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError):
+        return ()
+    result: list[tuple[str, str]] = []
+    for pair in pairs if isinstance(pairs, list) else ():
+        if (
+            isinstance(pair, list)
+            and len(pair) == 2
+            and all(isinstance(item, str) and item for item in pair)
+        ):
+            result.append((pair[0], pair[1]))
+    return tuple(sorted(set(result)))

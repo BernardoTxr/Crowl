@@ -1,0 +1,1646 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-21T22:15:51+00:00",
+  "observed_on": "2026-11-21",
+  "provenance": {
+    "method": "ordinary_public_html_schema_org",
+    "host": "www.ryanair.com",
+    "request_interval_seconds": 2.0
+  },
+  "summary": {
+    "catalog_cities": 150,
+    "supported_cities": 41,
+    "no_public_route_page": 109,
+    "discovery_failures": 0
+  },
+  "coverage": {
+    "supported_terminal_pairs": [
+      [
+        "par-bva",
+        "arn-arlanda"
+      ],
+      [
+        "par-bva",
+        "bcn-el-prat"
+      ],
+      [
+        "par-bva",
+        "cph-kastrup"
+      ],
+      [
+        "par-bva",
+        "fco-fiumicino"
+      ],
+      [
+        "par-bva",
+        "krk-balice"
+      ],
+      [
+        "par-bva",
+        "lis-humberto-delgado"
+      ],
+      [
+        "par-bva",
+        "prg-vaclav-havel"
+      ],
+      [
+        "par-bva",
+        "ryr-bgy"
+      ],
+      [
+        "par-bva",
+        "ryr-blq"
+      ],
+      [
+        "par-bva",
+        "ryr-bud"
+      ],
+      [
+        "par-bva",
+        "ryr-fao"
+      ],
+      [
+        "par-bva",
+        "ryr-gdn"
+      ],
+      [
+        "par-bva",
+        "ryr-gro"
+      ],
+      [
+        "par-bva",
+        "ryr-mad"
+      ],
+      [
+        "par-bva",
+        "ryr-mxp"
+      ],
+      [
+        "par-bva",
+        "ryr-nap"
+      ],
+      [
+        "par-bva",
+        "ryr-opo"
+      ],
+      [
+        "par-bva",
+        "ryr-otp"
+      ],
+      [
+        "par-bva",
+        "ryr-pmo"
+      ],
+      [
+        "par-bva",
+        "ryr-psa"
+      ],
+      [
+        "par-bva",
+        "ryr-rvn"
+      ],
+      [
+        "par-bva",
+        "ryr-skg"
+      ],
+      [
+        "par-bva",
+        "ryr-sof"
+      ],
+      [
+        "par-bva",
+        "ryr-svq"
+      ],
+      [
+        "par-bva",
+        "ryr-trs"
+      ],
+      [
+        "par-bva",
+        "ryr-tsf"
+      ],
+      [
+        "par-bva",
+        "ryr-vno"
+      ],
+      [
+        "par-bva",
+        "ryr-zag"
+      ],
+      [
+        "par-bva",
+        "vie-schwechat"
+      ]
+    ],
+    "sellable_through": "2027-06-19"
+  },
+  "routes": [
+    {
+      "city_id": "barcelona-es",
+      "terminal_id": "bcn-el-prat",
+      "arrival_iata": "BCN",
+      "arrival_airport_name": "Barcelona Airport",
+      "public_destination_slug": "barcelona",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-barcelona"
+    },
+    {
+      "city_id": "bergamo-it",
+      "terminal_id": "ryr-bgy",
+      "arrival_iata": "BGY",
+      "arrival_airport_name": "Bergamo Airport",
+      "public_destination_slug": "bergamo",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bergamo"
+    },
+    {
+      "city_id": "bologna-it",
+      "terminal_id": "ryr-blq",
+      "arrival_iata": "BLQ",
+      "arrival_airport_name": "Bologna Airport",
+      "public_destination_slug": "bologna",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bologna"
+    },
+    {
+      "city_id": "brasov-ro",
+      "terminal_id": "ryr-otp",
+      "arrival_iata": "OTP",
+      "arrival_airport_name": "Bucharest Airport",
+      "public_destination_slug": "bucharest",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bucharest"
+    },
+    {
+      "city_id": "bucharest-ro",
+      "terminal_id": "ryr-otp",
+      "arrival_iata": "OTP",
+      "arrival_airport_name": "Bucharest Airport",
+      "public_destination_slug": "bucharest",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bucharest"
+    },
+    {
+      "city_id": "budapest-hu",
+      "terminal_id": "ryr-bud",
+      "arrival_iata": "BUD",
+      "arrival_airport_name": "Budapest Airport",
+      "public_destination_slug": "budapest",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-budapest"
+    },
+    {
+      "city_id": "coimbra-pt",
+      "terminal_id": "ryr-opo",
+      "arrival_iata": "OPO",
+      "arrival_airport_name": "Porto Airport",
+      "public_destination_slug": "porto",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-porto"
+    },
+    {
+      "city_id": "copenhagen-dk",
+      "terminal_id": "cph-kastrup",
+      "arrival_iata": "CPH",
+      "arrival_airport_name": "Copenhagen Airport",
+      "public_destination_slug": "copenhagen",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-copenhagen"
+    },
+    {
+      "city_id": "cordoba-es",
+      "terminal_id": "ryr-svq",
+      "arrival_iata": "SVQ",
+      "arrival_airport_name": "Seville Airport",
+      "public_destination_slug": "seville",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-seville"
+    },
+    {
+      "city_id": "eger-hu",
+      "terminal_id": "ryr-bud",
+      "arrival_iata": "BUD",
+      "arrival_airport_name": "Budapest Airport",
+      "public_destination_slug": "budapest",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-budapest"
+    },
+    {
+      "city_id": "florence-it",
+      "terminal_id": "ryr-psa",
+      "arrival_iata": "PSA",
+      "arrival_airport_name": "Pisa Airport",
+      "public_destination_slug": "pisa",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pisa"
+    },
+    {
+      "city_id": "gdansk-pl",
+      "terminal_id": "ryr-gdn",
+      "arrival_iata": "GDN",
+      "arrival_airport_name": "Gdansk Airport",
+      "public_destination_slug": "gdansk",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-gdansk"
+    },
+    {
+      "city_id": "girona-es",
+      "terminal_id": "ryr-gro",
+      "arrival_iata": "GRO",
+      "arrival_airport_name": "Girona Airport",
+      "public_destination_slug": "girona",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-girona"
+    },
+    {
+      "city_id": "kalambaka-gr",
+      "terminal_id": "ryr-skg",
+      "arrival_iata": "SKG",
+      "arrival_airport_name": "Thessaloniki Airport",
+      "public_destination_slug": "thessaloniki",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-thessaloniki"
+    },
+    {
+      "city_id": "krakow-pl",
+      "terminal_id": "krk-balice",
+      "arrival_iata": "KRK",
+      "arrival_airport_name": "Krakow Airport",
+      "public_destination_slug": "krakow",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-krakow"
+    },
+    {
+      "city_id": "lagos-pt",
+      "terminal_id": "ryr-fao",
+      "arrival_iata": "FAO",
+      "arrival_airport_name": "Faro Airport",
+      "public_destination_slug": "faro",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-faro"
+    },
+    {
+      "city_id": "lisbon-pt",
+      "terminal_id": "lis-humberto-delgado",
+      "arrival_iata": "LIS",
+      "arrival_airport_name": "Lisbon Airport",
+      "public_destination_slug": "lisbon",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lisbon"
+    },
+    {
+      "city_id": "lucca-it",
+      "terminal_id": "ryr-psa",
+      "arrival_iata": "PSA",
+      "arrival_airport_name": "Pisa Airport",
+      "public_destination_slug": "pisa",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pisa"
+    },
+    {
+      "city_id": "madrid-es",
+      "terminal_id": "ryr-mad",
+      "arrival_iata": "MAD",
+      "arrival_airport_name": "Madrid Airport",
+      "public_destination_slug": "madrid",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-madrid"
+    },
+    {
+      "city_id": "milan-it",
+      "terminal_id": "ryr-mxp",
+      "arrival_iata": "MXP",
+      "arrival_airport_name": "Milan Airport",
+      "public_destination_slug": "milan",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-milan"
+    },
+    {
+      "city_id": "naples-it",
+      "terminal_id": "ryr-nap",
+      "arrival_iata": "NAP",
+      "arrival_airport_name": "Naples Airport",
+      "public_destination_slug": "naples",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-naples"
+    },
+    {
+      "city_id": "palermo-it",
+      "terminal_id": "ryr-pmo",
+      "arrival_iata": "PMO",
+      "arrival_airport_name": "Palermo Airport",
+      "public_destination_slug": "palermo",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-palermo"
+    },
+    {
+      "city_id": "pecs-hu",
+      "terminal_id": "ryr-bud",
+      "arrival_iata": "BUD",
+      "arrival_airport_name": "Budapest Airport",
+      "public_destination_slug": "budapest",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-budapest"
+    },
+    {
+      "city_id": "piran-si",
+      "terminal_id": "ryr-trs",
+      "arrival_iata": "TRS",
+      "arrival_airport_name": "Trieste Airport",
+      "public_destination_slug": "trieste",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-trieste"
+    },
+    {
+      "city_id": "porto-pt",
+      "terminal_id": "ryr-opo",
+      "arrival_iata": "OPO",
+      "arrival_airport_name": "Porto Airport",
+      "public_destination_slug": "porto",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-porto"
+    },
+    {
+      "city_id": "prague-cz",
+      "terminal_id": "prg-vaclav-havel",
+      "arrival_iata": "PRG",
+      "arrival_airport_name": "Prague Airport",
+      "public_destination_slug": "prague",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-prague"
+    },
+    {
+      "city_id": "rome-it",
+      "terminal_id": "fco-fiumicino",
+      "arrival_iata": "FCO",
+      "arrival_airport_name": "Rome Airport",
+      "public_destination_slug": "rome",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rome"
+    },
+    {
+      "city_id": "rovaniemi-fi",
+      "terminal_id": "ryr-rvn",
+      "arrival_iata": "RVN",
+      "arrival_airport_name": "Rovaniemi Airport",
+      "public_destination_slug": "rovaniemi",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rovaniemi"
+    },
+    {
+      "city_id": "seville-es",
+      "terminal_id": "ryr-svq",
+      "arrival_iata": "SVQ",
+      "arrival_airport_name": "Seville Airport",
+      "public_destination_slug": "seville",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-seville"
+    },
+    {
+      "city_id": "siena-it",
+      "terminal_id": "ryr-psa",
+      "arrival_iata": "PSA",
+      "arrival_airport_name": "Pisa Airport",
+      "public_destination_slug": "pisa",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pisa"
+    },
+    {
+      "city_id": "sintra-pt",
+      "terminal_id": "lis-humberto-delgado",
+      "arrival_iata": "LIS",
+      "arrival_airport_name": "Lisbon Airport",
+      "public_destination_slug": "lisbon",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lisbon"
+    },
+    {
+      "city_id": "sofia-bg",
+      "terminal_id": "ryr-sof",
+      "arrival_iata": "SOF",
+      "arrival_airport_name": "Sofia Airport",
+      "public_destination_slug": "sofia",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-sofia"
+    },
+    {
+      "city_id": "stockholm-se",
+      "terminal_id": "arn-arlanda",
+      "arrival_iata": "ARN",
+      "arrival_airport_name": "Stockholm Airport",
+      "public_destination_slug": "stockholm",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-stockholm"
+    },
+    {
+      "city_id": "thessaloniki-gr",
+      "terminal_id": "ryr-skg",
+      "arrival_iata": "SKG",
+      "arrival_airport_name": "Thessaloniki Airport",
+      "public_destination_slug": "thessaloniki",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-thessaloniki"
+    },
+    {
+      "city_id": "toledo-es",
+      "terminal_id": "ryr-mad",
+      "arrival_iata": "MAD",
+      "arrival_airport_name": "Madrid Airport",
+      "public_destination_slug": "madrid",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-madrid"
+    },
+    {
+      "city_id": "trakai-lt",
+      "terminal_id": "ryr-vno",
+      "arrival_iata": "VNO",
+      "arrival_airport_name": "Vilnius Airport",
+      "public_destination_slug": "vilnius",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vilnius"
+    },
+    {
+      "city_id": "venice-it",
+      "terminal_id": "ryr-tsf",
+      "arrival_iata": "TSF",
+      "arrival_airport_name": "Venice Treviso Airport",
+      "public_destination_slug": "venice-treviso",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-venice-treviso"
+    },
+    {
+      "city_id": "vienna-at",
+      "terminal_id": "vie-schwechat",
+      "arrival_iata": "VIE",
+      "arrival_airport_name": "Vienna Airport",
+      "public_destination_slug": "vienna",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vienna"
+    },
+    {
+      "city_id": "vilnius-lt",
+      "terminal_id": "ryr-vno",
+      "arrival_iata": "VNO",
+      "arrival_airport_name": "Vilnius Airport",
+      "public_destination_slug": "vilnius",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vilnius"
+    },
+    {
+      "city_id": "zagreb-hr",
+      "terminal_id": "ryr-zag",
+      "arrival_iata": "ZAG",
+      "arrival_airport_name": "Zagreb Airport",
+      "public_destination_slug": "zagreb",
+      "relationship": "primary_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-zagreb"
+    },
+    {
+      "city_id": "zakopane-pl",
+      "terminal_id": "krk-balice",
+      "arrival_iata": "KRK",
+      "arrival_airport_name": "Krakow Airport",
+      "public_destination_slug": "krakow",
+      "relationship": "nearby_airport",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-krakow"
+    }
+  ],
+  "city_results": [
+    {
+      "city_id": "aachen-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-aachen"
+      ]
+    },
+    {
+      "city_id": "aarhus-dk",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-aarhus"
+      ]
+    },
+    {
+      "city_id": "akureyri-is",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-akureyri"
+      ]
+    },
+    {
+      "city_id": "amiens-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-amiens"
+      ]
+    },
+    {
+      "city_id": "amsterdam-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-amsterdam"
+      ]
+    },
+    {
+      "city_id": "angers-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-angers"
+      ]
+    },
+    {
+      "city_id": "annecy-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-annecy"
+      ]
+    },
+    {
+      "city_id": "antwerp-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-antwerp"
+      ]
+    },
+    {
+      "city_id": "arles-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-arles"
+      ]
+    },
+    {
+      "city_id": "arras-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-arras"
+      ]
+    },
+    {
+      "city_id": "athens-gr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-athens"
+      ]
+    },
+    {
+      "city_id": "avignon-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-avignon"
+      ]
+    },
+    {
+      "city_id": "bad-ischl-at",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bad-ischl"
+      ]
+    },
+    {
+      "city_id": "baden-baden-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-baden-baden"
+      ]
+    },
+    {
+      "city_id": "barcelona-es",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-barcelona",
+      "public_destination_slug": "barcelona",
+      "relationship": "primary_airport",
+      "arrival_iata": "BCN",
+      "arrival_airport_name": "Barcelona Airport"
+    },
+    {
+      "city_id": "basel-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-basel"
+      ]
+    },
+    {
+      "city_id": "bergamo-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bergamo",
+      "public_destination_slug": "bergamo",
+      "relationship": "primary_airport",
+      "arrival_iata": "BGY",
+      "arrival_airport_name": "Bergamo Airport"
+    },
+    {
+      "city_id": "bergen-no",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bergen"
+      ]
+    },
+    {
+      "city_id": "berlin-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-berlin"
+      ]
+    },
+    {
+      "city_id": "bern-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bern"
+      ]
+    },
+    {
+      "city_id": "bilbao-es",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bilbao"
+      ]
+    },
+    {
+      "city_id": "bled-si",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bled"
+      ]
+    },
+    {
+      "city_id": "bologna-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bologna",
+      "public_destination_slug": "bologna",
+      "relationship": "primary_airport",
+      "arrival_iata": "BLQ",
+      "arrival_airport_name": "Bologna Airport"
+    },
+    {
+      "city_id": "bolzano-it",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bolzano"
+      ]
+    },
+    {
+      "city_id": "bordeaux-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bordeaux"
+      ]
+    },
+    {
+      "city_id": "brasov-ro",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bucharest",
+      "public_destination_slug": "bucharest",
+      "relationship": "nearby_airport",
+      "arrival_iata": "OTP",
+      "arrival_airport_name": "Bucharest Airport"
+    },
+    {
+      "city_id": "bratislava-sk",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bratislava"
+      ]
+    },
+    {
+      "city_id": "brno-cz",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-brno"
+      ]
+    },
+    {
+      "city_id": "bruges-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bruges"
+      ]
+    },
+    {
+      "city_id": "brussels-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-brussels"
+      ]
+    },
+    {
+      "city_id": "bucharest-ro",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-bucharest",
+      "public_destination_slug": "bucharest",
+      "relationship": "primary_airport",
+      "arrival_iata": "OTP",
+      "arrival_airport_name": "Bucharest Airport"
+    },
+    {
+      "city_id": "budapest-hu",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-budapest",
+      "public_destination_slug": "budapest",
+      "relationship": "primary_airport",
+      "arrival_iata": "BUD",
+      "arrival_airport_name": "Budapest Airport"
+    },
+    {
+      "city_id": "cesky-krumlov-cz",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-cesky-krumlov"
+      ]
+    },
+    {
+      "city_id": "chamonix-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-chamonix"
+      ]
+    },
+    {
+      "city_id": "chania-gr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-chania"
+      ]
+    },
+    {
+      "city_id": "chartres-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-chartres"
+      ]
+    },
+    {
+      "city_id": "clermont-ferrand-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-clermont-ferrand"
+      ]
+    },
+    {
+      "city_id": "coimbra-pt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-porto",
+      "public_destination_slug": "porto",
+      "relationship": "nearby_airport",
+      "arrival_iata": "OPO",
+      "arrival_airport_name": "Porto Airport"
+    },
+    {
+      "city_id": "colmar-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-colmar"
+      ]
+    },
+    {
+      "city_id": "cologne-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-cologne"
+      ]
+    },
+    {
+      "city_id": "copenhagen-dk",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-copenhagen",
+      "public_destination_slug": "copenhagen",
+      "relationship": "primary_airport",
+      "arrival_iata": "CPH",
+      "arrival_airport_name": "Copenhagen Airport"
+    },
+    {
+      "city_id": "cordoba-es",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-seville",
+      "public_destination_slug": "seville",
+      "relationship": "nearby_airport",
+      "arrival_iata": "SVQ",
+      "arrival_airport_name": "Seville Airport"
+    },
+    {
+      "city_id": "dijon-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-dijon"
+      ]
+    },
+    {
+      "city_id": "dinant-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-dinant"
+      ]
+    },
+    {
+      "city_id": "dresden-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-dresden"
+      ]
+    },
+    {
+      "city_id": "dusseldorf-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-dusseldorf"
+      ]
+    },
+    {
+      "city_id": "eger-hu",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-budapest",
+      "public_destination_slug": "budapest",
+      "relationship": "nearby_airport",
+      "arrival_iata": "BUD",
+      "arrival_airport_name": "Budapest Airport"
+    },
+    {
+      "city_id": "florence-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pisa",
+      "public_destination_slug": "pisa",
+      "relationship": "nearby_airport",
+      "arrival_iata": "PSA",
+      "arrival_airport_name": "Pisa Airport"
+    },
+    {
+      "city_id": "frankfurt-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-frankfurt"
+      ]
+    },
+    {
+      "city_id": "freiburg-im-breisgau-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-freiburg-im-breisgau"
+      ]
+    },
+    {
+      "city_id": "gdansk-pl",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-gdansk",
+      "public_destination_slug": "gdansk",
+      "relationship": "primary_airport",
+      "arrival_iata": "GDN",
+      "arrival_airport_name": "Gdansk Airport"
+    },
+    {
+      "city_id": "geneva-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-geneva"
+      ]
+    },
+    {
+      "city_id": "genoa-it",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-genoa"
+      ]
+    },
+    {
+      "city_id": "ghent-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-ghent"
+      ]
+    },
+    {
+      "city_id": "girona-es",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-girona",
+      "public_destination_slug": "girona",
+      "relationship": "primary_airport",
+      "arrival_iata": "GRO",
+      "arrival_airport_name": "Girona Airport"
+    },
+    {
+      "city_id": "gothenburg-se",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-gothenburg"
+      ]
+    },
+    {
+      "city_id": "granada-es",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-granada"
+      ]
+    },
+    {
+      "city_id": "graz-at",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-graz"
+      ]
+    },
+    {
+      "city_id": "hamburg-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-hamburg"
+      ]
+    },
+    {
+      "city_id": "heidelberg-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-heidelberg"
+      ]
+    },
+    {
+      "city_id": "helsinki-fi",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-helsinki"
+      ]
+    },
+    {
+      "city_id": "innsbruck-at",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-innsbruck"
+      ]
+    },
+    {
+      "city_id": "interlaken-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-interlaken"
+      ]
+    },
+    {
+      "city_id": "kalambaka-gr",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-thessaloniki",
+      "public_destination_slug": "thessaloniki",
+      "relationship": "nearby_airport",
+      "arrival_iata": "SKG",
+      "arrival_airport_name": "Thessaloniki Airport"
+    },
+    {
+      "city_id": "karlovy-vary-cz",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-karlovy-vary"
+      ]
+    },
+    {
+      "city_id": "krakow-pl",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-krakow",
+      "public_destination_slug": "krakow",
+      "relationship": "primary_airport",
+      "arrival_iata": "KRK",
+      "arrival_airport_name": "Krakow Airport"
+    },
+    {
+      "city_id": "la-rochelle-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-la-rochelle"
+      ]
+    },
+    {
+      "city_id": "lagos-pt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-faro",
+      "public_destination_slug": "faro",
+      "relationship": "nearby_airport",
+      "arrival_iata": "FAO",
+      "arrival_airport_name": "Faro Airport"
+    },
+    {
+      "city_id": "lausanne-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lausanne"
+      ]
+    },
+    {
+      "city_id": "leiden-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-leiden"
+      ]
+    },
+    {
+      "city_id": "leuven-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-leuven"
+      ]
+    },
+    {
+      "city_id": "lille-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lille"
+      ]
+    },
+    {
+      "city_id": "lisbon-pt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lisbon",
+      "public_destination_slug": "lisbon",
+      "relationship": "primary_airport",
+      "arrival_iata": "LIS",
+      "arrival_airport_name": "Lisbon Airport"
+    },
+    {
+      "city_id": "ljubljana-si",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-ljubljana"
+      ]
+    },
+    {
+      "city_id": "lucca-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pisa",
+      "public_destination_slug": "pisa",
+      "relationship": "nearby_airport",
+      "arrival_iata": "PSA",
+      "arrival_airport_name": "Pisa Airport"
+    },
+    {
+      "city_id": "lucerne-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lucerne"
+      ]
+    },
+    {
+      "city_id": "luxembourg-city-lu",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-luxembourg-city"
+      ]
+    },
+    {
+      "city_id": "lyon-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lyon"
+      ]
+    },
+    {
+      "city_id": "maastricht-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-maastricht"
+      ]
+    },
+    {
+      "city_id": "madrid-es",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-madrid",
+      "public_destination_slug": "madrid",
+      "relationship": "primary_airport",
+      "arrival_iata": "MAD",
+      "arrival_airport_name": "Madrid Airport"
+    },
+    {
+      "city_id": "marseille-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-marseille"
+      ]
+    },
+    {
+      "city_id": "metz-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-metz"
+      ]
+    },
+    {
+      "city_id": "milan-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-milan",
+      "public_destination_slug": "milan",
+      "relationship": "primary_airport",
+      "arrival_iata": "MXP",
+      "arrival_airport_name": "Milan Airport"
+    },
+    {
+      "city_id": "montpellier-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-montpellier"
+      ]
+    },
+    {
+      "city_id": "munich-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-munich"
+      ]
+    },
+    {
+      "city_id": "namur-be",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-namur"
+      ]
+    },
+    {
+      "city_id": "nancy-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-nancy"
+      ]
+    },
+    {
+      "city_id": "nantes-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-nantes"
+      ]
+    },
+    {
+      "city_id": "naples-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-naples",
+      "public_destination_slug": "naples",
+      "relationship": "primary_airport",
+      "arrival_iata": "NAP",
+      "arrival_airport_name": "Naples Airport"
+    },
+    {
+      "city_id": "nice-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-nice"
+      ]
+    },
+    {
+      "city_id": "nuremberg-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-nuremberg"
+      ]
+    },
+    {
+      "city_id": "orleans-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-orleans"
+      ]
+    },
+    {
+      "city_id": "oslo-no",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-oslo"
+      ]
+    },
+    {
+      "city_id": "palermo-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-palermo",
+      "public_destination_slug": "palermo",
+      "relationship": "primary_airport",
+      "arrival_iata": "PMO",
+      "arrival_airport_name": "Palermo Airport"
+    },
+    {
+      "city_id": "pecs-hu",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-budapest",
+      "public_destination_slug": "budapest",
+      "relationship": "nearby_airport",
+      "arrival_iata": "BUD",
+      "arrival_airport_name": "Budapest Airport"
+    },
+    {
+      "city_id": "piran-si",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-trieste",
+      "public_destination_slug": "trieste",
+      "relationship": "nearby_airport",
+      "arrival_iata": "TRS",
+      "arrival_airport_name": "Trieste Airport"
+    },
+    {
+      "city_id": "plovdiv-bg",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-plovdiv"
+      ]
+    },
+    {
+      "city_id": "poprad-sk",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-poprad"
+      ]
+    },
+    {
+      "city_id": "porto-pt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-porto",
+      "public_destination_slug": "porto",
+      "relationship": "primary_airport",
+      "arrival_iata": "OPO",
+      "arrival_airport_name": "Porto Airport"
+    },
+    {
+      "city_id": "prague-cz",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-prague",
+      "public_destination_slug": "prague",
+      "relationship": "primary_airport",
+      "arrival_iata": "PRG",
+      "arrival_airport_name": "Prague Airport"
+    },
+    {
+      "city_id": "reims-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-reims"
+      ]
+    },
+    {
+      "city_id": "rennes-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rennes"
+      ]
+    },
+    {
+      "city_id": "reykjavik-is",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-reykjavik"
+      ]
+    },
+    {
+      "city_id": "ribe-dk",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-ribe"
+      ]
+    },
+    {
+      "city_id": "riga-lv",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-riga"
+      ]
+    },
+    {
+      "city_id": "rome-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rome",
+      "public_destination_slug": "rome",
+      "relationship": "primary_airport",
+      "arrival_iata": "FCO",
+      "arrival_airport_name": "Rome Airport"
+    },
+    {
+      "city_id": "rothenburg-ob-der-tauber-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rothenburg-ob-der-tauber"
+      ]
+    },
+    {
+      "city_id": "rotterdam-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rotterdam"
+      ]
+    },
+    {
+      "city_id": "rouen-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rouen"
+      ]
+    },
+    {
+      "city_id": "rovaniemi-fi",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rovaniemi",
+      "public_destination_slug": "rovaniemi",
+      "relationship": "primary_airport",
+      "arrival_iata": "RVN",
+      "arrival_airport_name": "Rovaniemi Airport"
+    },
+    {
+      "city_id": "rovinj-hr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-rovinj",
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pula"
+      ]
+    },
+    {
+      "city_id": "saint-malo-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-saint-malo"
+      ]
+    },
+    {
+      "city_id": "salamanca-es",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-salamanca"
+      ]
+    },
+    {
+      "city_id": "salzburg-at",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-salzburg"
+      ]
+    },
+    {
+      "city_id": "san-sebastian-es",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-san-sebastian"
+      ]
+    },
+    {
+      "city_id": "santiago-de-compostela-es",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-santiago-de-compostela"
+      ]
+    },
+    {
+      "city_id": "seville-es",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-seville",
+      "public_destination_slug": "seville",
+      "relationship": "primary_airport",
+      "arrival_iata": "SVQ",
+      "arrival_airport_name": "Seville Airport"
+    },
+    {
+      "city_id": "sibiu-ro",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-sibiu"
+      ]
+    },
+    {
+      "city_id": "siena-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-pisa",
+      "public_destination_slug": "pisa",
+      "relationship": "nearby_airport",
+      "arrival_iata": "PSA",
+      "arrival_airport_name": "Pisa Airport"
+    },
+    {
+      "city_id": "sigulda-lv",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-sigulda",
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-riga"
+      ]
+    },
+    {
+      "city_id": "sintra-pt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-lisbon",
+      "public_destination_slug": "lisbon",
+      "relationship": "nearby_airport",
+      "arrival_iata": "LIS",
+      "arrival_airport_name": "Lisbon Airport"
+    },
+    {
+      "city_id": "sofia-bg",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-sofia",
+      "public_destination_slug": "sofia",
+      "relationship": "primary_airport",
+      "arrival_iata": "SOF",
+      "arrival_airport_name": "Sofia Airport"
+    },
+    {
+      "city_id": "split-hr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-split"
+      ]
+    },
+    {
+      "city_id": "stockholm-se",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-stockholm",
+      "public_destination_slug": "stockholm",
+      "relationship": "primary_airport",
+      "arrival_iata": "ARN",
+      "arrival_airport_name": "Stockholm Airport"
+    },
+    {
+      "city_id": "strasbourg-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-strasbourg"
+      ]
+    },
+    {
+      "city_id": "tallinn-ee",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-tallinn"
+      ]
+    },
+    {
+      "city_id": "tartu-ee",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-tartu",
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-tallinn"
+      ]
+    },
+    {
+      "city_id": "the-hague-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-the-hague"
+      ]
+    },
+    {
+      "city_id": "thessaloniki-gr",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-thessaloniki",
+      "public_destination_slug": "thessaloniki",
+      "relationship": "primary_airport",
+      "arrival_iata": "SKG",
+      "arrival_airport_name": "Thessaloniki Airport"
+    },
+    {
+      "city_id": "toledo-es",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-madrid",
+      "public_destination_slug": "madrid",
+      "relationship": "nearby_airport",
+      "arrival_iata": "MAD",
+      "arrival_airport_name": "Madrid Airport"
+    },
+    {
+      "city_id": "toulouse-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-toulouse"
+      ]
+    },
+    {
+      "city_id": "tours-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-tours"
+      ]
+    },
+    {
+      "city_id": "trakai-lt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vilnius",
+      "public_destination_slug": "vilnius",
+      "relationship": "nearby_airport",
+      "arrival_iata": "VNO",
+      "arrival_airport_name": "Vilnius Airport"
+    },
+    {
+      "city_id": "trier-de",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-trier"
+      ]
+    },
+    {
+      "city_id": "tromso-no",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-tromso",
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-troms"
+      ]
+    },
+    {
+      "city_id": "troyes-fr",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-troyes"
+      ]
+    },
+    {
+      "city_id": "turin-it",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-turin"
+      ]
+    },
+    {
+      "city_id": "utrecht-nl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-utrecht"
+      ]
+    },
+    {
+      "city_id": "vaduz-li",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vaduz"
+      ]
+    },
+    {
+      "city_id": "valencia-es",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-valencia"
+      ]
+    },
+    {
+      "city_id": "valletta-mt",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-valletta"
+      ]
+    },
+    {
+      "city_id": "venice-it",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-venice-treviso",
+      "public_destination_slug": "venice-treviso",
+      "relationship": "nearby_airport",
+      "arrival_iata": "TSF",
+      "arrival_airport_name": "Venice Treviso Airport"
+    },
+    {
+      "city_id": "verona-it",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-verona"
+      ]
+    },
+    {
+      "city_id": "vienna-at",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vienna",
+      "public_destination_slug": "vienna",
+      "relationship": "primary_airport",
+      "arrival_iata": "VIE",
+      "arrival_airport_name": "Vienna Airport"
+    },
+    {
+      "city_id": "vilnius-lt",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-vilnius",
+      "public_destination_slug": "vilnius",
+      "relationship": "primary_airport",
+      "arrival_iata": "VNO",
+      "arrival_airport_name": "Vilnius Airport"
+    },
+    {
+      "city_id": "visby-se",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-visby"
+      ]
+    },
+    {
+      "city_id": "warsaw-pl",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-warsaw"
+      ]
+    },
+    {
+      "city_id": "zagreb-hr",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-zagreb",
+      "public_destination_slug": "zagreb",
+      "relationship": "primary_airport",
+      "arrival_iata": "ZAG",
+      "arrival_airport_name": "Zagreb Airport"
+    },
+    {
+      "city_id": "zakopane-pl",
+      "status": "supported",
+      "route_url": "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-krakow",
+      "public_destination_slug": "krakow",
+      "relationship": "nearby_airport",
+      "arrival_iata": "KRK",
+      "arrival_airport_name": "Krakow Airport"
+    },
+    {
+      "city_id": "zurich-ch",
+      "status": "no_public_route_page",
+      "attempted_urls": [
+        "https://www.ryanair.com/gb/en/flights/flights-from-paris-beauvais-to-zurich"
+      ]
+    }
+  ]
+}
